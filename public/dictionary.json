@@ -1,0 +1,34 @@
+[
+    {
+        "title": "Case Number",
+        "description": "This refers to the police report number."
+    },
+    {
+        "title": "Crime Code",
+        "description": "This is the local code utilized to report the offense."
+    },
+    {
+        "title": "Crime Description",
+        "description": "This denotes the crime being reported. Notably, case numbers may encompass multiple crimes reported to law enforcement."
+    },
+    {
+        "title": "Reported Block Address",
+        "description": "To safeguard the privacy of the victim, the block number of the location where the crime occurred is employed."
+    },
+    {
+        "title": "City of Incident",
+        "description": "This indicates the city in which the crime was reported."
+    },
+    {
+        "title": "District",
+        "description": "This specifies the Police District in which the crime took place."
+    },
+    {
+        "title": "Reported Date",
+        "description": "This indicates the date the report was submitted to the police."
+    },
+    {
+        "title": "Reported Day of Week",
+        "description": "This denotes the day of the week the report was made to the police."
+    }
+]

@@ -1,0 +1,77 @@
+@import url("https://js.arcgis.com/4.32/@arcgis/core/assets/esri/themes/light/main.css");
+@import url("https://js.arcgis.com/calcite-components/3.0.3/calcite.css");
+@import url("https://js.arcgis.com/map-components/4.32/arcgis-map-components.css");
+@import url("https://js.arcgis.com/calcite-components/3.0.3/calcite.css");
+#root,
+html,
+body {
+  margin: 0;
+  --calcite-color-brand: #11233F;
+  --calcite-color-brand-hover: #007AB8;
+  --calcite-color-brand-active: #007AB8;
+  --calcite-color-brand-focus: #007AB8;
+  --calcite-color-brand-pressed: #007AB8;
+  --calcite-color-secondary: #007AB8;
+  --calcite-navigation-background-color: #11233F;
+  --calcite-navigation-logo-text-color: #FFFFFF;
+  --calcite-navigation-logo-heading-text-color: #FFFFFF;
+
+}
+
+:host([checked]) .label {
+  background-color: var(--calcite-color-secondary);
+}
+
+calcite-navigation {
+    --calcite-action-text-color: #FFFFFF;
+    --calcite-action-text-color-press: #FFFFFF;
+}
+
+arcgis-map {
+  display: block;
+  height: 100vh;
+}
+arcgis-feature-table {
+  display: block;
+  height: 0vh;
+}
+
+arcgis-map .show-table {
+  display: block;
+  height: 40vh;
+}
+arcgis-feature-table.show-table {
+  display: block;
+  height: 80vh;
+}
+
+.tile-icon  {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.tile-icon  {
+  width: 100%;
+  height: 100%;
+  align-items: center;
+}
+.tile-icon img {
+  max-width: 120px;
+  height: auto;
+}
+
+.tile-text {
+  width: 100%;
+  height: 100%;
+  align-items: center;
+}
+
+
+.tile-text h3 {
+
+  text-align: center;
+}
