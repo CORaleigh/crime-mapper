@@ -101,7 +101,7 @@ export default function When({ onWhereChange, onFilterPanelClose, open, isMobile
     <calcite-panel heading="Filter by Date" closed={!open} closable={isMobile} oncalcitePanelClose={onFilterPanelClose}>
       <div style={{ padding: "1rem" }}>
         <calcite-label>
-          Preset:
+          Show incidents in
           <calcite-select
             label="Preset"
             value={preset}

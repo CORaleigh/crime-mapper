@@ -15,6 +15,7 @@ export default function Disclaimer({ open, onClose }: DisclaimerProps) {
       scale="l"
       width="m"
       closeDisabled
+      modal
     >
       <p>
         The Raleigh Police Department does not guarantee the accuracy of the

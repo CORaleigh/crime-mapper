@@ -6,12 +6,12 @@
 html,
 body {
   margin: 0;
-  --calcite-color-brand: #11233f;
-  --calcite-color-brand-hover: #007ab8;
-  --calcite-color-brand-active: #007ab8;
+  --calcite-color-brand: #007ab8;
+  --calcite-color-brand-hover: #11233f;
+  --calcite-color-brand-active: #11233f;
   --calcite-color-brand-focus: #007ab8;
-  --calcite-color-brand-pressed: #007ab8;
-  --calcite-color-secondary: #007ab8;
+  --calcite-color-brand-pressed: #11233f;
+  --calcite-color-secondary: #11233f;
   --calcite-navigation-background-color: #11233f;
   --calcite-navigation-logo-text-color: #ffffff;
   --calcite-navigation-logo-heading-text-color: #ffffff;
@@ -29,7 +29,7 @@ calcite-navigation {
 }
 
 calcite-dialog {
-  --calcite-panel-header-background-color: var(--calcite-color-brand);
+  --calcite-panel-header-background-color: var(--calcite-color-secondary);
   --calcite-panel-heading-text-color: #ffffff;
 }
 
@@ -87,7 +87,7 @@ arcgis-feature-table.show-table {
 calcite-tile-group {
   height: calc(100vh - 180px);
 }
-calcite-list {
+calcite-flow-item calcite-list {
   height: calc(100vh - 160px);
 }
 
@@ -95,7 +95,7 @@ calcite-list {
   calcite-tile-group {
     height: calc(100vh - 210px);
   }
-  calcite-list {
+  calcite-flow-item calcite-list {
     height: calc(100vh - 210px);
   }
   arcgis-map {
@@ -129,4 +129,9 @@ calcite-list {
     --calcite-shell-panel-min-width: 100vw;
     --calcite-shell-panel-max-width: calc(100vw - 300px);
   }
+}
+
+
+#sketchActionBar {
+  width: 290px;
 }

@@ -32,11 +32,8 @@ import "@esri/calcite-components/components/calcite-button";
 import "@esri/calcite-components/components/calcite-action";
 import "@esri/calcite-components/components/calcite-dropdown";
 import "@esri/calcite-components/components/calcite-dropdown-item";
-import "@esri/calcite-components/components/calcite-tabs";
-import "@esri/calcite-components/components/calcite-tab";
-import "@esri/calcite-components/components/calcite-tab-nav";
-import "@esri/calcite-components/components/calcite-tab-title";
 
+//import Geometry from "@arcgis/core/geometry/Geometry";
 import type { TargetedEvent } from "@esri/calcite-components";
 import What from "./What";
 import When from "./When";
@@ -44,6 +41,8 @@ import Where from "./Where";
 import DataDictionary from "./DataDictionary";
 import Disclaimer from "./Disclaimer";
 import FilterSegmentedControl from "./FilterSegmentedControl";
+//import { useSearchParams } from "react-router-dom";
+import Collection from "@arcgis/core/core/Collection";
 
 // Description type
 type Description = {
@@ -52,8 +51,10 @@ type Description = {
 };
 
 function App() {
-  const [whereClause, setWhereClause] = useState("1=1"); // from <Where>
-  const [whenClause, setWhenClause] = useState("CURRENT_TIMESTAMP - 90"); // from <When>
+ // const [searchParams, setSearchParams] = useSearchParams();
+
+  const [whereClause, setWhereClause] = useState("1=1");
+  const [whenClause, setWhenClause] = useState("CURRENT_TIMESTAMP - 90");
   const [combinedWhere, setCombinedWhere] = useState("1=1");
   const [geometryFilter, setFilterGeometry] = useState<__esri.Geometry | null>(
     null
@@ -66,11 +67,11 @@ function App() {
   const [selectedSegment, setSelectedSegment] = useState("what");
   const arcgisMap = useRef<HTMLArcgisMapElement>(null);
   const arcgisFeatureTable = useRef<HTMLArcgisFeatureTableElement>(null);
-  const shell = useRef<HTMLCalciteShellElement>(null);
 
-  const incidentsLayer = useRef<__esri.FeatureLayer | null>(null);
   const [showDataDictionary, setShowDataDictionary] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(true);
+
+  const incidentsLayer = useRef<__esri.FeatureLayer | null>(null);
   const crimeTypes = useRef<string[]>([]);
 
   const [isMobile, setIsMobile] = useState(
@@ -78,20 +79,19 @@ function App() {
   );
 
   useEffect(() => {
-    if (window.innerWidth < 900) {
-      setShowFilter(false);
-    }
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 900);
-      if (window.innerWidth < 900) {
-        setShowTable(true);
-      }
+      const isMobileView = window.innerWidth < 900;
+      setIsMobile(isMobileView);
+      setShowTable(isMobileView);
+      setShowFilter(!isMobileView);
     };
+
+    handleResize(); // call once to initialize
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const viewReady = async (
+  const handleViewReady = async (
     event: TargetedEvent<HTMLArcgisMapElement, void>
   ) => {
     const view = await event.target?.view?.when();
@@ -108,6 +108,16 @@ function App() {
       });
       setCategories(results.features);
     }
+
+    // const where = searchParams.get('where');
+    // const geometry = searchParams.get('geometry');
+    // if (geometry) {
+    //   setFilterGeometry(Geometry.fromJSON(geometry));
+    // }
+    
+    // if (where) {
+    //   setCombinedWhere(where);
+    // }
   };
 
   const toTitleCase = (str: string) => {
@@ -210,7 +220,7 @@ function App() {
 
     setAllDescriptions(result.filter((item) => item.descriptions.length > 0));
   }, [geometryFilter, categories, whenClause]);
-  const onDescriptionShow = (show: boolean) => {
+  const handleDescriptionShow = (show: boolean) => {
     if (show) {
       //if (categories.length > 0) {
 
@@ -219,21 +229,16 @@ function App() {
     }
   };
 
-  const onCrimeTypeChange = (types: string[]) => {
+  const handleCrimeTypeChange = (types: string[]) => {
     if (types.length > 0) {
       crimeTypes.current = types;
     }
   };
   // Combine the two where clauses
   useEffect(() => {
-    let combined = "1=1";
-    if (whereClause !== "1=1" && whenClause !== "1=1") {
-      combined = `(${whereClause}) AND (${whenClause})`;
-    } else if (whereClause !== "1=1") {
-      combined = whereClause;
-    } else if (whenClause !== "1=1") {
-      combined = whenClause;
-    }
+    const combined =
+      [whereClause, whenClause].filter((c) => c !== "1=1").join(" AND ") ||
+      "1=1";
     setCombinedWhere(combined);
   }, [whereClause, whenClause]);
 
@@ -272,13 +277,26 @@ function App() {
       }
     }
     console.log("Combined where clause applied:", combinedWhere);
+    // if (geometryFilter) {
+    //   searchParams.set("geometry", JSON.stringify(geometryFilter.toJSON()));
+    //   setSearchParams(searchParams);
+    // } else {
+    //   searchParams.delete("geometry");
+    //   setSearchParams(searchParams);
+    // }
+    // if (combinedWhere !== '1=1') {
+    //   searchParams.set("where", combinedWhere);
+    // } else {
+    //   searchParams.delete("where");
+    //   setSearchParams(searchParams);
+    // }
   }, [combinedWhere, geometryFilter]);
 
   const arcgisMapEl = (
     <arcgis-map
       ref={arcgisMap}
       itemId="8a9abcc6b1bd4b6492923810c88cc879"
-      onarcgisViewReadyChange={viewReady}
+      onarcgisViewReadyChange={handleViewReady}
       className={showTable ? "show-table" : ""}
     >
       <arcgis-expand position="top-right">
@@ -326,6 +344,22 @@ function App() {
             icon: "zoom-to-object",
             callback: (event) => arcgisMap.current?.goTo(event.feature),
           }}
+          hideSelectionColumn
+          hideMenuItemsExportSelectionToCsv
+          menuConfig={{items: [
+            {
+              label: 'Export to CSV',
+              icon: 'file-csv',
+              clickFunction:  async () => {
+                  if (!arcgisFeatureTable.current) return;
+                  const oids = await arcgisFeatureTable.current?.layer?.queryObjectIds();
+                  arcgisFeatureTable.current.highlightIds = new Collection(oids);
+                  arcgisFeatureTable.current.exportSelectionToCSV();
+                  arcgisFeatureTable.current.highlightIds.removeAll();
+
+              }
+            }
+          ]}}
         />
       )}
     </>
@@ -335,7 +369,6 @@ function App() {
     <>
       <calcite-shell
         id="shell"
-        ref={shell}
         className={showFilter ? "show-filter" : ""}
       >
         <calcite-navigation slot="header">
@@ -377,8 +410,8 @@ function App() {
                 categories={categories}
                 allDescriptions={allDescriptions}
                 onWhereChange={setWhereClause}
-                onDescriptionShow={onDescriptionShow}
-                onCrimeTypeChange={onCrimeTypeChange}
+                onDescriptionShow={handleDescriptionShow}
+                onCrimeTypeChange={handleCrimeTypeChange}
                 isMobile={isMobile}
                 onFilterPanelClose={() => setShowFilter(false)}
                 open={showFilter}
