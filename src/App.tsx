@@ -31,6 +31,7 @@ import "@esri/calcite-components/components/calcite-fab";
 import "@esri/calcite-components/components/calcite-button";
 import "@esri/calcite-components/components/calcite-action";
 import "@esri/calcite-components/components/calcite-dropdown";
+import "@esri/calcite-components/components/calcite-dropdown-group";
 import "@esri/calcite-components/components/calcite-dropdown-item";
 
 //import Geometry from "@arcgis/core/geometry/Geometry";
@@ -378,7 +379,7 @@ function App() {
             thumbnail="badge.png"
           />
           <div slot="content-end">
-            <calcite-dropdown slot="content-end" scale="l">
+            <calcite-dropdown slot="content-end" scale="l" width="l" type="hover" >
               <calcite-action
                 slot="trigger"
                 icon="hamburger"
@@ -386,11 +387,27 @@ function App() {
                 appearance="transparent"
                 text={"Menu"}
               ></calcite-action>
+              <calcite-dropdown-group selectionMode="none" groupTitle="Menu">
               <calcite-dropdown-item
                 onClick={() => setShowDataDictionary(true)}
+                iconStart="book"
               >
                 Data Dictionary
               </calcite-dropdown-item>
+              <calcite-dropdown-item
+                onClick={() => setShowDisclaimer(true)}
+                iconStart="file-text"
+              >
+                Disclaimer
+              </calcite-dropdown-item>   
+              <calcite-dropdown-item
+                iconStart="data"
+                href="https://data.raleighnc.gov/datasets/24c0b37fa9bb4e16ba8bcaa7e806c615_0/explore?location=35.796813%2C-78.624284%2C9.61&showTable=true"
+                target="_blank"
+              >
+                Open Data
+              </calcite-dropdown-item>                 
+              </calcite-dropdown-group>           
             </calcite-dropdown>
           </div>
         </calcite-navigation>
