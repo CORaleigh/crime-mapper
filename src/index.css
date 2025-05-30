@@ -101,8 +101,11 @@ calcite-flow-item calcite-list {
   arcgis-map {
     height: calc(100vh);
   }
+  arcgis-map.show-table {
+    height: calc(50vh);
+  }  
   arcgis-feature-table.show-table {
-    height: calc(100vh);
+    height: calc(50vh);
   }
 
   calcite-shell.show-filter > arcgis-map {

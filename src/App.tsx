@@ -83,7 +83,6 @@ function App() {
     const handleResize = () => {
       const isMobileView = window.innerWidth < 900;
       setIsMobile(isMobileView);
-      setShowTable(isMobileView);
       setShowFilter(!isMobileView);
     };
 
