@@ -7,6 +7,10 @@ import "@esri/calcite-components/components/calcite-option";
 
 interface WhenProps {
   onWhereChange: (where: string) => void;
+  onFilterPanelClose: () => void;
+  open: boolean;
+  isMobile: boolean;
+
 }
 
 type Preset = "week" | "month" | "90days" | "";
@@ -46,7 +50,7 @@ function isRangeValid(start: string, end: string): boolean {
   return diff <= 90 && diff >= 0;
 }
 
-export default function When({ onWhereChange }: WhenProps) {
+export default function When({ onWhereChange, onFilterPanelClose, open, isMobile }: WhenProps) {
   const [preset, setPreset] = useState<Preset>("90days");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
@@ -94,7 +98,7 @@ export default function When({ onWhereChange }: WhenProps) {
   }, [preset, startDate, endDate, onWhereChange]);
 
   return (
-    <calcite-panel heading="Filter by Date">
+    <calcite-panel heading="Filter by Date" closed={!open} closable={isMobile} oncalcitePanelClose={onFilterPanelClose}>
       <div style={{ padding: "1rem" }}>
         <calcite-label>
           Preset:

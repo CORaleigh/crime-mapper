@@ -18,22 +18,27 @@ export default function DataDictionary({ open, onClose }: DataDictionaryProps) {
   const [entries, setEntries] = useState<DictionaryEntry[]>([]);
 
   useEffect(() => {
-    fetch("/dictionary.json")
+    fetch("./dictionary.json")
       .then((res) => res.json())
       .then((data) => setEntries(data));
   }, []);
 
   return (
-    <calcite-dialog open={open} modal heading="Data Dictionary" oncalciteDialogClose={onClose}>
-        <calcite-list label={""}>
-          {entries.map((entry) => (
-            <calcite-list-item
-              key={entry.title}
-              label={entry.title}
-              description={entry.description}
-            />
-          ))}
-        </calcite-list>
+    <calcite-dialog
+      open={open}
+      modal
+      heading="Data Dictionary"
+      oncalciteDialogClose={onClose}
+    >
+      <calcite-list label={""}>
+        {entries.map((entry) => (
+          <calcite-list-item
+            key={entry.title}
+            label={entry.title}
+            description={entry.description}
+          />
+        ))}
+      </calcite-list>
     </calcite-dialog>
   );
 }

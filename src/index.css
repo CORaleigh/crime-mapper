@@ -6,16 +6,17 @@
 html,
 body {
   margin: 0;
-  --calcite-color-brand: #11233F;
-  --calcite-color-brand-hover: #007AB8;
-  --calcite-color-brand-active: #007AB8;
-  --calcite-color-brand-focus: #007AB8;
-  --calcite-color-brand-pressed: #007AB8;
-  --calcite-color-secondary: #007AB8;
-  --calcite-navigation-background-color: #11233F;
-  --calcite-navigation-logo-text-color: #FFFFFF;
-  --calcite-navigation-logo-heading-text-color: #FFFFFF;
-
+  --calcite-color-brand: #11233f;
+  --calcite-color-brand-hover: #007ab8;
+  --calcite-color-brand-active: #007ab8;
+  --calcite-color-brand-focus: #007ab8;
+  --calcite-color-brand-pressed: #007ab8;
+  --calcite-color-secondary: #007ab8;
+  --calcite-navigation-background-color: #11233f;
+  --calcite-navigation-logo-text-color: #ffffff;
+  --calcite-navigation-logo-heading-text-color: #ffffff;
+  --calcite-action-background-color: transparent;
+  --calcite-tab-content-space-y: 0px;
 }
 
 :host([checked]) .label {
@@ -23,9 +24,19 @@ body {
 }
 
 calcite-navigation {
-    --calcite-action-text-color: #FFFFFF;
-    --calcite-action-text-color-press: #FFFFFF;
+  --calcite-action-text-color: #ffffff;
+  --calcite-action-text-color-press: #ffffff;
 }
+
+calcite-dialog {
+  --calcite-panel-header-background-color: var(--calcite-color-brand);
+  --calcite-panel-heading-text-color: #ffffff;
+}
+
+/* calcite-panel {
+    --calcite-action-background-color:  var(--calcite-color-brand);
+
+} */
 
 arcgis-map {
   display: block;
@@ -45,7 +56,7 @@ arcgis-feature-table.show-table {
   height: 80vh;
 }
 
-.tile-icon  {
+.tile-icon {
   width: 100%;
   height: 100%;
   display: flex;
@@ -53,8 +64,7 @@ arcgis-feature-table.show-table {
   align-items: center;
 }
 
-
-.tile-icon  {
+.tile-icon {
   width: 100%;
   height: 100%;
   align-items: center;
@@ -70,8 +80,53 @@ arcgis-feature-table.show-table {
   align-items: center;
 }
 
-
 .tile-text h3 {
-
   text-align: center;
+}
+
+calcite-tile-group {
+  height: calc(100vh - 180px);
+}
+calcite-list {
+  height: calc(100vh - 160px);
+}
+
+@media (max-width: 900px) {
+  calcite-tile-group {
+    height: calc(100vh - 210px);
+  }
+  calcite-list {
+    height: calc(100vh - 210px);
+  }
+  arcgis-map {
+    height: calc(100vh);
+  }
+  arcgis-feature-table.show-table {
+    height: calc(100vh);
+  }
+
+  calcite-shell.show-filter > arcgis-map {
+    display: none;
+  }
+  calcite-shell.show-filter arcgis-feature-table {
+    display: none;
+  }
+  calcite-shell.show-filter calcite-shell-panel {
+    min-width: 100vw;
+  }
+  calcite-shell.show-filter calcite-panel {
+    min-width: 100vw;
+  }
+  calcite-shell.show-filter calcite-segmented-control {
+    min-width: 100vw;
+  }
+  calcite-shell.show-filter calcite-tile-group {
+    min-width: 100vw;
+  }
+
+  calcite-shell.show-filter {
+    --calcite-shell-panel-width: 100vw;
+    --calcite-shell-panel-min-width: 100vw;
+    --calcite-shell-panel-max-width: calc(100vw - 300px);
+  }
 }

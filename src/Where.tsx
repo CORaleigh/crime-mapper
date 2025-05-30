@@ -12,10 +12,13 @@ import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 
 interface WhereProps {
   onGeometryChange: (geometry: __esri.Geometry | null) => void;
+  onFilterPanelClose: () => void;
   arcgisMap: HTMLArcgisMapElement | null;
+  open: boolean
+  isMobile: boolean;
 }
 
-export default function Where({ onGeometryChange, arcgisMap }: WhereProps) {
+export default function Where({ onGeometryChange, onFilterPanelClose, arcgisMap, open, isMobile }: WhereProps) {
   const [mode, setMode] = useState<"city" | "extent" | "draw">("city");
   const [bufferDistance, setBufferDistance] = useState<number>(0);
 
@@ -73,7 +76,7 @@ export default function Where({ onGeometryChange, arcgisMap }: WhereProps) {
     }
   }, [mode, arcgisMap?.view?.map]);
   return (
-    <calcite-panel heading="Where">
+    <calcite-panel heading="Where" closed={!open} closable={isMobile} oncalcitePanelClose={onFilterPanelClose}>
       <div style={{ padding: "1rem" }}>
         <calcite-label>
           Area Filter:
