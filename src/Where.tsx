@@ -94,7 +94,9 @@ export default function Where({
         layer: sketchLayer as __esri.GraphicsLayer,
         view: arcgisMap?.view,
       });
-      sketchVm.current.on("create" as any, handleSketchCreated);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      sketchVm.current.on("create", handleSketchCreated);
     }
   }, [arcgisMap?.view, arcgisMap?.view.map]);
 
