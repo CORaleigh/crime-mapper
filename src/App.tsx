@@ -384,7 +384,7 @@ function App() {
             thumbnail="badge.png"
           />
           <div slot="content-end">
-            <calcite-dropdown slot="content-end" scale="l" width="l" type="hover" >
+            <calcite-dropdown slot="content-end" scale="l" width="l"  >
               <calcite-action
                 slot="trigger"
                 icon="hamburger"
@@ -410,7 +410,7 @@ function App() {
                 href="https://data.raleighnc.gov/datasets/24c0b37fa9bb4e16ba8bcaa7e806c615_0/explore?location=35.796813%2C-78.624284%2C9.61&showTable=true"
                 target="_blank"
               >
-                Open Data
+                Crime Incidents Open Dataset
               </calcite-dropdown-item>                 
               </calcite-dropdown-group>           
             </calcite-dropdown>
@@ -456,7 +456,7 @@ function App() {
                 open={showFilter}
               />
             </div>
-            {isMobile && (
+            {/* {isMobile && (
               <div slot="footer">
                 <calcite-fab
                   scale="l"
@@ -467,7 +467,7 @@ function App() {
                   onClick={() => setShowFilter((prev) => !prev)}
                 ></calcite-fab>
               </div>
-            )}
+            )} */}
           </calcite-panel>
         </calcite-shell-panel>
         {arcgisMapEl}
