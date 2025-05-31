@@ -84,7 +84,7 @@ export default function Where({
   useEffect(() => {
     let sketchLayer = arcgisMap?.view?.map.findLayerById("sketch-layer");
     if (!sketchLayer) {
-      sketchLayer = new GraphicsLayer({ id: "sketch-layer", listMode: 'hide' });
+      sketchLayer = new GraphicsLayer({ id: "sketch-layer", listMode: "hide" });
       arcgisMap?.view.map.add(
         sketchLayer,
         arcgisMap?.view.map.layers.length + 1
@@ -133,47 +133,54 @@ export default function Where({
     onGeometryChange(null);
   };
 
-  const handleSearchComplete = (event: TargetedEvent<HTMLArcgisSearchElement, __esri.SearchSearchCompleteEvent>) => {
-    if (event.detail.numResults === 0 ) return;
+  const handleSearchComplete = (
+    event: TargetedEvent<
+      HTMLArcgisSearchElement,
+      __esri.SearchSearchCompleteEvent
+    >
+  ) => {
+    if (event.detail.numResults === 0) return;
     const sketchLayer = arcgisMap?.view?.map.findLayerById(
       "sketch-layer"
     ) as __esri.GraphicsLayer;
-    if (!sketchLayer) return;    
+    if (!sketchLayer) return;
     sketchLayer.removeAll();
     const graphic = event.detail.results[0].results[0].feature;
-      if (bufferDistance > 0 && graphic.geometry) {
-        const buffered = bufferOperator.execute(
-          graphic.geometry,
-          bufferDistance,
-          { unit: "miles" }
-        );
-        onGeometryChange(buffered as __esri.Geometry);
-        graphic.geometry = buffered;
-        graphic.symbol = {
-            type: 'simple-fill',
-            style: 'none',
-            outline: {
-                type: 'simple-line',
-                color: 'black',
-                width: 2
-            }
-        }
-        sketchLayer.add(graphic);
-        requestAnimationFrame(() => {
+    const distance = graphic.geometry?.type === "point" ? 1 : bufferDistance
+    setBufferDistance(distance);
+    
+    if (distance > 0 && graphic.geometry) {
+      const buffered = bufferOperator.execute(
+        graphic.geometry,
+        distance,
+        { unit: "miles" }
+      );
+      onGeometryChange(buffered as __esri.Geometry);
+      graphic.geometry = buffered;
+      graphic.symbol = {
+        type: "simple-fill",
+        style: "none",
+        outline: {
+          type: "simple-line",
+          color: "black",
+          width: 2,
+        },
+      };
+      sketchLayer.add(graphic);
+      requestAnimationFrame(() => {
         arcgisMap?.view.goTo(graphic);
-
-        });
-      }    
-  }
+      });
+    }
+  };
 
   const clear = () => {
     onGeometryChange(null);
     const sketchLayer = arcgisMap?.view?.map.findLayerById(
       "sketch-layer"
     ) as __esri.GraphicsLayer;
-    if (!sketchLayer) return; 
+    if (!sketchLayer) return;
     sketchLayer.removeAll();
-  }
+  };
 
   useEffect(() => {
     if (mode !== "draw") {
@@ -182,6 +189,8 @@ export default function Where({
       if (sketchLayer) {
         (sketchLayer as __esri.GraphicsLayer).removeAll();
       }
+    } else {
+        setBufferDistance(0)
     }
   }, [mode, arcgisMap?.view?.map]);
   return (
@@ -272,8 +281,8 @@ export default function Where({
             ></arcgis-search>
           </calcite-label>
         )}
-        {mode === "draw" ||
-          (mode == "search" && (
+        {(mode === "draw" ||
+          mode == "search") && (
             <calcite-label>
               Buffer Distance:
               <calcite-input-number
@@ -291,7 +300,7 @@ export default function Where({
                 }
               />
             </calcite-label>
-          ))}
+          )}
       </div>
     </calcite-panel>
   );
