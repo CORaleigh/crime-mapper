@@ -229,6 +229,12 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    if (selectedSegment === 'what') {
+      fetchAllDescriptions();
+    }
+  }, [fetchAllDescriptions, selectedSegment])
+
   const handleCrimeTypeChange = (types: string[]) => {
     if (types.length > 0) {
       crimeTypes.current = types;
@@ -299,16 +305,16 @@ function App() {
       onarcgisViewReadyChange={handleViewReady}
       className={showTable ? "show-table" : ""}
     >
-      <arcgis-expand position="top-right">
-        <arcgis-search position="top-right" />
+      <arcgis-expand position="top-right" group="top-right">
+        <arcgis-search/>
       </arcgis-expand>
       <arcgis-zoom position="top-left" />
       <arcgis-locate position="top-left" />
-      <arcgis-expand position="top-right">
-        <arcgis-layer-list position="top-right" />
+      <arcgis-expand position="top-right" group="top-right">
+        <arcgis-layer-list visibilityAppearance="checkbox"/>
       </arcgis-expand>
-      <arcgis-expand position="top-right">
-        <arcgis-legend position="top-right" />
+      <arcgis-expand position="top-right" group="top-right">
+        <arcgis-legend />
       </arcgis-expand>
       <arcgis-placement position="bottom-left">
         <calcite-fab

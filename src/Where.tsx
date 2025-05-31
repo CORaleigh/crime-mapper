@@ -84,7 +84,7 @@ export default function Where({
   useEffect(() => {
     let sketchLayer = arcgisMap?.view?.map.findLayerById("sketch-layer");
     if (!sketchLayer) {
-      sketchLayer = new GraphicsLayer({ id: "sketch-layer" });
+      sketchLayer = new GraphicsLayer({ id: "sketch-layer", listMode: 'hide' });
       arcgisMap?.view.map.add(
         sketchLayer,
         arcgisMap?.view.map.layers.length + 1
