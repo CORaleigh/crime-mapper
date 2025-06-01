@@ -52,7 +52,7 @@ type Description = {
 };
 
 function App() {
- // const [searchParams, setSearchParams] = useSearchParams();
+  // const [searchParams, setSearchParams] = useSearchParams();
 
   const [whereClause, setWhereClause] = useState("1=1");
   const [whenClause, setWhenClause] = useState("CURRENT_TIMESTAMP - 90");
@@ -64,6 +64,7 @@ function App() {
   const [showFilter, setShowFilter] = useState(true);
 
   const [categories, setCategories] = useState<__esri.Graphic[]>([]);
+
   const [allDescriptions, setAllDescriptions] = useState<Description[]>([]);
   const [selectedSegment, setSelectedSegment] = useState("what");
   const arcgisMap = useRef<HTMLArcgisMapElement>(null);
@@ -73,6 +74,7 @@ function App() {
   const [showDisclaimer, setShowDisclaimer] = useState(true);
 
   const incidentsLayer = useRef<__esri.FeatureLayer | null>(null);
+
   const crimeTypes = useRef<string[]>([]);
 
   const [isMobile, setIsMobile] = useState(
@@ -114,7 +116,7 @@ function App() {
     // if (geometry) {
     //   setFilterGeometry(Geometry.fromJSON(geometry));
     // }
-    
+
     // if (where) {
     //   setCombinedWhere(where);
     // }
@@ -135,6 +137,8 @@ function App() {
   };
 
   const fetchAllDescriptions = useCallback(async () => {
+    if (!arcgisMap.current) return;
+    if (!arcgisMap.current.ready) return;
     const layer = arcgisMap.current?.map.allLayers.find(
       (layer) => layer.title === "Incidents"
     ) as __esri.FeatureLayer | undefined;
@@ -230,10 +234,10 @@ function App() {
   };
 
   useEffect(() => {
-    if (selectedSegment === 'what') {
+    if (selectedSegment === "what") {
       fetchAllDescriptions();
     }
-  }, [fetchAllDescriptions, selectedSegment])
+  }, [fetchAllDescriptions, selectedSegment]);
 
   const handleCrimeTypeChange = (types: string[]) => {
     if (types.length > 0) {
@@ -306,12 +310,12 @@ function App() {
       className={showTable ? "show-table" : ""}
     >
       <arcgis-expand position="top-right" group="top-right">
-        <arcgis-search/>
+        <arcgis-search />
       </arcgis-expand>
       <arcgis-zoom position="top-left" />
       <arcgis-locate position="top-left" />
       <arcgis-expand position="top-right" group="top-right">
-        <arcgis-layer-list visibilityAppearance="checkbox"/>
+        <arcgis-layer-list visibilityAppearance="checkbox" />
       </arcgis-expand>
       <arcgis-expand position="top-right" group="top-right">
         <arcgis-legend />
@@ -352,20 +356,24 @@ function App() {
           }}
           hideSelectionColumn
           hideMenuItemsExportSelectionToCsv
-          menuConfig={{items: [
-            {
-              label: 'Export to CSV',
-              icon: 'file-csv',
-              clickFunction:  async () => {
+          menuConfig={{
+            items: [
+              {
+                label: "Export to CSV",
+                icon: "file-csv",
+                clickFunction: async () => {
                   if (!arcgisFeatureTable.current) return;
-                  const oids = await arcgisFeatureTable.current?.layer?.queryObjectIds();
-                  arcgisFeatureTable.current.highlightIds = new Collection(oids);
+                  const oids =
+                    await arcgisFeatureTable.current?.layer?.queryObjectIds();
+                  arcgisFeatureTable.current.highlightIds = new Collection(
+                    oids
+                  );
                   arcgisFeatureTable.current.exportSelectionToCSV();
                   arcgisFeatureTable.current.highlightIds.removeAll();
-
-              }
-            }
-          ]}}
+                },
+              },
+            ],
+          }}
         />
       )}
     </>
@@ -373,10 +381,7 @@ function App() {
 
   return (
     <>
-      <calcite-shell
-        id="shell"
-        className={showFilter ? "show-filter" : ""}
-      >
+      <calcite-shell id="shell" className={showFilter ? "show-filter" : ""}>
         <calcite-navigation slot="header">
           <calcite-navigation-logo
             slot="logo"
@@ -384,7 +389,7 @@ function App() {
             thumbnail="badge.png"
           />
           <div slot="content-end">
-            <calcite-dropdown slot="content-end" scale="l" width="l"  >
+            <calcite-dropdown slot="content-end" scale="l" width="l">
               <calcite-action
                 slot="trigger"
                 icon="hamburger"
@@ -393,26 +398,26 @@ function App() {
                 text={"Menu"}
               ></calcite-action>
               <calcite-dropdown-group selectionMode="none" groupTitle="Menu">
-              <calcite-dropdown-item
-                onClick={() => setShowDataDictionary(true)}
-                iconStart="book"
-              >
-                Data Dictionary
-              </calcite-dropdown-item>
-              <calcite-dropdown-item
-                onClick={() => setShowDisclaimer(true)}
-                iconStart="file-text"
-              >
-                Disclaimer
-              </calcite-dropdown-item>   
-              <calcite-dropdown-item
-                iconStart="data"
-                href="https://data.raleighnc.gov/datasets/24c0b37fa9bb4e16ba8bcaa7e806c615_0/explore?location=35.796813%2C-78.624284%2C9.61&showTable=true"
-                target="_blank"
-              >
-                Crime Incidents Open Dataset
-              </calcite-dropdown-item>                 
-              </calcite-dropdown-group>           
+                <calcite-dropdown-item
+                  onClick={() => setShowDataDictionary(true)}
+                  iconStart="book"
+                >
+                  Data Dictionary
+                </calcite-dropdown-item>
+                <calcite-dropdown-item
+                  onClick={() => setShowDisclaimer(true)}
+                  iconStart="file-text"
+                >
+                  Disclaimer
+                </calcite-dropdown-item>
+                <calcite-dropdown-item
+                  iconStart="data"
+                  href="https://data.raleighnc.gov/datasets/24c0b37fa9bb4e16ba8bcaa7e806c615_0/explore?location=35.796813%2C-78.624284%2C9.61&showTable=true"
+                  target="_blank"
+                >
+                  Crime Incidents Open Dataset
+                </calcite-dropdown-item>
+              </calcite-dropdown-group>
             </calcite-dropdown>
           </div>
         </calcite-navigation>
