@@ -78,6 +78,7 @@ export default function Where({
   };
 
   const getSketchLayer = (arcgisMap: HTMLArcgisMapElement) => {
+
     let sketchLayer = arcgisMap?.view?.map.findLayerById("sketch-layer");
     if (!sketchLayer) {
       sketchLayer = new GraphicsLayer({ id: "sketch-layer", listMode: "hide" });
@@ -90,7 +91,7 @@ export default function Where({
   };
 
   useEffect(() => {
-    if (!arcgisMap) return;
+    if (!arcgisMap?.ready) return;
     const sketchLayer = getSketchLayer(arcgisMap);
     sketchVm.current = new SketchViewModel({
       creationMode: "single",
