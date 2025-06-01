@@ -138,3 +138,7 @@ calcite-flow-item calcite-list {
 #sketchActionBar {
   width: 290px;
 }
+
+calcite-shell-panel .esri-search {
+  width: 100%;
+}
