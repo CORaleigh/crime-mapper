@@ -521,6 +521,11 @@
     "definitions": []
   },
   {
+    "title": "Vandalism/Damage to Property",
+    "definition": "To willfully or maliciously destroy, damage, deface, or otherwise injure real or personal property without the consent of the owner or the person having custody or control of it",
+    "definitions": []
+  },
+  {
     "title": "Weapons Violation",
     "definition": "The violation of laws or ordinances prohibiting the manufacture, sale, purchase, transportation, possession, concealment, or use of firearms, cutting instruments, explosives, incendiary devices, or other deadly weapons.",
     "definitions": [
@@ -551,4 +556,4 @@
       }
     ]
   }
-]    
+]

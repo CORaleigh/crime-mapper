@@ -28,10 +28,10 @@ export default function Definitions({ open, onClose }: DefinitionsProps) {
     <calcite-dialog
       open={open}
       modal
-      heading="Data Dictionary"
+      heading="Offense Definitions"
       oncalciteDialogClose={onClose}
     >
-      <calcite-list label={""} displayMode="nested" filterEnabled>
+      <calcite-list label={""} displayMode="nested" filterEnabled filterPlaceholder="enter text to filter definitions">
         {entries.map((entry) => (
           <calcite-list-item
             open

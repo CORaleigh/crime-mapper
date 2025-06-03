@@ -411,7 +411,7 @@ function App() {
                   onClick={() => setShowDefinitions(true)}
                   iconStart="open-book"
                 >
-                  Crime Definitions
+                  Offense Definitions
                 </calcite-dropdown-item>                
                 <calcite-dropdown-item
                   onClick={() => setShowDisclaimer(true)}
