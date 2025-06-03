@@ -44,6 +44,7 @@ import Disclaimer from "./Disclaimer";
 import FilterSegmentedControl from "./FilterSegmentedControl";
 //import { useSearchParams } from "react-router-dom";
 import Collection from "@arcgis/core/core/Collection";
+import Definitions from "./Definitions";
 
 // Description type
 type Description = {
@@ -71,6 +72,8 @@ function App() {
   const arcgisFeatureTable = useRef<HTMLArcgisFeatureTableElement>(null);
 
   const [showDataDictionary, setShowDataDictionary] = useState(false);
+  const [showDefinitions, setShowDefinitions] = useState(false);
+
   const [showDisclaimer, setShowDisclaimer] = useState(true);
 
   const incidentsLayer = useRef<__esri.FeatureLayer | null>(null);
@@ -405,6 +408,12 @@ function App() {
                   Data Dictionary
                 </calcite-dropdown-item>
                 <calcite-dropdown-item
+                  onClick={() => setShowDefinitions(true)}
+                  iconStart="book"
+                >
+                  Crime Definitions
+                </calcite-dropdown-item>                
+                <calcite-dropdown-item
                   onClick={() => setShowDisclaimer(true)}
                   iconStart="file-text"
                 >
@@ -482,6 +491,10 @@ function App() {
         open={showDataDictionary}
         onClose={() => setShowDataDictionary(false)}
       />
+      <Definitions
+        open={showDefinitions}
+        onClose={() => setShowDefinitions(false)}
+      />      
       <Disclaimer
         open={showDisclaimer}
         onClose={() => setShowDisclaimer(false)}

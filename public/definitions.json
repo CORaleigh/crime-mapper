@@ -1,0 +1,554 @@
+[
+  {
+    "title": "All Other Offenses",
+    "definition": "Any offense that does not fall under the classification of Group \"A\" offenses and is not specified within one of the delineated categories of Group \"B\" crimes is included in this category. This classification encompasses crimes such as Damage to Property (Minor), which refers to damages amounting to less than $1000, Noise Ordinance Violations, Trespassing, and Unauthorized Use of a Vehicle.",
+    "definitions": []
+  },
+  {
+    "title": "Arson",
+    "definition": "To unlawfully and intentionally damage, or attempt to damage, any real or personal property by fire, explosion, or incendiary device.",
+    "definitions": []
+  },
+  {
+    "title": "Assault",
+    "definition": null,
+    "definitions": [
+      {
+        "title": "Aggravated Assault",
+        "definition": "An unlawful attack by one person upon another wherein the offender uses a weapon, or displays it in a threatening manner, or the victim suffers obvious, severe, or aggravated bodily injury involving apparent broken bones, loss of teeth, possible internal injury, severe laceration, or loss of consciousness. This also includes assault with disease (as in cases when the offender is aware that he/she is infected with a deadly disease and deliberately attempts to inflict the disease by biting, spitting, etc.).",
+        "definitions": []
+      },
+      {
+        "title": "Simple Assault",
+        "definition": "An unlawful physical attack by one person upon another where neither the offender displays a weapon, nor the victim suffers obvious, severe, or aggravated bodily injury involving apparent broken bones, loss of teeth, possible internal injury, severe laceration, or loss of consciousness.",
+        "definitions": []
+      }
+    ]
+  },
+  {
+    "title": "Burglary",
+    "definition": "The unlawful entry into a building or other structure with the intent to commit a felony, theft, or sexual battery.",
+    "definitions": [
+      {
+        "title": "Burglary/Commercial",
+        "definition": "The building was a business.",
+        "definitions": []
+      },
+      {
+        "title": "Burglary/Residential",
+        "definition": "The building was a residence.",
+        "definitions": []
+      }
+    ]
+  },
+  {
+    "title": "Disorderly Conduct",
+    "definition": "Any behavior that tends to disturb the public peace or decorum, scandalizes the community, or shocks the public sense of morality.",
+    "definitions": [
+      {
+        "title": "Disorderly Conduct/Begging",
+        "definition": "A violation of local or state codes regarding begging in a public place.",
+        "definitions": []
+      },
+      {
+        "title": "Disorderly Conduct/Disturbing the Peace",
+        "definition": "Includes Blasphemy, Profanity, Obscene Language, Disturbing the Peace, and Public Nuisance.",
+        "definitions": []
+      },
+      {
+        "title": "Disorderly Conduct/Drunk-Disorderly",
+        "definition": "To drink alcoholic beverages to the extent that one’s mental faculties and physical coordination are substantially impaired.",
+        "definitions": []
+      },
+      {
+        "title": "Disorderly Conduct/Resist-Delay-Obstruct",
+        "definition": "Any person shall willfully and unlawfully resist, delay, or obstruct a public officer in discharging or attempting to discharge a duty of his office.",
+        "definitions": []
+      }
+    ]
+  },
+  {
+    "title": "Drug Violation",
+    "definition": null,
+    "definitions": [
+      {
+        "title": "Drug Equipment / Paraphernalia",
+        "definition": "The unlawful manufacture, sale, purchase, possession, or transportation of equipment or devices utilized in preparing and/or using drugs or narcotics.",
+        "definitions": []
+      },
+      {
+        "title": "Drug Violation / Misdemeanor",
+        "definition": "Any Misdemeanor Offense that includes the unlawful cultivation, manufacture, distribution, sale, purchase, use, possession, transportation, or importation of any controlled drug or narcotic substance.",
+        "definitions": []
+      },
+      {
+        "title": "Drug Violation / Felony",
+        "definition": "Any Felony Offense that includes the unlawful cultivation, manufacture, distribution, sale, purchase, use, possession, transportation, or importation of any controlled drug or narcotic substance.",
+        "definitions": []
+      }
+    ]
+  },
+  {
+    "title": "DWI",
+    "definition": "Driving or operating a motor vehicle or common carrier while mentally or physically impaired as the result of consuming an alcoholic beverage or using a drug or narcotic.",
+    "definitions": []
+  },
+  {
+    "title": "Embezzlement",
+    "definition": "The unlawful misappropriation by an offender to his/her own use or purpose of money, property, or some other thing of value entrusted to his/her care, custody, or control.",
+    "definitions": []
+  },
+  {
+    "title": "Extortion",
+    "definition": "To unlawfully obtain money, property, or any other thing of value, either tangible or intangible, through the use or threat of force, misuse of authority, threat of criminal prosecution, threat of destruction of reputation or social standing, or through other coercive means.",
+    "definitions": []
+  },
+  {
+    "title": "Fraud",
+    "definition": null,
+    "definitions": [
+      {
+        "title": "Fraud / False Pretense or Swindle",
+        "definition": "The intentional misrepresentation of existing fact or condition or the use of some other deceptive scheme or device to obtain money, goods, or other things of value.",
+        "definitions": []
+      },
+      {
+        "title": "Fraud / Credit Card – ATM Fraud",
+        "definition": "The unlawful use of a credit (or debit) card or automatic teller machine for fraudulent purposes.",
+        "definitions": []
+      },
+      {
+        "title": "Fraud / Hacking / Computer Invasion",
+        "definition": "Gaining access to another person’s or institution’s computer software, hardware, or networks without authorized permissions.",
+        "definitions": []
+      },
+      {
+        "title": "Fraud / Identity Theft",
+        "definition": "Identity Theft is knowingly and with intent to defraud for any benefit, obtaining, possessing, transferring, or using one or more identification documents or numbers of another person.",
+        "definitions": []
+      },
+      {
+        "title": "Fraud / Welfare Fraud",
+        "definition": "The use of deceitful statements, practices, or devices to unlawfully obtain welfare benefits.",
+        "definitions": []
+      },
+      {
+        "title": "Fraud / Wire Fraud",
+        "definition": "The use of an electric or electronic communications facility to intentionally transmit a false and/or deceptive message in furtherance of a fraudulent activity.",
+        "definitions": []
+      },
+      {
+        "title": "Fraud / Rental Car Conversion",
+        "definition": "The failure to return a rental vehicle and converting it to personal use.",
+        "definitions": []
+      },
+      {
+        "title": "Fraud / Impersonation",
+        "definition": "Falsely representing one’s identity or position and acting in the character or position thus unlawfully assumed to deceive others and thereby gain a profit or advantage, enjoy some right or privilege, or subject another person or entity to an expense, charge, or liability that would not have otherwise been incurred.",
+        "definitions": []
+      }
+    ]
+  },
+  {
+    "title": "Gambling",
+    "definition": null,
+    "definitions": [
+      {
+        "title": "Gambling / Betting – Wagering",
+        "definition": "To unlawfully stake money or something else of value on the happening of an uncertain event or on the ascertainment of a fact in dispute.",
+        "definitions": []
+      },
+      {
+        "title": "Gambling / Operating – Promoting – Assisting",
+        "definition": "To unlawfully operate, promote, or assist in the operation of a game of chance, lottery, or other gambling activity.",
+        "definitions": []
+      },
+      {
+        "title": "Gambling / Equipment Violations",
+        "definition": "To unlawfully manufacture, sell, buy, possess, or transport equipment, devices, and/or goods used for gambling purposes.",
+        "definitions": []
+      },
+      {
+        "title": "Gambling / Sports Tampering",
+        "definition": "To unlawfully alter, meddle in, or otherwise interfere with a sporting contest or event for the purpose of gaining a gambling advantage.",
+        "definitions": []
+      }
+    ]
+  },
+  {
+    "title": "Homicide",
+    "definition": null,
+    "definitions": [
+      {
+        "title": "Homicide / Murder and Nonnegligent Manslaughter",
+        "definition": "The willful (nonnegligent) killing of one human being by another.",
+        "definitions": []
+      },
+      {
+        "title": "Homicide / Negligent Manslaughter",
+        "definition": "The killing of another person through negligence.",
+        "definitions": []
+      },
+      {
+        "title": "Homicide / Justifiable Homicide",
+        "definition": "The killing of a perpetrator of a serious criminal offense by a peace officer in the line of duty, or the killing, during the commission of a serious criminal offense, of the perpetrator by a private individual.",
+        "definitions": []
+      }
+    ]
+  },
+  {
+    "title": "Human Trafficking",
+    "definition": null,
+    "definitions": [
+      {
+        "title": "Human Trafficking / Commercial Sex Acts",
+        "definition": "Inducing a person by force, fraud, or coercion to participate in commercial sex acts, or in which the person induced to perform such act(s) has not attained 18 years of age.",
+        "definitions": []
+      },
+      {
+        "title": "Human Trafficking / Involuntary Servitude",
+        "definition": "The obtaining of a person(s) through recruitment, harboring, transportation, or provision, and subjecting such persons by force, fraud, or coercion into voluntary servitude, peonage, debt bondage, or slavery (not to include commercial sex acts)",
+        "definitions": []
+      }
+    ]
+  },
+  {
+    "title": "Humane",
+    "definition": null,
+    "definitions": [
+      {
+        "title": "Humane/Stray",
+        "definition": "Any domestic animal running at large.",
+        "definitions": []
+      },
+      {
+        "title": "Humane/Noisy Animal",
+        "definition": "Any animal making loud or habitual noises.",
+        "definitions": []
+      },
+      {
+        "title": "Humane/Injured Person",
+        "definition": "Person injured from something other than an animal bite.",
+        "definitions": []
+      },
+      {
+        "title": "Humane/Pick Up Animals",
+        "definition": "Any animal that is picked up and transported by police or human to an alternate location.",
+        "definitions": []
+      },
+      {
+        "title": "Humane/Animal Bite",
+        "definition": "Any person bitten by a domestic or wild animal.",
+        "definitions": []
+      },
+      {
+        "title": "Humane/Vicious Animal",
+        "definition": "Any domesticated animal that is acting or showing aggression.",
+        "definitions": []
+      },
+      {
+        "title": "Humane/Rabies Test",
+        "definition": "Any domestic or wild animal that meets criteria for rabies testing.",
+        "definitions": []
+      },
+      {
+        "title": "Humane/Chemical Deployment",
+        "definition": "When animals have to be chemically immobilized.",
+        "definitions": []
+      },
+      {
+        "title": "Humane/Animal Cruelty",
+        "definition": "Intentionally, knowingly, or recklessly taking an action that mistreats or kills any animal without just cause, such as torturing, tormenting, mutilation, maiming, poisoning, or abandoning.",
+        "definitions": []
+      },
+      {
+        "title": "Humane/Injured Animal",
+        "definition": "Any domestic or wild animal that is sick or injured",
+        "definitions": []
+      },
+      {
+        "title": "Humane/All Other Humane",
+        "definition": "Anything that does not meet the above classifications",
+        "definitions": []
+      }
+    ]
+  },
+  {
+    "title": "Kidnapping",
+    "definition": "The unlawful seizure, transportation, and/or detention of a person against his/her will or of a minor without the consent of his/her custodial parent(s) or legal guardian.",
+    "definitions": []
+  },
+  {
+    "title": "Larceny",
+    "definition": "The unlawful taking, carrying, leading, or riding away of property from the possession or constructive possession of another person.",
+    "definitions": [
+      {
+        "title": "Larceny/Pocket-Picking",
+        "definition": "The theft of articles from another person’s physical possession by stealth, where the victim usually does not become immediately aware of the theft.",
+        "definitions": []
+      },
+      {
+        "title": "Larceny/Purse-Snatching",
+        "definition": "The grabbing or snatching of a purse, handbag, etc., from the physical possession of another person.",
+        "definitions": []
+      },
+      {
+        "title": "Larceny/Shoplifting",
+        "definition": "The theft by someone other than an employee of the victim of goods or merchandise exposed for sale.",
+        "definitions": []
+      },
+      {
+        "title": "Larceny/Theft from Building",
+        "definition": "A theft from within a building which is either open to the general public or to which the offender has legal access.",
+        "definitions": []
+      },
+      {
+        "title": "Larceny/Theft from Coin-Operated Machine",
+        "definition": "A theft from a machine or device that is operated or activated by the use of coins.",
+        "definitions": []
+      },
+      {
+        "title": "Larceny/Theft from Motor Vehicle",
+        "definition": "The theft of articles from a motor vehicle, locked or unlocked.",
+        "definitions": []
+      },
+      {
+        "title": "Larceny/Theft of MV Parts-Accessories",
+        "definition": "The theft of any part or accessory affixed to the interior or exterior of a motor vehicle in a manner which would make the item an attachment of the vehicle or necessary for its operation.",
+        "definitions": []
+      },
+      {
+        "title": "Larceny/All Other",
+        "definition": "All thefts that do not fit any of the definitions of the specific subcategories of Larceny/Theft listed above",
+        "definitions": []
+      }
+    ]
+  },
+  {
+    "title": "Liquor Law Violations",
+    "definition": "The violation of laws or ordinances prohibiting the manufacture, sale, purchase, transportation, possession, or use of alcoholic beverages.",
+    "definitions": []
+  },
+  {
+    "title": "Miscellaneous (No Offense)",
+    "definition": null,
+    "definitions": [
+      {
+        "title": "Miscellaneous/All Other Non-Offense",
+        "definition": "An information report with no criminal offense.",
+        "definitions": []
+      },
+      {
+        "title": "Miscellaneous/Deceased Person",
+        "definition": "The person died of natural causes, and/or there is no evidence of crime.",
+        "definitions": []
+      },
+      {
+        "title": "Miscellaneous/Found Property",
+        "definition": "Property not determined to be stolen or used in a crime.",
+        "definitions": []
+      },
+      {
+        "title": "Miscellaneous/Injured Person",
+        "definition": "A person injured due to an accident other than a motor vehicle crash.",
+        "definitions": []
+      },
+      {
+        "title": "Miscellaneous/Lost Property",
+        "definition": "Property that disappeared by unknown means, without evidence of a crime.",
+        "definitions": []
+      },
+      {
+        "title": "Miscellaneous/Mental Commitment",
+        "definition": "Used to document transport times and the service of involuntary mental commitment papers.",
+        "definitions": []
+      },
+      {
+        "title": "Miscellaneous/Missing Person (17 – Under)",
+        "definition": "",
+        "definitions": []
+      },
+      {
+        "title": "Miscellaneous/Missing Person (18 – Over)",
+        "definition": "",
+        "definitions": []
+      },
+      {
+        "title": "Miscellaneous/Overdose",
+        "definition": "A drug overdose is the accidental or intentional use of a drug or medicine in an amount that is higher than what is typically used.",
+        "definitions": []
+      },
+      {
+        "title": "Miscellaneous/Overdose Death",
+        "definition": "This classification will be changed whenever a death is determined to be an overdose.",
+        "definitions": []
+      },
+      {
+        "title": "Miscellaneous/Suicide",
+        "definition": "The intentional taking of one’s own life.",
+        "definitions": []
+      }
+    ]
+  },
+  {
+    "title": "Motor Vehicle Theft",
+    "definition": "The theft of a motor vehicle.",
+    "definitions": []
+  },
+  {
+    "title": "Obscene Material",
+    "definition": null,
+    "definitions": [
+      {
+        "title": "Pornography/Obscene Material",
+        "definition": "The violation of laws or ordinances prohibiting the manufacture, publishing, sale, purchase, or possession of sexually explicit material, e.g., literature or photographs.",
+        "definitions": []
+      }
+    ]
+  },
+  {
+    "title": "Prostitution",
+    "definition": "To unlawfully engage in or promote sexual activities for anything of value.",
+    "definitions": [
+      {
+        "title": "Prostitution/Engaging",
+        "definition": "To engage in commercial sex acts for anything of value.",
+        "definitions": []
+      },
+      {
+        "title": "Prostitution/Assisting-Promoting",
+        "definition": "To solicit customers or transport persons for prostitution purposes; to own, manage, or operate a dwelling or other establishment for the purpose of providing a place where prostitution is performed; or to otherwise assist or promote prostitution.",
+        "definitions": []
+      },
+      {
+        "title": "Prostitution/Purchasing Prostitution",
+        "definition": "To purchase or trade anything of value for commercial sex acts.",
+        "definitions": []
+      }
+    ]
+  },
+  {
+    "title": "Robbery",
+    "definition": "The taking or attempting to take anything of value under confrontational circumstances from the control, custody, or care of another person by force or threat of force or violence and/or by putting the victim in fear of immediate harm.",
+    "definitions": [
+      {
+        "title": "Robbery / From Person",
+        "definition": "",
+        "definitions": []
+      },
+      {
+        "title": "Robbery / From Business",
+        "definition": "",
+        "definitions": []
+      }
+    ]
+  },
+  {
+    "title": "Sex Offenses",
+    "definition": "Any sexual act directed against another person, without the consent of the victim, including instances where the victim is incapable of giving consent. (To protect the victim's privacy, the address and map location are obfuscated from Open Data.)",
+    "definitions": [
+      {
+        "title": "Rape",
+        "definition": "The carnal knowledge of a person, without the consent of the victim, including instances where the victim is incapable of giving consent because of his/her age or because of his/her temporary or permanent mental or physical incapacity.",
+        "definitions": []
+      },
+      {
+        "title": "Forcible Sodomy",
+        "definition": "Oral or anal sexual intercourse with another person, without the consent of the victim, including instances where the victim is incapable of giving consent because of his/her age or because of his/her temporary or permanent mental or physical incapacity.",
+        "definitions": []
+      },
+      {
+        "title": "Assault with an Object",
+        "definition": "To use an object or instrument to unlawfully penetrate, however slightly, the genital or anal opening of the body of another person, without the consent of the victim, including instances where the victim is incapable of giving consent because of his/her age or because of his/her temporary or permanent mental or physical incapacity.",
+        "definitions": []
+      },
+      {
+        "title": "Forcible Fondling",
+        "definition": "The touching of the private body parts of another person for the purpose of sexual gratification, without the consent of the victim, including instances where the victim is incapable of giving consent because of his/her age or because of his/her temporary or permanent mental or physical incapacity.",
+        "definitions": []
+      },
+      {
+        "title": "Sex Offense / Nonforcible",
+        "definition": "Unlawful, nonforcible sexual intercourse.",
+        "definitions": []
+      },
+      {
+        "title": "Incest",
+        "definition": "Nonforcible sexual intercourse between persons who are related to each other within the degrees wherein marriage is prohibited by law.",
+        "definitions": []
+      },
+      {
+        "title": "Indecent Exposure",
+        "definition": "A violation of North Carolina General Statute 14-190.9 pertains to indecent exposure laws, which penalize the intentional exposure of private body parts in public settings. The degree of punishment may vary according to the specific context and the audience involved.",
+        "definitions": []
+      },
+      {
+        "title": "Peeping Tom",
+        "definition": "To secretly look through a window, doorway, keyhole, or other aperture for the purpose of voyeurism.",
+        "definitions": []
+      }
+    ]
+  },
+  {
+    "title": "Stolen Property",
+    "definition": "Receiving, buying, selling, possessing, concealing, or transporting any property with the knowledge that it has been unlawfully taken, as by Burglary, Embezzlement, Fraud, Larceny, Robbery, etc. (This classification applies exclusively when the offense involves property that has been reported stolen by another agency. It does not pertain to previously stolen property for which RPD has already filed a report.)",
+    "definitions": [
+      {
+        "title": "Possession of Stolen Property (with arrest)",
+        "definition": "",
+        "definitions": []
+      },
+      {
+        "title": "Possession of Stolen Vehicle (with arrest)",
+        "definition": "",
+        "definitions": []
+      },
+      {
+        "title": "Recovery of Stolen Property (no arrest)",
+        "definition": "",
+        "definitions": []
+      },
+      {
+        "title": "Recovery of Stolen Vehicle (no arrest)",
+        "definition": "",
+        "definitions": []
+      }
+    ]
+  },
+  {
+    "title": "Unauthorized Motor Vehicle Use",
+    "definition": "The taking of a vehicle, without the expressed implied consent of the owner, for temporary use, when prior authority has been granted or can be assumed, such as in family or roommate situations.",
+    "definitions": []
+  },
+  {
+    "title": "Weapons Violation",
+    "definition": "The violation of laws or ordinances prohibiting the manufacture, sale, purchase, transportation, possession, concealment, or use of firearms, cutting instruments, explosives, incendiary devices, or other deadly weapons.",
+    "definitions": [
+      {
+        "title": "Weapons / Carry Concealed Weapon",
+        "definition": "",
+        "definitions": []
+      },
+      {
+        "title": "Weapons / Illegal Possession of Weapon",
+        "definition": "",
+        "definitions": []
+      },
+      {
+        "title": "Weapons / Shots Fired",
+        "definition": "",
+        "definitions": []
+      },
+      {
+        "title": "Weapons / Shots Fired (with evidence)",
+        "definition": "",
+        "definitions": []
+      },
+      {
+        "title": "Weapons / All Other",
+        "definition": "",
+        "definitions": []
+      }
+    ]
+  }
+]    
