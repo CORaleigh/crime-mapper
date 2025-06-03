@@ -91,7 +91,11 @@ export default function Where({
   };
 
   useEffect(() => {
+
     if (!arcgisMap?.ready) return;
+    if (sketchVm.current) return;
+        debugger
+
     const sketchLayer = getSketchLayer(arcgisMap);
     sketchVm.current = new SketchViewModel({
       creationMode: "single",
@@ -101,15 +105,17 @@ export default function Where({
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     sketchVm.current.on("create", handleSketchCreated);
-  }, [arcgisMap?.view, arcgisMap?.view.map]);
+  }, [arcgisMap?.ready]);
 
   const handleActionClick = (
     event: React.MouseEvent<HTMLCalciteActionElement>
   ) => {
+    
     const target = event.currentTarget;
     const toolText = target.getAttribute("value")?.toLowerCase();
     if (toolText) {
       if (sketchVm.current) {
+        
         sketchVm.current.create(
           toolText as
             | "point"

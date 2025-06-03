@@ -31,17 +31,21 @@ export default function Definitions({ open, onClose }: DefinitionsProps) {
       heading="Offense Definitions"
       oncalciteDialogClose={onClose}
     >
-      <calcite-list label={""} displayMode="nested" filterEnabled filterPlaceholder="enter text to filter definitions">
+      <calcite-list
+        label={""}
+        displayMode="nested"
+
+      >
         {entries.map((entry) => (
           <calcite-list-item
-            open
+            expanded
             key={entry.title}
             label={entry.title}
             description={entry.definition}
           >
             {entry.definitions.map((subEntry) => (
               <calcite-list-item
-                open
+                expanded
                 key={subEntry.title}
                 label={subEntry.title}
                 description={subEntry.definition}
