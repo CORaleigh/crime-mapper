@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "@esri/calcite-components/components/calcite-panel";
 import "@esri/calcite-components/components/calcite-label";
 import "@esri/calcite-components/components/calcite-select";
@@ -39,7 +39,8 @@ export default function Where({
   const [bufferDistance, setBufferDistance] = useState<number>(0);
   const [selectedTool, setSelectedTool] = useState<string>("");
   const sketchVm = useRef<SketchViewModel>(null);
-
+  const graphic = useRef<__esri.Graphic>(null);
+  const distanceInput = useRef<HTMLCalciteInputNumberElement>(null);
   // Handle selection change
   const handleSelectChange = async (e: Event) => {
     const value = (e.target as HTMLCalciteSelectElement).value as
@@ -48,7 +49,10 @@ export default function Where({
       | "draw"
       | "search";
     setMode(value);
-    clear();
+    if (value === 'city' || value == 'extent') {
+      clear();
+
+    }
     if (value === "extent" && arcgisMap?.view) {
       await arcgisMap?.view.when();
       onGeometryChange(arcgisMap?.view.extent.clone());
@@ -58,27 +62,19 @@ export default function Where({
     if (!arcgisMap) return;
     const sketchLayer = getSketchLayer(arcgisMap);
     if (!sketchLayer) return;
+    if (!distanceInput.current) return;
+    graphic.current = event.graphic;
     if (event.state === "complete") {
       setSelectedTool("");
       sketchLayer.removeAll();
-      if (bufferDistance > 0 && event.graphic.geometry) {
-        const buffered = bufferOperator.execute(
-          event.graphic.geometry,
-          bufferDistance,
-          { unit: "miles" }
-        );
-        onGeometryChange(buffered as __esri.Geometry);
-        event.graphic.geometry = buffered;
-      }
-      sketchLayer.add(event.graphic);
-      arcgisMap?.view.goTo(event.graphic);
+      setTimeout(() => {
+      updateGeometry(sketchLayer, Number(distanceInput.current ? distanceInput.current.value : 0));
 
-      onGeometryChange(event.graphic.geometry ?? null);
+      })
     }
   };
 
   const getSketchLayer = (arcgisMap: HTMLArcgisMapElement) => {
-
     let sketchLayer = arcgisMap?.view?.map.findLayerById("sketch-layer");
     if (!sketchLayer) {
       sketchLayer = new GraphicsLayer({ id: "sketch-layer", listMode: "hide" });
@@ -91,11 +87,8 @@ export default function Where({
   };
 
   useEffect(() => {
-
     if (!arcgisMap?.ready) return;
     if (sketchVm.current) return;
-        debugger
-
     const sketchLayer = getSketchLayer(arcgisMap);
     sketchVm.current = new SketchViewModel({
       creationMode: "single",
@@ -105,17 +98,16 @@ export default function Where({
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     sketchVm.current.on("create", handleSketchCreated);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [arcgisMap?.ready]);
 
   const handleActionClick = (
     event: React.MouseEvent<HTMLCalciteActionElement>
   ) => {
-    
     const target = event.currentTarget;
     const toolText = target.getAttribute("value")?.toLowerCase();
     if (toolText) {
       if (sketchVm.current) {
-        
         sketchVm.current.create(
           toolText as
             | "point"
@@ -149,19 +141,30 @@ export default function Where({
   ) => {
     if (!arcgisMap) return;
     if (event.detail.numResults === 0) return;
-    const graphic = event.detail.results[0].results[0].feature;
-    const distance = graphic.geometry?.type === "point" ? 1 : bufferDistance;
+    graphic.current = event.detail.results[0].results[0].feature;
+    const distance =
+    graphic.current.geometry?.type === "point" && bufferDistance === 0 ? 1 : bufferDistance;
     setBufferDistance(distance);
     const sketchLayer = getSketchLayer(arcgisMap);
     if (!sketchLayer) return;
     sketchLayer.removeAll();
-    if (distance > 0 && graphic.geometry) {
-      const buffered = bufferOperator.execute(graphic.geometry, distance, {
-        unit: "miles",
-      });
-      graphic.geometry = buffered;
+    updateGeometry(sketchLayer, distance);
+  };
+
+  const updateGeometry = useCallback((sketchLayer: __esri.GraphicsLayer, distance: number) => {
+    if (!graphic.current) return;
+    const newGraphic = graphic.current.clone();
+    if (distance > 0 && graphic.current.geometry) {
+      const buffered = bufferOperator.execute(
+        newGraphic.geometry as __esri.GeometryUnion,
+        distance,
+        {
+          unit: "miles",
+        }
+      );
+      newGraphic.geometry = buffered;
     }
-    graphic.symbol = {
+    newGraphic.symbol = {
       type: "simple-fill",
       style: "none",
       outline: {
@@ -170,12 +173,13 @@ export default function Where({
         width: 2,
       },
     };
-    sketchLayer.add(graphic);
+    sketchLayer.removeAll();
+    sketchLayer.add(newGraphic);
     requestAnimationFrame(() => {
-      arcgisMap?.view.goTo(graphic);
+      arcgisMap?.view.goTo(newGraphic);
     });
-    onGeometryChange(graphic.geometry as __esri.GeometryUnion);
-  };
+    onGeometryChange(newGraphic.geometry as __esri.GeometryUnion);
+  }, [arcgisMap?.view, onGeometryChange]);
 
   const clear = () => {
     onGeometryChange(null);
@@ -186,7 +190,7 @@ export default function Where({
   };
 
   useEffect(() => {
-    if (mode !== "draw") {
+    if (mode !== "draw" && mode != "search") {
       if (!arcgisMap) return;
       const sketchLayer = getSketchLayer(arcgisMap);
       if (sketchLayer) {
@@ -195,8 +199,17 @@ export default function Where({
     } else {
       setBufferDistance(0);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, arcgisMap?.view?.map]);
 
+  const refreshDistance = useCallback(() => {
+       if (!arcgisMap) return;
+      const sketchLayer = getSketchLayer(arcgisMap);
+      if (sketchLayer) {
+        (sketchLayer as __esri.GraphicsLayer).removeAll();
+      }
+      updateGeometry(sketchLayer, Number(distanceInput.current ? distanceInput.current.value : 0));
+  }, [arcgisMap, updateGeometry])
   const addSource = (
     arcgisSearch: HTMLArcgisSearchElement,
     layerName: string,
@@ -346,6 +359,7 @@ export default function Where({
           <calcite-label>
             Buffer Distance:
             <calcite-input-number
+              ref={distanceInput}
               step={0.1}
               min={0}
               max={5}
@@ -358,7 +372,14 @@ export default function Where({
                   Number((e.target as HTMLCalciteInputNumberElement).value)
                 )
               }
-            />
+            >
+              <calcite-action
+                icon="refresh"
+                slot="action"
+                text={"Refresh"}
+                onClick={refreshDistance}
+              ></calcite-action>
+            </calcite-input-number>
           </calcite-label>
         )}
       </div>
