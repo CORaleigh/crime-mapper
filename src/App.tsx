@@ -202,7 +202,7 @@ function App() {
         ? `crime_category IN ('${crimeTypes.current.join(
             "', '"
           )}') and ${whenClause}`
-        : "1=1"; // If no groups selected, fetch all
+        : "1=1"; 
 
     const results = await (layer as __esri.FeatureLayer).queryFeatures({
       returnDistinctValues: true,
