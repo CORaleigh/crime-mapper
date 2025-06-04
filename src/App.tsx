@@ -355,7 +355,7 @@ function App() {
           actionColumnConfig={{
             label: "Go to feature",
             icon: "zoom-to-object",
-            callback: (event) => arcgisMap.current?.goTo(event.feature),
+            callback: (event) => arcgisMap.current?.goTo({target: event.feature, zoom: 15}),
           }}
           hideSelectionColumn
           hideMenuItemsExportSelectionToCsv
