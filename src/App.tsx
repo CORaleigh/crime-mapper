@@ -96,6 +96,56 @@ function App() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const handleTableReady = (
+    event: TargetedEvent<HTMLArcgisFeatureTableElement>
+  ) => {
+    event.target.tableTemplate = {
+      columnTemplates: [
+        {
+          type: "field",
+          fieldName: "case_number",
+        },
+        {
+          type: "field",
+          fieldName: "crime_category",
+          label: "Crime Category",
+        },
+        {
+          type: "field",
+          fieldName: "crime_code",
+        },
+        {
+          type: "field",
+          fieldName: "crime_description",
+        },
+
+        {
+          type: "field",
+          fieldName: "crime_type",
+        },
+        {
+          type: "field",
+          fieldName: "reported_block_address",
+        },
+        {
+          type: "field",
+          fieldName: "city",
+        },
+        {
+          type: "field",
+          fieldName: "district",
+        },
+        {
+          type: "field",
+          fieldName: "reported_date",
+        },
+        {
+          type: "field",
+          fieldName: "reported_dayofwk",
+        },
+      ],
+    } as __esri.TableTemplate;
+  };
   const handleViewReady = async (
     event: TargetedEvent<HTMLArcgisMapElement, void>
   ) => {
@@ -349,13 +399,15 @@ function App() {
       {incidentsLayer.current && (
         <arcgis-feature-table
           ref={arcgisFeatureTable}
+          onarcgisReady={handleTableReady}
           referenceElement={arcgisMap.current}
           layer={incidentsLayer.current}
           className={showTable ? "show-table" : ""}
           actionColumnConfig={{
             label: "Go to feature",
             icon: "zoom-to-object",
-            callback: (event) => arcgisMap.current?.goTo({target: event.feature, zoom: 15}),
+            callback: (event) =>
+              arcgisMap.current?.goTo({ target: event.feature, zoom: 15 }),
           }}
           hideSelectionColumn
           hideMenuItemsExportSelectionToCsv
@@ -412,7 +464,7 @@ function App() {
                   iconStart="open-book"
                 >
                   Offense Definitions
-                </calcite-dropdown-item>                
+                </calcite-dropdown-item>
                 <calcite-dropdown-item
                   onClick={() => setShowDisclaimer(true)}
                   iconStart="script"
@@ -494,7 +546,7 @@ function App() {
       <Definitions
         open={showDefinitions}
         onClose={() => setShowDefinitions(false)}
-      />      
+      />
       <Disclaimer
         open={showDisclaimer}
         onClose={() => setShowDisclaimer(false)}
