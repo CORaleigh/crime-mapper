@@ -1,7 +1,6 @@
-@import url("https://js.arcgis.com/4.32/@arcgis/core/assets/esri/themes/light/main.css");
-@import url("https://js.arcgis.com/calcite-components/3.0.3/calcite.css");
-@import url("https://js.arcgis.com/map-components/4.32/arcgis-map-components.css");
-@import url("https://js.arcgis.com/calcite-components/3.0.3/calcite.css");
+@import url("https://js.arcgis.com/4.33/@arcgis/core/assets/esri/themes/light/main.css");
+@import url("https://js.arcgis.com/calcite-components/3.2.1/calcite.css");
+@import url("https://js.arcgis.com/map-components/4.33/arcgis-map-components.css");
 #root,
 html,
 body {
@@ -37,24 +36,95 @@ calcite-dialog {
     --calcite-action-background-color:  var(--calcite-color-brand);
 
 } */
+ .main-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
 
-arcgis-map {
+/* Base style for all panels */
+.map-panel,
+.table-panel,
+.charts-panel {
+  transition: all 0.3s ease;
+  overflow: hidden;
+  opacity: 0;
+  height: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+/* Show chart only — hide map and table */
+.main-container.show-charts .charts-panel {
+  height: 100%;
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+.main-container.show-charts .map-panel,
+.main-container.show-charts .table-panel {
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+/* Show map and/or table if chart not active */
+.main-container:not(.show-charts) .map-panel,
+.main-container:not(.show-charts) .table-panel {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+/* When both map and table visible — split 50/50 */
+.main-container.show-map.show-table:not(.show-charts) .map-panel,
+.main-container.show-map.show-table:not(.show-charts) .table-panel {
+  height: 50%;
+}
+
+/* Only map visible */
+.main-container.show-map:not(.show-table):not(.show-charts) .map-panel {
+  height: 100%;
+}
+
+/* Only table visible */
+.main-container.show-table:not(.show-map):not(.show-charts) .table-panel {
+  height: 100%;
+}
+
+/* Neither map nor table visible, and no chart — hide all panels (or fallback logic in JS) */
+.main-container:not(.show-map):not(.show-table):not(.show-charts) .map-panel,
+.main-container:not(.show-map):not(.show-table):not(.show-charts) .table-panel,
+.main-container:not(.show-map):not(.show-table):not(.show-charts) .charts-panel {
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+
+/* arcgis-map.show-map {
   display: block;
   height: 100vh;
 }
-arcgis-feature-table {
+
+arcgis-feature-table.show-map {
   display: block;
   height: 0vh;
 }
 
-arcgis-map .show-table {
+arcgis-map.show-table.show-map {
   display: block;
   height: 40vh;
 }
-arcgis-feature-table.show-table {
+
+arcgis-feature-table.show-table.show-map {
   display: block;
   height: 80vh;
-}
+} */
 
 .tile-icon {
   width: 100%;
@@ -101,13 +171,16 @@ calcite-flow-item calcite-list {
   arcgis-map {
     height: 100%;
   }
-  arcgis-map.show-table {
+  arcgis-map.show-table.show-map {
     height: 50%;
   }  
-  arcgis-feature-table.show-table {
+  arcgis-feature-table.show-map {
     height: 50%;
   }
 
+  arcgis-map.show-map {
+    height: 100%;
+  }  
   calcite-shell.show-filter > arcgis-map {
     display: none;
   }
@@ -141,4 +214,8 @@ calcite-flow-item calcite-list {
 
 calcite-shell-panel .esri-search {
   width: 100%;
+}
+
+arcgis-chart {
+  height: 50vh;
 }

@@ -113,7 +113,6 @@ export default function When({ onWhereChange, onFilterPanelClose, open, isMobile
             <calcite-option value="90days">Past 90 Days</calcite-option>
             <calcite-option value="month">Past Month</calcite-option>
             <calcite-option value="week">Past Week</calcite-option>
-            <calcite-option value="">Custom</calcite-option>
           </calcite-select>
         </calcite-label>
         {preset === "" && (

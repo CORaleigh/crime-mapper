@@ -11,7 +11,8 @@ import "@arcgis/map-components/dist/components/arcgis-legend";
 import "@arcgis/map-components/dist/components/arcgis-expand";
 import "@arcgis/map-components/dist/components/arcgis-locate";
 import "@arcgis/map-components/dist/components/arcgis-feature-table";
-import "@arcgis/map-components/components/arcgis-placement";
+import "@arcgis/map-components/dist/components/arcgis-placement";
+import "@arcgis/charts-components/dist/components/arcgis-chart";
 
 import "@esri/calcite-components/components/calcite-shell";
 import "@esri/calcite-components/components/calcite-shell-panel";
@@ -33,6 +34,10 @@ import "@esri/calcite-components/components/calcite-action";
 import "@esri/calcite-components/components/calcite-dropdown";
 import "@esri/calcite-components/components/calcite-dropdown-group";
 import "@esri/calcite-components/components/calcite-dropdown-item";
+
+import "@esri/calcite-components/components/calcite-action-bar";
+import "@esri/calcite-components/components/calcite-action-group";
+import "@esri/calcite-components/components/calcite-action";
 
 //import Geometry from "@arcgis/core/geometry/Geometry";
 import type { TargetedEvent } from "@esri/calcite-components";
@@ -61,8 +66,10 @@ function App() {
   const [geometryFilter, setFilterGeometry] = useState<__esri.Geometry | null>(
     null
   );
+  const [showMap, setShowMap] = useState(true);
   const [showTable, setShowTable] = useState(false);
   const [showFilter, setShowFilter] = useState(true);
+  const [showCharts, setShowCharts] = useState(false);
 
   const [categories, setCategories] = useState<__esri.Graphic[]>([]);
 
@@ -149,10 +156,10 @@ function App() {
   const handleViewReady = async (
     event: TargetedEvent<HTMLArcgisMapElement, void>
   ) => {
-    const view = await event.target?.view?.when();
+    const view = await event.target.view.when();
     const table = view.map.allTables.getItemAt(1);
-    const layer = arcgisMap.current?.map.allLayers.find(
-      (layer) => layer.title === "Incidents"
+    const layer = view.map.allLayers.find(
+      (layer: __esri.Layer) => layer.title === "Incidents"
     );
     incidentsLayer.current = layer as __esri.FeatureLayer;
     if (table?.type === "feature") {
@@ -192,7 +199,7 @@ function App() {
   const fetchAllDescriptions = useCallback(async () => {
     if (!arcgisMap.current) return;
     if (!arcgisMap.current.ready) return;
-    const layer = arcgisMap.current?.map.allLayers.find(
+    const layer = arcgisMap.current.view.map?.allLayers.find(
       (layer) => layer.title === "Incidents"
     ) as __esri.FeatureLayer | undefined;
     if (!layer) return;
@@ -202,7 +209,7 @@ function App() {
         ? `crime_category IN ('${crimeTypes.current.join(
             "', '"
           )}') and ${whenClause}`
-        : "1=1"; 
+        : "1=1";
 
     const results = await (layer as __esri.FeatureLayer).queryFeatures({
       returnDistinctValues: true,
@@ -354,13 +361,34 @@ function App() {
     //   setSearchParams(searchParams);
     // }
   }, [combinedWhere, geometryFilter]);
+  // If map or table turns on, hide charts
+  useEffect(() => {
+    if (showMap || showTable) {
+      setShowCharts(false);
+    }
+  }, [showMap, showTable]);
+
+  // If charts turn on, hide map and table
+  useEffect(() => {
+    if (showCharts) {
+      setShowMap(false);
+      setShowTable(false);
+    }
+  }, [showCharts]);
+
+  // If none are active, default to showing the map
+  useEffect(() => {
+    if (!showMap && !showTable && !showCharts) {
+      setShowMap(true);
+    }
+  }, [showMap, showTable, showCharts]);
 
   const arcgisMapEl = (
     <arcgis-map
       ref={arcgisMap}
       itemId="8a9abcc6b1bd4b6492923810c88cc879"
       onarcgisViewReadyChange={handleViewReady}
-      className={showTable ? "show-table" : ""}
+      className="map-panel"
     >
       <arcgis-expand position="top-right" group="top-right">
         <arcgis-search />
@@ -373,7 +401,7 @@ function App() {
       <arcgis-expand position="top-right" group="top-right">
         <arcgis-legend />
       </arcgis-expand>
-      <arcgis-placement position="bottom-left">
+      {/* <arcgis-placement position="bottom-left">
         <calcite-fab
           icon="filter"
           kind="inverse"
@@ -390,7 +418,7 @@ function App() {
           text={showTable ? "Hide Table" : "Show Table"}
           onClick={() => setShowTable((prev) => !prev)}
         ></calcite-fab>
-      </arcgis-placement>
+      </arcgis-placement> */}
     </arcgis-map>
   );
 
@@ -399,10 +427,10 @@ function App() {
       {incidentsLayer.current && (
         <arcgis-feature-table
           ref={arcgisFeatureTable}
+          className="table-panel"
           onarcgisReady={handleTableReady}
-          referenceElement={arcgisMap.current}
+          referenceElement={arcgisMap.current ?? undefined}
           layer={incidentsLayer.current}
-          className={showTable ? "show-table" : ""}
           actionColumnConfig={{
             label: "Go to feature",
             icon: "zoom-to-object",
@@ -488,6 +516,40 @@ function App() {
           resizable={!isMobile}
           collapsed={!showFilter}
         >
+          <calcite-action-bar slot="action-bar" expanded>
+            <calcite-action-group>
+              <calcite-action
+                icon="filter"
+                textEnabled
+                text="Filter"
+                active={showFilter}
+                onClick={() => setShowFilter((prev) => !prev)}
+              ></calcite-action>
+            </calcite-action-group>
+            <calcite-action-group>
+              <calcite-action
+                icon="map"
+                textEnabled
+                text="Map"
+                active={showMap}
+                onClick={() => setShowMap((prev) => !prev)}
+              ></calcite-action>
+              <calcite-action
+                icon="table"
+                textEnabled
+                text="Table"
+                active={showTable}
+                onClick={() => setShowTable((prev) => !prev)}
+              ></calcite-action>
+              <calcite-action
+                icon="pie-chart"
+                textEnabled
+                text="Charts"
+                active={showCharts}
+                onClick={() => setShowCharts((prev) => !prev)}
+              ></calcite-action>
+            </calcite-action-group>
+          </calcite-action-bar>
           <FilterSegmentedControl
             selectedSegment={selectedSegment}
             setSelectedSegment={setSelectedSegment}
@@ -536,8 +598,30 @@ function App() {
             )} */}
           </calcite-panel>
         </calcite-shell-panel>
-        {arcgisMapEl}
-        {arcgisTableEl}
+        <div
+          className={`main-container ${showTable ? "show-table" : ""} ${
+            showMap ? "show-map" : ""
+          } ${showCharts ? "show-charts" : ""}`}
+        >
+          {arcgisMapEl}
+          {arcgisTableEl}
+          <calcite-panel className="charts-panel">
+            {arcgisMap.current && incidentsLayer.current && incidentsLayer.current.charts && (
+              <>
+                <arcgis-chart
+                  view={arcgisMap.current.view}
+                  layer={incidentsLayer.current}
+                  model={incidentsLayer.current.charts[0]}
+                ></arcgis-chart>
+                <arcgis-chart
+                  view={arcgisMap.current.view}
+                  layer={incidentsLayer.current}
+                  model={incidentsLayer.current.charts[1]}
+                ></arcgis-chart>
+              </>
+            )}
+          </calcite-panel>
+        </div>
       </calcite-shell>
       <DataDictionary
         open={showDataDictionary}
