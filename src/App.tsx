@@ -554,7 +554,7 @@ function App() {
             selectedSegment={selectedSegment}
             setSelectedSegment={setSelectedSegment}
           />
-          <calcite-panel>
+          <calcite-panel className="filter-panel">
             <div hidden={selectedSegment !== "what"}>
               <What
                 categories={categories}
