@@ -75,12 +75,13 @@ export default function Where({
   };
 
   const getSketchLayer = (arcgisMap: HTMLArcgisMapElement) => {
-    let sketchLayer = arcgisMap?.view?.map.findLayerById("sketch-layer");
+    if (!arcgisMap || !arcgisMap.view || !arcgisMap.view.map) return;
+    let sketchLayer = arcgisMap.view.map.findLayerById("sketch-layer");
     if (!sketchLayer) {
       sketchLayer = new GraphicsLayer({ id: "sketch-layer", listMode: "hide" });
-      arcgisMap?.view.map.add(
+      arcgisMap.view.map.add(
         sketchLayer,
-        arcgisMap?.view.map.layers.length + 1
+        arcgisMap.view.map.layers.length + 1
       );
     }
     return sketchLayer as __esri.GraphicsLayer;
@@ -134,14 +135,13 @@ export default function Where({
   };
 
   const handleSearchComplete = (
-    event: TargetedEvent<
-      HTMLArcgisSearchElement,
-      __esri.SearchSearchCompleteEvent
-    >
+    event: TargetedEvent<HTMLArcgisSearchElement, __esri.SearchViewModelSearchCompleteEvent>
   ) => {
     if (!arcgisMap) return;
     if (event.detail.numResults === 0) return;
-    graphic.current = event.detail.results[0].results[0].feature;
+    graphic.current = (event.detail.results[0]?.results[0] as any)?.feature;
+    if (!graphic.current) return;
+
     const distance =
     graphic.current.geometry?.type === "point" && bufferDistance === 0 ? 1 : bufferDistance;
     setBufferDistance(distance);
@@ -207,6 +207,8 @@ export default function Where({
       const sketchLayer = getSketchLayer(arcgisMap);
       if (sketchLayer) {
         (sketchLayer as __esri.GraphicsLayer).removeAll();
+      } else {
+        return;
       }
       updateGeometry(sketchLayer, Number(distanceInput.current ? distanceInput.current.value : 0));
   }, [arcgisMap, updateGeometry])
@@ -218,7 +220,8 @@ export default function Where({
     displayField: string,
     minSuggestCharacters: number
   ) => {
-    const layer = arcgisMap?.view?.map.allLayers.find(
+    if (!arcgisMap || !arcgisMap.view || !arcgisMap.view.map) return
+    const layer = arcgisMap.view.map.allLayers.find(
       (layer: __esri.Layer) => layer.title === layerName
     );
     if (!layer) return;
@@ -345,8 +348,8 @@ export default function Where({
               ref={arcgisSearch}
               referenceElement={arcgisMap}
               includeDefaultSourcesDisabled
-              onarcgisComplete={handleSearchComplete}
-              onarcgisClear={clear}
+              onarcgisSearchComplete={handleSearchComplete}
+              onarcgisSearchClear={clear}
               resultGraphicDisabled
               onarcgisReady={handleSearchReady}
               allPlaceholder="Search by address or area"
