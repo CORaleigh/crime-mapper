@@ -88,7 +88,7 @@ function App() {
   const crimeTypes = useRef<string[]>([]);
 
   const [isMobile, setIsMobile] = useState(
-    typeof window !== "undefined" ? window.innerWidth < 900 : false
+    typeof window !== "undefined" ? window.innerWidth >= 900 : false
   );
 
   useEffect(() => {
