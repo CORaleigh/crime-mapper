@@ -189,22 +189,22 @@ calcite-flow-item calcite-list {
     display: none;
   }
   calcite-shell.show-filter calcite-shell-panel {
-    min-width: 100vw;
+    min-width: 100%;
   }
   calcite-shell.show-filter calcite-panel {
-    min-width: 100vw;
+    min-width: 100%;
   }
   calcite-shell.show-filter calcite-segmented-control {
-    min-width: 100vw;
+    min-width: 100%;
   }
   calcite-shell.show-filter calcite-tile-group {
-    min-width: 100vw;
+    min-width: 100%;
   }
 
   calcite-shell.show-filter {
-    --calcite-shell-panel-width: 100vw;
-    --calcite-shell-panel-min-width: 100vw;
-    --calcite-shell-panel-max-width: calc(100vw - 300px);
+    --calcite-shell-panel-width: 100%;
+    --calcite-shell-panel-min-width: 100%;
+    --calcite-shell-panel-max-width: calc(100vw - 300%);
   }
 }
 

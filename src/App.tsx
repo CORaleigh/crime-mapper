@@ -516,7 +516,8 @@ function App() {
           resizable={!isMobile}
           collapsed={!showFilter}
         >
-          <calcite-action-bar slot="action-bar" expanded>
+        
+          <calcite-action-bar slot="action-bar" expanded={!isMobile} expandDisabled={isMobile}>
             <calcite-action-group>
               <calcite-action
                 icon="filter"
