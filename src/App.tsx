@@ -39,6 +39,9 @@ import "@esri/calcite-components/components/calcite-action-bar";
 import "@esri/calcite-components/components/calcite-action-group";
 import "@esri/calcite-components/components/calcite-action";
 
+import "@esri/calcite-components/components/calcite-select";
+import "@esri/calcite-components/components/calcite-option";
+
 //import Geometry from "@arcgis/core/geometry/Geometry";
 import type { TargetedEvent } from "@esri/calcite-components";
 import What from "./What";
@@ -70,6 +73,8 @@ function App() {
   const [showTable, setShowTable] = useState(false);
   const [showFilter, setShowFilter] = useState(true);
   const [showCharts, setShowCharts] = useState(false);
+
+  const [selectedChart, setSelectedChart] = useState(undefined);
 
   const [categories, setCategories] = useState<__esri.Graphic[]>([]);
 
@@ -160,8 +165,12 @@ function App() {
     const table = view.map.allTables.getItemAt(1);
     const layer = view.map.allLayers.find(
       (layer: __esri.Layer) => layer.title === "Incidents"
-    );
+    ) as __esri.FeatureLayer;
+
     incidentsLayer.current = layer as __esri.FeatureLayer;
+    if (layer && layer.charts && layer.charts.length > 0) {
+      setSelectedChart(layer.charts[0]);
+    }
     if (table?.type === "feature") {
       const results = await (table as __esri.FeatureLayer).queryFeatures({
         where: "1=1",
@@ -462,6 +471,12 @@ function App() {
     </>
   );
 
+  const chartSelected = (
+    event: TargetedEvent<HTMLCalciteSelectElement, void>
+  ) => {
+    setSelectedChart(event.target.selectedOption.value);
+  };
+
   return (
     <>
       <calcite-shell id="shell" className={showFilter ? "show-filter" : ""}>
@@ -516,8 +531,11 @@ function App() {
           resizable={!isMobile}
           collapsed={!showFilter}
         >
-        
-          <calcite-action-bar slot="action-bar" expanded={!isMobile} expandDisabled={isMobile}>
+          <calcite-action-bar
+            slot="action-bar"
+            expanded={!isMobile}
+            expandDisabled={isMobile}
+          >
             <calcite-action-group>
               <calcite-action
                 icon="filter"
@@ -607,20 +625,39 @@ function App() {
           {arcgisMapEl}
           {arcgisTableEl}
           <calcite-panel className="charts-panel">
-            {arcgisMap.current && incidentsLayer.current && incidentsLayer.current.charts && (
-              <>
-                <arcgis-chart
-                  view={arcgisMap.current.view}
-                  layer={incidentsLayer.current}
-                  model={incidentsLayer.current.charts[0]}
-                ></arcgis-chart>
-                <arcgis-chart
-                  view={arcgisMap.current.view}
-                  layer={incidentsLayer.current}
-                  model={incidentsLayer.current.charts[1]}
-                ></arcgis-chart>
-              </>
-            )}
+            {arcgisMap.current &&
+              incidentsLayer.current &&
+              incidentsLayer.current.charts && (
+                <>
+                  <calcite-select
+                    label={"Select chart"}
+                    oncalciteSelectChange={chartSelected}
+                  >
+                    {incidentsLayer.current.charts.map((chart, i) => {
+                      console.log(chart);
+                      return (
+                        <calcite-option
+                          key={`chart-${i}`}
+                          label={chart.title.content.text}
+                          value={chart}
+                        ></calcite-option>
+                      );
+                    })}
+                  </calcite-select>
+
+                  <arcgis-chart
+                    view={arcgisMap.current.view}
+                    layer={incidentsLayer.current}
+                    model={selectedChart}
+                    legendPosition={isMobile ? "bottom": "right"}
+                  ></arcgis-chart>
+                  {/* <arcgis-chart
+                    view={arcgisMap.current.view}
+                    layer={incidentsLayer.current}
+                    model={incidentsLayer.current.charts[1]}
+                  ></arcgis-chart> */}
+                </>
+              )}
           </calcite-panel>
         </div>
       </calcite-shell>
