@@ -42,6 +42,7 @@ export default function Where({
   const graphic = useRef<__esri.Graphic>(null);
   const distanceInput = useRef<HTMLCalciteInputNumberElement>(null);
   // Handle selection change
+  let extentWatcher: IHandle | null = null;
   const handleSelectChange = async (e: Event) => {
     const value = (e.target as HTMLCalciteSelectElement).value as
       | "city"
@@ -49,13 +50,25 @@ export default function Where({
       | "draw"
       | "search";
     setMode(value);
-    if (value === 'city' || value == 'extent') {
+    if (value === "city" || value == "extent") {
       clear();
-
     }
     if (value === "extent" && arcgisMap?.view) {
       await arcgisMap?.view.when();
+      if (extentWatcher) {
+        extentWatcher.remove();
+      }
+      extentWatcher = arcgisMap.view.watch("extent", (extent) => {
+        if (extent) {
+          onGeometryChange(extent.clone());
+        }
+      });
       onGeometryChange(arcgisMap?.view.extent.clone());
+    } else {
+      onGeometryChange(null);
+      if (extentWatcher) {
+        extentWatcher.remove();
+      }
     }
   };
   const handleSketchCreated = (event: __esri.SketchCreateEvent) => {
@@ -68,9 +81,11 @@ export default function Where({
       setSelectedTool("");
       sketchLayer.removeAll();
       setTimeout(() => {
-      updateGeometry(sketchLayer, Number(distanceInput.current ? distanceInput.current.value : 0));
-
-      })
+        updateGeometry(
+          sketchLayer,
+          Number(distanceInput.current ? distanceInput.current.value : 0)
+        );
+      });
     }
   };
 
@@ -79,10 +94,7 @@ export default function Where({
     let sketchLayer = arcgisMap.view.map.findLayerById("sketch-layer");
     if (!sketchLayer) {
       sketchLayer = new GraphicsLayer({ id: "sketch-layer", listMode: "hide" });
-      arcgisMap.view.map.add(
-        sketchLayer,
-        arcgisMap.view.map.layers.length + 1
-      );
+      arcgisMap.view.map.add(sketchLayer, arcgisMap.view.map.layers.length + 1);
     }
     return sketchLayer as __esri.GraphicsLayer;
   };
@@ -135,7 +147,10 @@ export default function Where({
   };
 
   const handleSearchComplete = (
-    event: TargetedEvent<HTMLArcgisSearchElement, __esri.SearchViewModelSearchCompleteEvent>
+    event: TargetedEvent<
+      HTMLArcgisSearchElement,
+      __esri.SearchViewModelSearchCompleteEvent
+    >
   ) => {
     if (!arcgisMap) return;
     if (event.detail.numResults === 0) return;
@@ -143,7 +158,9 @@ export default function Where({
     if (!graphic.current) return;
 
     const distance =
-    graphic.current.geometry?.type === "point" && bufferDistance === 0 ? 1 : bufferDistance;
+      graphic.current.geometry?.type === "point" && bufferDistance === 0
+        ? 1
+        : bufferDistance;
     setBufferDistance(distance);
     const sketchLayer = getSketchLayer(arcgisMap);
     if (!sketchLayer) return;
@@ -151,35 +168,38 @@ export default function Where({
     updateGeometry(sketchLayer, distance);
   };
 
-  const updateGeometry = useCallback((sketchLayer: __esri.GraphicsLayer, distance: number) => {
-    if (!graphic.current) return;
-    const newGraphic = graphic.current.clone();
-    if (distance > 0 && graphic.current.geometry) {
-      const buffered = bufferOperator.execute(
-        newGraphic.geometry as __esri.GeometryUnion,
-        distance,
-        {
-          unit: "miles",
-        }
-      );
-      newGraphic.geometry = buffered;
-    }
-    newGraphic.symbol = {
-      type: "simple-fill",
-      style: "none",
-      outline: {
-        type: "simple-line",
-        color: "black",
-        width: 2,
-      },
-    };
-    sketchLayer.removeAll();
-    sketchLayer.add(newGraphic);
-    requestAnimationFrame(() => {
-      arcgisMap?.view.goTo(newGraphic);
-    });
-    onGeometryChange(newGraphic.geometry as __esri.GeometryUnion);
-  }, [arcgisMap?.view, onGeometryChange]);
+  const updateGeometry = useCallback(
+    (sketchLayer: __esri.GraphicsLayer, distance: number) => {
+      if (!graphic.current) return;
+      const newGraphic = graphic.current.clone();
+      if (distance > 0 && graphic.current.geometry) {
+        const buffered = bufferOperator.execute(
+          newGraphic.geometry as __esri.GeometryUnion,
+          distance,
+          {
+            unit: "miles",
+          }
+        );
+        newGraphic.geometry = buffered;
+      }
+      newGraphic.symbol = {
+        type: "simple-fill",
+        style: "none",
+        outline: {
+          type: "simple-line",
+          color: "black",
+          width: 2,
+        },
+      };
+      sketchLayer.removeAll();
+      sketchLayer.add(newGraphic);
+      requestAnimationFrame(() => {
+        arcgisMap?.view.goTo(newGraphic);
+      });
+      onGeometryChange(newGraphic.geometry as __esri.GeometryUnion);
+    },
+    [arcgisMap?.view, onGeometryChange]
+  );
 
   const clear = () => {
     onGeometryChange(null);
@@ -203,15 +223,18 @@ export default function Where({
   }, [mode, arcgisMap?.view?.map]);
 
   const refreshDistance = useCallback(() => {
-       if (!arcgisMap) return;
-      const sketchLayer = getSketchLayer(arcgisMap);
-      if (sketchLayer) {
-        (sketchLayer as __esri.GraphicsLayer).removeAll();
-      } else {
-        return;
-      }
-      updateGeometry(sketchLayer, Number(distanceInput.current ? distanceInput.current.value : 0));
-  }, [arcgisMap, updateGeometry])
+    if (!arcgisMap) return;
+    const sketchLayer = getSketchLayer(arcgisMap);
+    if (sketchLayer) {
+      (sketchLayer as __esri.GraphicsLayer).removeAll();
+    } else {
+      return;
+    }
+    updateGeometry(
+      sketchLayer,
+      Number(distanceInput.current ? distanceInput.current.value : 0)
+    );
+  }, [arcgisMap, updateGeometry]);
   const addSource = (
     arcgisSearch: HTMLArcgisSearchElement,
     layerName: string,
@@ -220,7 +243,7 @@ export default function Where({
     displayField: string,
     minSuggestCharacters: number
   ) => {
-    if (!arcgisMap || !arcgisMap.view || !arcgisMap.view.map) return
+    if (!arcgisMap || !arcgisMap.view || !arcgisMap.view.map) return;
     const layer = arcgisMap.view.map.allLayers.find(
       (layer: __esri.Layer) => layer.title === layerName
     );

@@ -410,24 +410,6 @@ function App() {
       <arcgis-expand position="top-right" group="top-right">
         <arcgis-legend />
       </arcgis-expand>
-      {/* <arcgis-placement position="bottom-left">
-        <calcite-fab
-          icon="filter"
-          kind="inverse"
-          textEnabled
-          text={showFilter ? "Hide Filters" : "Show Filters"}
-          onClick={() => setShowFilter((prev) => !prev)}
-        ></calcite-fab>
-      </arcgis-placement>
-      <arcgis-placement position="bottom-right">
-        <calcite-fab
-          icon="table"
-          kind="inverse"
-          textEnabled
-          text={showTable ? "Hide Table" : "Show Table"}
-          onClick={() => setShowTable((prev) => !prev)}
-        ></calcite-fab>
-      </arcgis-placement> */}
     </arcgis-map>
   );
 
@@ -649,7 +631,7 @@ function App() {
                     view={arcgisMap.current.view}
                     layer={incidentsLayer.current}
                     model={selectedChart}
-                    legendPosition={isMobile ? "bottom": "right"}
+                    legendPosition={isMobile ? "bottom" : "right"}
                   ></arcgis-chart>
                   {/* <arcgis-chart
                     view={arcgisMap.current.view}
