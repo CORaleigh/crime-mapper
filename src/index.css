@@ -16,7 +16,10 @@ body {
   --calcite-navigation-logo-heading-text-color: #ffffff;
   --calcite-action-background-color: transparent;
   --calcite-tab-content-space-y: 0px;
+  --calcite-internal-tile-spacing: 0;
 }
+
+
 
 :host([checked]) .label {
   background-color: var(--calcite-color-secondary);
@@ -27,10 +30,10 @@ calcite-navigation {
   --calcite-action-text-color-press: #ffffff;
 }
 
-calcite-dialog {
+/* calcite-dialog {
   --calcite-panel-header-background-color: var(--calcite-color-secondary);
   --calcite-panel-heading-text-color: #ffffff;
-}
+} */
 
 /* calcite-panel {
     --calcite-action-background-color:  var(--calcite-color-brand);
@@ -141,7 +144,7 @@ arcgis-feature-table.show-table.show-map {
   align-items: center;
 }
 .tile-icon img {
-  max-width: 120px;
+  max-width: 80px;
   height: auto;
 }
 

@@ -42,6 +42,9 @@ import "@esri/calcite-components/components/calcite-action";
 import "@esri/calcite-components/components/calcite-select";
 import "@esri/calcite-components/components/calcite-option";
 
+import "@esri/calcite-components/components/calcite-switch";
+
+
 //import Geometry from "@arcgis/core/geometry/Geometry";
 import type { TargetedEvent } from "@esri/calcite-components";
 import What from "./What";
@@ -162,7 +165,6 @@ function App() {
     event: TargetedEvent<HTMLArcgisMapElement, void>
   ) => {
     const view = await event.target.view.when();
-    const table = view.map.allTables.getItemAt(1);
     const layer = view.map.allLayers.find(
       (layer: __esri.Layer) => layer.title === "Incidents"
     ) as __esri.FeatureLayer;
@@ -171,15 +173,8 @@ function App() {
     if (layer && layer.charts && layer.charts.length > 0) {
       setSelectedChart(layer.charts[0]);
     }
-    if (table?.type === "feature") {
-      const results = await (table as __esri.FeatureLayer).queryFeatures({
-        where: "1=1",
-        returnGeometry: false,
-        outFields: ["*"],
-      });
-      setCategories(results.features);
-    }
 
+    updateCategories('1=1');
     // const where = searchParams.get('where');
     // const geometry = searchParams.get('geometry');
     // if (geometry) {
@@ -190,6 +185,19 @@ function App() {
     //   setCombinedWhere(where);
     // }
   };
+
+  const updateCategories = async (where: string) => {
+    const table = arcgisMap.current?.view.map?.allTables.getItemAt(0);
+    if (table?.type === "feature") {
+      const results = await (table as __esri.FeatureLayer).queryFeatures({
+        where: where,
+        returnGeometry: false,
+        outFields: ["*"],
+        orderByFields: ["crime_group", "crime_category"]
+      });
+      setCategories(results.features);
+    }
+  }
 
   const toTitleCase = (str: string) => {
     return str
@@ -243,8 +251,7 @@ function App() {
       outFields: ["description_count", "crime_description"],
       orderByFields: ["crime_description"],
     });
-    console.log("Fetched Descriptions:", results.features);
-    console.log("Count Results:", countResults.features);
+
 
     // Build a map of description to count
     const descriptionCountMap: Record<string, number> = {};
@@ -355,7 +362,6 @@ function App() {
         arcgisFeatureTable.current.refresh();
       }
     }
-    console.log("Combined where clause applied:", combinedWhere);
     // if (geometryFilter) {
     //   searchParams.set("geometry", JSON.stringify(geometryFilter.toJSON()));
     //   setSearchParams(searchParams);
@@ -566,6 +572,13 @@ function App() {
                 isMobile={isMobile}
                 onFilterPanelClose={() => setShowFilter(false)}
                 open={showFilter}
+                onViolentCrimeFilterChange={(show: boolean) => {
+                  updateCategories(show ? "violent_crime = 'Yes'" : "1=1");
+                }}
+                onTopCrimeFilterChange={(show: boolean) => {
+                  updateCategories(show ? "top_crime = 'Yes'" : "1=1");
+                }}                
+                categoryTable={arcgisMap.current?.view.map?.allTables.getItemAt(0) as __esri.FeatureLayer}
               />
             </div>
             <div hidden={selectedSegment !== "when"}>
@@ -616,7 +629,6 @@ function App() {
                     oncalciteSelectChange={chartSelected}
                   >
                     {incidentsLayer.current.charts.map((chart, i) => {
-                      console.log(chart);
                       return (
                         <calcite-option
                           key={`chart-${i}`}

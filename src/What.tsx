@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { TargetedEvent } from "@esri/calcite-components";
 
 type Description = {
@@ -15,6 +15,9 @@ interface WhatProps {
   onFilterPanelClose: () => void;
   open: boolean;
   isMobile: boolean;
+  onViolentCrimeFilterChange: (enabled: boolean) => void;
+  onTopCrimeFilterChange: (enabled: boolean) => void;
+  categoryTable: __esri.FeatureLayer;
 }
 
 export default function What({
@@ -26,6 +29,9 @@ export default function What({
   onFilterPanelClose,
   open,
   isMobile,
+  onViolentCrimeFilterChange,
+  onTopCrimeFilterChange,
+  categoryTable,
 }: WhatProps) {
   const [descriptions, setDescriptions] = useState<Description[]>([]);
   const [selectedCrimeGroups, setSelectedCrimeGroups] = useState<string[]>([]);
@@ -34,6 +40,38 @@ export default function What({
   const [groupSelections, setGroupSelections] = useState<
     Record<string, string[]>
   >({});
+  const [filterViolentCrimes, setFilterViolentCrimes] = useState(false);
+  const [filterTopCrimes, setFilterTopCrimes] = useState(false);
+
+  const filterByTopOrViolentCrimes = useCallback(
+    async (
+      field: string,
+      showAll: boolean,
+      categoryTable: __esri.FeatureLayer
+    ) => {
+      if (categoryTable && !showAll) {
+        await categoryTable
+          .queryFeatures({
+            where: `${field} = 'Yes'`,
+            returnDistinctValues: true,
+            outFields: ["crime_category"],
+          })
+          .then((results) => {
+            const categories = results.features.map(
+              (f) => f.attributes.crime_category
+            );
+            const whereClause = `crime_category IN ('${categories.join(
+              "','"
+            )}')`;
+
+            onWhereChange(whereClause);
+          });
+      } else {
+        onWhereChange("1=1");
+      }
+    },
+    [onWhereChange]
+  );
 
   // Filter allDescriptions by selectedCrimeGroups
   useEffect(() => {
@@ -92,19 +130,39 @@ export default function What({
   // Compute the where clause and provide it to the parent
   useEffect(() => {
     let whereClause = "1=1";
+
+    // if (filterViolentCrimes) {
+    //   whereClause = `crime_code in ('11','12','13','17A','20A','20B','25G')`;
+    // } else {
     if (allSelectedDescriptions.length > 0) {
       whereClause = `upper(crime_description) IN ('${allSelectedDescriptions
         .join("','")
         .toUpperCase()}')`;
+      onWhereChange(whereClause);
     } else if (selectedCrimeGroups.length > 0) {
       whereClause = `crime_category IN ('${selectedCrimeTypes.join("','")}')`;
+      onWhereChange(whereClause);
+    } else if (filterViolentCrimes) {
+      filterByTopOrViolentCrimes("violent_crime", false, categoryTable);
+    } else if (filterTopCrimes) {
+      filterByTopOrViolentCrimes("top_crime", false, categoryTable);
     }
-    onWhereChange(whereClause);
+    //}
+    // else {
+    //   whereClause = "1=1";
+    // }
+    //if (whereClause !== "1=1") {
+    // onWhereChange(whereClause);
+    //}
   }, [
     allSelectedDescriptions,
     selectedCrimeGroups,
     selectedCrimeTypes,
     onWhereChange,
+    filterViolentCrimes,
+    filterTopCrimes,
+    filterByTopOrViolentCrimes,
+    categoryTable,
   ]);
 
   useEffect(() => {
@@ -122,34 +180,88 @@ export default function What({
           oncalciteFlowItemClose={onFilterPanelClose}
           closed={!open}
         >
-          { selectedCrimeGroups.length > 0 && 
+          {selectedCrimeGroups.length > 0 && (
             <div slot="header-actions-end">
               <calcite-action
                 icon="trash"
                 text="Remove Filter"
                 textEnabled
                 onClick={() => {
-                  
                   setSelectedCrimeGroups([]);
                 }}
               ></calcite-action>
             </div>
-          }
+          )}
           <div
             style={{
               position: "sticky",
               top: 0,
-              background: "var(--calcite-ui-foreground-1)",
+              background: "var(--calcite-ui-foreground-2)",
               zIndex: 2,
+              marginTop: "1rem",
+              marginBottom: "1rem",
+
+              display: "flex",
+              justifyContent: "space-evenly",
+              alignItems: "center",
             }}
           >
-            {/* Optionally, you can add a custom header here if needed */}
+            <calcite-label layout="inline">
+              <calcite-switch
+                label="Violent Crimes"
+                checked={filterViolentCrimes}
+                oncalciteSwitchChange={async (event) => {
+                  setFilterViolentCrimes(event.target.checked);
+                  if (event.target.checked) {
+                    setFilterTopCrimes(false);
+                  }
+                  onViolentCrimeFilterChange(event.target.checked);
+                  await filterByTopOrViolentCrimes(
+                    "violent_crime",
+                    !event.target.checked && !filterTopCrimes,
+                    categoryTable
+                  );
+                }}
+              />
+              Violent Crimes
+            </calcite-label>
+            <calcite-label layout="inline">
+              <calcite-switch
+                label="Top Crimes"
+                checked={filterTopCrimes}
+                oncalciteSwitchChange={useCallback(
+                  async (
+                    event: TargetedEvent<HTMLCalciteSwitchElement, void>
+                  ) => {
+                    setFilterTopCrimes(event.target.checked);
+                    if (event.target.checked) {
+                      setFilterViolentCrimes(false);
+                    }
+                    onTopCrimeFilterChange(event.target.checked);
+
+                    await filterByTopOrViolentCrimes(
+                      "top_crime",
+                      !event.target.checked && !filterViolentCrimes,
+                      categoryTable
+                    );
+                  },
+                  [
+                    onTopCrimeFilterChange,
+                    filterViolentCrimes,
+                    filterByTopOrViolentCrimes,
+                    categoryTable,
+                  ]
+                )}
+              />
+              Top Crimes
+            </calcite-label>
           </div>
           <calcite-tile-group
             label="label"
             selection-mode="multiple"
             selection-appearance="border"
             oncalciteTileGroupSelect={tileSelected}
+            checked={filterTopCrimes}
           >
             {Array.from(
               new Map(
@@ -162,7 +274,9 @@ export default function What({
               <calcite-tile
                 key={category.attributes.OBJECTID}
                 data-crime-group={category.attributes.crime_group}
-                selected={selectedCrimeGroups.includes(category.attributes.crime_group)}
+                selected={selectedCrimeGroups.includes(
+                  category.attributes.crime_group
+                )}
               >
                 <div slot="content-top" className="tile-icon">
                   <img
@@ -187,7 +301,7 @@ export default function What({
             oncalciteFlowItemClose={onFilterPanelClose}
           >
             <calcite-list
-              label="Park features"
+              label="Descriptions"
               selection-appearance="icon"
               selection-mode="multiple"
             >
