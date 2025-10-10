@@ -95,6 +95,9 @@ function App() {
 
   const crimeTypes = useRef<string[]>([]);
 
+  const [showViolentCrimeOnly, setShowViolentCrimeOnly] = useState(false);
+  
+
   const [isMobile, setIsMobile] = useState(
     typeof window !== "undefined" ? window.innerWidth >= 900 : false
   );
@@ -221,7 +224,7 @@ function App() {
     ) as __esri.FeatureLayer | undefined;
     if (!layer) return;
 
-    const where =
+    const where = showViolentCrimeOnly ? `crime_code in ('11','12','13','17A','20A','20B','25G')` :
       Array.isArray(crimeTypes.current) && crimeTypes.current.length > 0
         ? `crime_category IN ('${crimeTypes.current.join(
             "', '"
@@ -574,6 +577,7 @@ function App() {
                 open={showFilter}
                 onViolentCrimeFilterChange={(show: boolean) => {
                   updateCategories(show ? "violent_crime = 'Yes'" : "1=1");
+                  setShowViolentCrimeOnly(show);
                 }}
                 onTopCrimeFilterChange={(show: boolean) => {
                   updateCategories(show ? "top_crime = 'Yes'" : "1=1");

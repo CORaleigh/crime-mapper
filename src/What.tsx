@@ -50,22 +50,28 @@ export default function What({
       categoryTable: __esri.FeatureLayer
     ) => {
       if (categoryTable && !showAll) {
-        await categoryTable
-          .queryFeatures({
-            where: `${field} = 'Yes'`,
-            returnDistinctValues: true,
-            outFields: ["crime_category"],
-          })
-          .then((results) => {
-            const categories = results.features.map(
-              (f) => f.attributes.crime_category
-            );
-            const whereClause = `crime_category IN ('${categories.join(
-              "','"
-            )}')`;
+        if (field === "top_crime") {
+          await categoryTable
+            .queryFeatures({
+              where: `${field} = 'Yes'`,
+              returnDistinctValues: true,
+              outFields: ["crime_category"],
+            })
+            .then((results) => {
+              const categories = results.features.map(
+                (f) => f.attributes.crime_category
+              );
+              const whereClause = `crime_category IN ('${categories.join(
+                "','"
+              )}')`;
 
-            onWhereChange(whereClause);
-          });
+              onWhereChange(whereClause);
+            });
+        } else if (field === "violent_crime") {
+          onWhereChange(
+            "crime_code in ('11','12','13','17A','20A','20B','25G')"
+          );
+        }
       } else {
         onWhereChange("1=1");
       }
@@ -214,6 +220,12 @@ export default function What({
                   setFilterViolentCrimes(event.target.checked);
                   if (event.target.checked) {
                     setFilterTopCrimes(false);
+                  } else {
+                    setSelectedCrimeGroups([]);
+                      setSelectedCrimeTypes([]);
+                                                                  setDescriptions([]);
+
+
                   }
                   onViolentCrimeFilterChange(event.target.checked);
                   await filterByTopOrViolentCrimes(
@@ -236,6 +248,11 @@ export default function What({
                     setFilterTopCrimes(event.target.checked);
                     if (event.target.checked) {
                       setFilterViolentCrimes(false);
+                    } else {
+                      setSelectedCrimeGroups([]);
+                      setSelectedCrimeTypes([]);
+                                            setDescriptions([]);
+
                     }
                     onTopCrimeFilterChange(event.target.checked);
 
