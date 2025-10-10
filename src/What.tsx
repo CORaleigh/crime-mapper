@@ -222,10 +222,8 @@ export default function What({
                     setFilterTopCrimes(false);
                   } else {
                     setSelectedCrimeGroups([]);
-                      setSelectedCrimeTypes([]);
-                                                                  setDescriptions([]);
-
-
+                    setSelectedCrimeTypes([]);
+                    setDescriptions([]);
                   }
                   onViolentCrimeFilterChange(event.target.checked);
                   await filterByTopOrViolentCrimes(
@@ -251,8 +249,7 @@ export default function What({
                     } else {
                       setSelectedCrimeGroups([]);
                       setSelectedCrimeTypes([]);
-                                            setDescriptions([]);
-
+                      setDescriptions([]);
                     }
                     onTopCrimeFilterChange(event.target.checked);
 
@@ -273,6 +270,10 @@ export default function What({
               Top Crimes
             </calcite-label>
           </div>
+          <calcite-alert open={filterViolentCrimes} label={""} kind="warning" icon="exclamation-mark-triangle-f" autoClose autoCloseDuration="medium">
+            <div slot="title">Sex Offenses Not Shown on Map</div>
+            <div slot="message">Due to privacy concerns, this category is excluded from the map.</div>
+          </calcite-alert>          
           <calcite-tile-group
             label="label"
             selection-mode="multiple"
@@ -307,6 +308,7 @@ export default function What({
               </calcite-tile>
             ))}
           </calcite-tile-group>
+
         </calcite-flow-item>
         {showDescriptionFilter && (
           <calcite-flow-item

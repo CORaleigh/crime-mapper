@@ -44,6 +44,8 @@ import "@esri/calcite-components/components/calcite-option";
 
 import "@esri/calcite-components/components/calcite-switch";
 
+import "@esri/calcite-components/components/calcite-alert";
+
 
 //import Geometry from "@arcgis/core/geometry/Geometry";
 import type { TargetedEvent } from "@esri/calcite-components";

@@ -224,3 +224,7 @@ arcgis-chart {
   height: 100vh;
 }
 
+.esri-legend {
+  max-height: 80vh;
+}
+
