@@ -46,7 +46,6 @@ import "@esri/calcite-components/components/calcite-switch";
 
 import "@esri/calcite-components/components/calcite-alert";
 
-
 //import Geometry from "@arcgis/core/geometry/Geometry";
 import type { TargetedEvent } from "@esri/calcite-components";
 import What from "./What";
@@ -58,6 +57,8 @@ import FilterSegmentedControl from "./FilterSegmentedControl";
 //import { useSearchParams } from "react-router-dom";
 import Collection from "@arcgis/core/core/Collection";
 import Definitions from "./Definitions";
+
+import LocatorSearchSource from "@arcgis/core/widgets/Search/LocatorSearchSource";
 
 // Description type
 type Description = {
@@ -98,7 +99,6 @@ function App() {
   const crimeTypes = useRef<string[]>([]);
 
   const [showViolentCrimeOnly, setShowViolentCrimeOnly] = useState(false);
-  
 
   const [isMobile, setIsMobile] = useState(
     typeof window !== "undefined" ? window.innerWidth >= 900 : false
@@ -179,7 +179,7 @@ function App() {
       setSelectedChart(layer.charts[0]);
     }
 
-    updateCategories('1=1');
+    updateCategories("1=1");
     // const where = searchParams.get('where');
     // const geometry = searchParams.get('geometry');
     // if (geometry) {
@@ -198,11 +198,11 @@ function App() {
         where: where,
         returnGeometry: false,
         outFields: ["*"],
-        orderByFields: ["crime_group", "crime_category"]
+        orderByFields: ["crime_group", "crime_category"],
       });
       setCategories(results.features);
     }
-  }
+  };
 
   const toTitleCase = (str: string) => {
     return str
@@ -226,12 +226,13 @@ function App() {
     ) as __esri.FeatureLayer | undefined;
     if (!layer) return;
 
-    const where = showViolentCrimeOnly ? `crime_code in ('11','12','13','17A','20A','20B','25G')` :
-      Array.isArray(crimeTypes.current) && crimeTypes.current.length > 0
-        ? `crime_category IN ('${crimeTypes.current.join(
-            "', '"
-          )}') and ${whenClause}`
-        : "1=1";
+    const where = showViolentCrimeOnly
+      ? `crime_code in ('11','12','13','17A','20A','20B','25G')`
+      : Array.isArray(crimeTypes.current) && crimeTypes.current.length > 0
+      ? `crime_category IN ('${crimeTypes.current.join(
+          "', '"
+        )}') and ${whenClause}`
+      : "1=1";
 
     const results = await (layer as __esri.FeatureLayer).queryFeatures({
       returnDistinctValues: true,
@@ -256,7 +257,6 @@ function App() {
       outFields: ["description_count", "crime_description"],
       orderByFields: ["crime_description"],
     });
-
 
     // Build a map of description to count
     const descriptionCountMap: Record<string, number> = {};
@@ -304,7 +304,7 @@ function App() {
     }));
 
     setAllDescriptions(result.filter((item) => item.descriptions.length > 0));
-  }, [geometryFilter, categories, whenClause]);
+  }, [showViolentCrimeOnly, whenClause, geometryFilter, categories]);
   const handleDescriptionShow = (show: boolean) => {
     if (show) {
       //if (categories.length > 0) {
@@ -410,15 +410,24 @@ function App() {
       onarcgisViewReadyChange={handleViewReady}
       className="map-panel"
     >
-      <arcgis-expand position="top-right" group="top-right">
-        <arcgis-search />
+      <arcgis-expand position="top-right" group="top-right" label="Search">
+        <arcgis-search
+          includeDefaultSourcesDisabled
+          sources={new Collection([
+            new LocatorSearchSource({
+              url: "https://maps.raleighnc.gov/arcgis/rest/services/Locators/Locator/GeocodeServer",
+              placeholder: "Search by address",
+              maxResults: 6,
+            })  ,
+          ])}
+        />
       </arcgis-expand>
       <arcgis-zoom position="top-left" />
       <arcgis-locate position="top-left" />
-      <arcgis-expand position="top-right" group="top-right">
+      <arcgis-expand position="top-right" group="top-right" label="Layers">
         <arcgis-layer-list visibilityAppearance="checkbox" />
       </arcgis-expand>
-      <arcgis-expand position="top-right" group="top-right">
+      <arcgis-expand position="top-right" group="top-right" label="Legend">
         <arcgis-legend />
       </arcgis-expand>
     </arcgis-map>
@@ -583,8 +592,12 @@ function App() {
                 }}
                 onTopCrimeFilterChange={(show: boolean) => {
                   updateCategories(show ? "top_crime = 'Yes'" : "1=1");
-                }}                
-                categoryTable={arcgisMap.current?.view.map?.allTables.getItemAt(0) as __esri.FeatureLayer}
+                }}
+                categoryTable={
+                  arcgisMap.current?.view.map?.allTables.getItemAt(
+                    0
+                  ) as __esri.FeatureLayer
+                }
               />
             </div>
             <div hidden={selectedSegment !== "when"}>
