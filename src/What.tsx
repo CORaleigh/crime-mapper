@@ -1,11 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import type { TargetedEvent } from "@esri/calcite-components";
 
+// Types
+// Description type for crime descriptions grouped by crime group
 type Description = {
   group: string;
   descriptions: { description: string; count: number }[];
 };
 
+// Props for What component
 interface WhatProps {
   categories: __esri.Graphic[];
   allDescriptions: Description[];
@@ -20,6 +23,7 @@ interface WhatProps {
   categoryTable: __esri.FeatureLayer;
 }
 
+// What component for filtering by crime group and description
 export default function What({
   categories,
   allDescriptions,
@@ -33,6 +37,7 @@ export default function What({
   onTopCrimeFilterChange,
   categoryTable,
 }: WhatProps) {
+  // States
   const [descriptions, setDescriptions] = useState<Description[]>([]);
   const [selectedCrimeGroups, setSelectedCrimeGroups] = useState<string[]>([]);
   const [selectedCrimeTypes, setSelectedCrimeTypes] = useState<string[]>([]);
@@ -43,6 +48,8 @@ export default function What({
   const [filterViolentCrimes, setFilterViolentCrimes] = useState(false);
   const [filterTopCrimes, setFilterTopCrimes] = useState(false);
 
+  // Functions
+  // Function to filter by top or violent crimes
   const filterByTopOrViolentCrimes = useCallback(
     async (
       field: string,
@@ -51,6 +58,8 @@ export default function What({
     ) => {
       if (categoryTable && !showAll) {
         if (field === "top_crime") {
+          // Query the categories table for all categories where top_crime = 'Yes'
+          // Then build a where clause to filter the main crimes layer
           await categoryTable
             .queryFeatures({
               where: `${field} = 'Yes'`,
@@ -68,15 +77,43 @@ export default function What({
               onWhereChange(whereClause);
             });
         } else if (field === "violent_crime") {
+          // Violent crimes are hard-coded since there is no field in the categories table
           onWhereChange(
             "crime_code in ('11','12','13','17A','20A','20B','25G')"
           );
         }
       } else {
+        // Show all crimes
         onWhereChange("1=1");
       }
     },
     [onWhereChange]
+  );
+
+  // Handle tile selection for crime groups
+  const tileSelected = (
+    event: TargetedEvent<HTMLCalciteTileGroupElement, void>
+  ) => {
+    const selectedTiles = event.target.selectedItems;
+    const newSelectedCrimeGroups = Array.from(selectedTiles).map(
+      (tile) => tile.dataset.crimeGroup as string
+    );
+    setSelectedCrimeGroups(newSelectedCrimeGroups);
+
+    // Always get ALL crime types for ALL selected groups
+    const crimeTypes = categories
+      .filter((category) =>
+        newSelectedCrimeGroups.includes(category.attributes.crime_group)
+      )
+      .map((category) => category.attributes.crime_category);
+    setSelectedCrimeTypes(crimeTypes);
+    // Provide to parent
+    onCrimeTypeChange(crimeTypes);
+  };
+
+  // Gather all selected descriptions for filtering
+  const allSelectedDescriptions = descriptions.flatMap(
+    (desc) => groupSelections[desc.group] ?? []
   );
 
   // Filter allDescriptions by selectedCrimeGroups
@@ -108,58 +145,25 @@ export default function What({
     });
   }, [selectedCrimeGroups, allDescriptions]);
 
-  const tileSelected = (
-    event: TargetedEvent<HTMLCalciteTileGroupElement, void>
-  ) => {
-    const selectedTiles = event.target.selectedItems;
-    const newSelectedCrimeGroups = Array.from(selectedTiles).map(
-      (tile) => tile.dataset.crimeGroup as string
-    );
-    setSelectedCrimeGroups(newSelectedCrimeGroups);
-
-    // Always get ALL crime types for ALL selected groups
-    const crimeTypes = categories
-      .filter((category) =>
-        newSelectedCrimeGroups.includes(category.attributes.crime_group)
-      )
-      .map((category) => category.attributes.crime_category);
-    setSelectedCrimeTypes(crimeTypes);
-
-    onCrimeTypeChange(crimeTypes);
-  };
-
-  // Gather all selected descriptions for filtering
-  const allSelectedDescriptions = descriptions.flatMap(
-    (desc) => groupSelections[desc.group] ?? []
-  );
-
   // Compute the where clause and provide it to the parent
   useEffect(() => {
-    let whereClause = "1=1";
-
-    // if (filterViolentCrimes) {
-    //   whereClause = `crime_code in ('11','12','13','17A','20A','20B','25G')`;
-    // } else {
     if (allSelectedDescriptions.length > 0) {
-      whereClause = `upper(crime_description) IN ('${allSelectedDescriptions
-        .join("','")
-        .toUpperCase()}')`;
-      onWhereChange(whereClause);
+      // If any descriptions are selected, filter by them
+      onWhereChange(
+        `upper(crime_description) IN ('${allSelectedDescriptions
+          .join("','")
+          .toUpperCase()}')`
+      );
     } else if (selectedCrimeGroups.length > 0) {
-      whereClause = `crime_category IN ('${selectedCrimeTypes.join("','")}')`;
-      onWhereChange(whereClause);
+      // If no descriptions are selected but groups are, filter by all types in those groups
+      onWhereChange(`crime_category IN ('${selectedCrimeTypes.join("','")}')`);
     } else if (filterViolentCrimes) {
+      // If no groups or descriptions are selected but violent crimes filter is on, filter by violent crimes
       filterByTopOrViolentCrimes("violent_crime", false, categoryTable);
     } else if (filterTopCrimes) {
+      // If no groups or descriptions are selected but top crimes filter is on, filter by top crimes
       filterByTopOrViolentCrimes("top_crime", false, categoryTable);
     }
-    //}
-    // else {
-    //   whereClause = "1=1";
-    // }
-    //if (whereClause !== "1=1") {
-    // onWhereChange(whereClause);
-    //}
   }, [
     allSelectedDescriptions,
     selectedCrimeGroups,
@@ -202,10 +206,10 @@ export default function What({
             style={{
               position: "sticky",
               top: 0,
-              background: "var(--calcite-ui-foreground-2)",
+              background: "var(--calcite-color-foreground-2)",
               zIndex: 2,
-              marginTop: "1rem",
-              marginBottom: "1rem",
+              paddingTop: "1rem",
+              paddingBottom: "1rem",
 
               display: "flex",
               justifyContent: "space-evenly",
@@ -217,15 +221,20 @@ export default function What({
                 label="Violent Crimes"
                 checked={filterViolentCrimes}
                 oncalciteSwitchChange={async (event) => {
+                  // If violent crimes is checked, uncheck top crimes
                   setFilterViolentCrimes(event.target.checked);
+                  // Clear any selected groups or descriptions
+                  setSelectedCrimeGroups([]);
+                  setSelectedCrimeTypes([]);
+                  setDescriptions([]);
+                  // If violent crimes is being checked, uncheck top crimes
                   if (event.target.checked) {
                     setFilterTopCrimes(false);
-                  } else {
-                    setSelectedCrimeGroups([]);
-                    setSelectedCrimeTypes([]);
-                    setDescriptions([]);
                   }
+                  // Provide to parent
                   onViolentCrimeFilterChange(event.target.checked);
+
+                  // Apply the filter
                   await filterByTopOrViolentCrimes(
                     "violent_crime",
                     !event.target.checked && !filterTopCrimes,
@@ -243,16 +252,20 @@ export default function What({
                   async (
                     event: TargetedEvent<HTMLCalciteSwitchElement, void>
                   ) => {
+                    // If top crimes is checked, uncheck violent crimes
                     setFilterTopCrimes(event.target.checked);
+                    // Clear any selected groups or descriptions
+                    setSelectedCrimeGroups([]);
+                    setSelectedCrimeTypes([]);
+                    setDescriptions([]);
+                    // If top crimes is being checked, uncheck violent crimes
                     if (event.target.checked) {
                       setFilterViolentCrimes(false);
-                    } else {
-                      setSelectedCrimeGroups([]);
-                      setSelectedCrimeTypes([]);
-                      setDescriptions([]);
                     }
+                    // Provide to parent
                     onTopCrimeFilterChange(event.target.checked);
 
+                    // Apply the filter
                     await filterByTopOrViolentCrimes(
                       "top_crime",
                       !event.target.checked && !filterViolentCrimes,
@@ -270,10 +283,19 @@ export default function What({
               Top Crimes
             </calcite-label>
           </div>
-          <calcite-alert open={filterViolentCrimes} label={""} kind="warning" icon="exclamation-mark-triangle-f" autoClose autoCloseDuration="medium">
+          <calcite-alert
+            open={filterViolentCrimes}
+            label={""}
+            kind="warning"
+            icon="exclamation-mark-triangle-f"
+            autoClose
+            autoCloseDuration="medium"
+          >
             <div slot="title">Sex Offenses Not Shown on Map</div>
-            <div slot="message">Due to privacy concerns, this category is excluded from the map.</div>
-          </calcite-alert>          
+            <div slot="message">
+              Due to privacy concerns, this category is excluded from the map.
+            </div>
+          </calcite-alert>
           <calcite-tile-group
             label="label"
             selection-mode="multiple"
@@ -308,7 +330,6 @@ export default function What({
               </calcite-tile>
             ))}
           </calcite-tile-group>
-
         </calcite-flow-item>
         {showDescriptionFilter && (
           <calcite-flow-item

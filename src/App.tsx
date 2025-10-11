@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import "./App.css";
 import "@esri/calcite-components";
 
+// Import the map components
 import "@arcgis/map-components/dist/components/arcgis-map";
 import "@arcgis/map-components/dist/components/arcgis-layer-list";
 import "@arcgis/map-components/dist/components/arcgis-search";
@@ -12,8 +13,11 @@ import "@arcgis/map-components/dist/components/arcgis-expand";
 import "@arcgis/map-components/dist/components/arcgis-locate";
 import "@arcgis/map-components/dist/components/arcgis-feature-table";
 import "@arcgis/map-components/dist/components/arcgis-placement";
+
+// Import the chart component
 import "@arcgis/charts-components/dist/components/arcgis-chart";
 
+// Import calcite components
 import "@esri/calcite-components/components/calcite-shell";
 import "@esri/calcite-components/components/calcite-shell-panel";
 import "@esri/calcite-components/components/calcite-panel";
@@ -34,30 +38,27 @@ import "@esri/calcite-components/components/calcite-action";
 import "@esri/calcite-components/components/calcite-dropdown";
 import "@esri/calcite-components/components/calcite-dropdown-group";
 import "@esri/calcite-components/components/calcite-dropdown-item";
-
 import "@esri/calcite-components/components/calcite-action-bar";
 import "@esri/calcite-components/components/calcite-action-group";
 import "@esri/calcite-components/components/calcite-action";
-
 import "@esri/calcite-components/components/calcite-select";
 import "@esri/calcite-components/components/calcite-option";
-
 import "@esri/calcite-components/components/calcite-switch";
-
 import "@esri/calcite-components/components/calcite-alert";
 
-//import Geometry from "@arcgis/core/geometry/Geometry";
 import type { TargetedEvent } from "@esri/calcite-components";
+
+// Import custom components
 import What from "./What";
 import When from "./When";
 import Where from "./Where";
 import DataDictionary from "./DataDictionary";
 import Disclaimer from "./Disclaimer";
 import FilterSegmentedControl from "./FilterSegmentedControl";
-//import { useSearchParams } from "react-router-dom";
-import Collection from "@arcgis/core/core/Collection";
 import Definitions from "./Definitions";
 
+// ArcGIS SDK imports
+import Collection from "@arcgis/core/core/Collection";
 import LocatorSearchSource from "@arcgis/core/widgets/Search/LocatorSearchSource";
 
 // Description type
@@ -66,9 +67,8 @@ type Description = {
   descriptions: { description: string; count: number }[];
 };
 
+// Main App component
 function App() {
-  // const [searchParams, setSearchParams] = useSearchParams();
-
   const [whereClause, setWhereClause] = useState("1=1");
   const [whenClause, setWhenClause] = useState("CURRENT_TIMESTAMP - 90");
   const [combinedWhere, setCombinedWhere] = useState("1=1");
@@ -180,15 +180,6 @@ function App() {
     }
 
     updateCategories("1=1");
-    // const where = searchParams.get('where');
-    // const geometry = searchParams.get('geometry');
-    // if (geometry) {
-    //   setFilterGeometry(Geometry.fromJSON(geometry));
-    // }
-
-    // if (where) {
-    //   setCombinedWhere(where);
-    // }
   };
 
   const updateCategories = async (where: string) => {
@@ -367,19 +358,6 @@ function App() {
         arcgisFeatureTable.current.refresh();
       }
     }
-    // if (geometryFilter) {
-    //   searchParams.set("geometry", JSON.stringify(geometryFilter.toJSON()));
-    //   setSearchParams(searchParams);
-    // } else {
-    //   searchParams.delete("geometry");
-    //   setSearchParams(searchParams);
-    // }
-    // if (combinedWhere !== '1=1') {
-    //   searchParams.set("where", combinedWhere);
-    // } else {
-    //   searchParams.delete("where");
-    //   setSearchParams(searchParams);
-    // }
   }, [combinedWhere, geometryFilter]);
   // If map or table turns on, hide charts
   useEffect(() => {
@@ -617,18 +595,6 @@ function App() {
                 open={showFilter}
               />
             </div>
-            {/* {isMobile && (
-              <div slot="footer">
-                <calcite-fab
-                  scale="l"
-                  icon="filter"
-                  kind="brand"
-                  textEnabled
-                  text={showFilter ? "Hide Filters" : "Show Filters"}
-                  onClick={() => setShowFilter((prev) => !prev)}
-                ></calcite-fab>
-              </div>
-            )} */}
           </calcite-panel>
         </calcite-shell-panel>
         <div
@@ -664,11 +630,6 @@ function App() {
                     model={selectedChart}
                     legendPosition={isMobile ? "bottom" : "right"}
                   ></arcgis-chart>
-                  {/* <arcgis-chart
-                    view={arcgisMap.current.view}
-                    layer={incidentsLayer.current}
-                    model={incidentsLayer.current.charts[1]}
-                  ></arcgis-chart> */}
                 </>
               )}
           </calcite-panel>

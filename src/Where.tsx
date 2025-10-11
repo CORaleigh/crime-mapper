@@ -154,6 +154,7 @@ export default function Where({
   ) => {
     if (!arcgisMap) return;
     if (event.detail.numResults === 0) return;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     graphic.current = (event.detail.results[0]?.results[0] as any)?.feature;
     if (!graphic.current) return;
 
