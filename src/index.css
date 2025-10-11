@@ -17,13 +17,15 @@ body {
   --calcite-tab-content-space-y: 0px;
   --calcite-internal-tile-spacing: 0;
   --calcite-action-bar-background-color: #0e426b;
-  --calcite-color-text-hover:#fff
+  --calcite-color-text-hover:#fff;
     --calcite-action-text-color: #ffffff;
     --calcite-button-text-color: #ffffff;
-
+--calcite-fab-shadow: 4px 6px 8px rgba(0, 0, 0, 0.6);
   height: 100%;
   width: 100%;
 } 
+
+calcite
 
 calcite-action[active] {
   background-color: var(--calcite-color-brand);
@@ -65,6 +67,8 @@ calcite-navigation {
   --calcite-action-text-color: #ffffff;
   --calcite-action-text-color-press: #ffffff;
 }
+
+
 
 /* calcite-dialog {
   --calcite-panel-header-background-color: var(--calcite-color-secondary);
