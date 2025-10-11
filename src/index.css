@@ -9,30 +9,39 @@ body {
   --calcite-color-brand-hover: #007ab8;
   --calcite-color-brand-active: #11233f;
   --calcite-color-brand-focus: #007ab8;
-  --calcite-color-brand-pressed: #11233f;
+  --calcite-color-brand-press: #E4CA85;
   --calcite-color-secondary: #E4CA85;
   --calcite-navigation-background-color: #11233f;
-  --calcite-navigation-logo-text-color: #ffffff;
   --calcite-navigation-logo-heading-text-color: #ffffff;
   --calcite-action-background-color: transparent;
   --calcite-tab-content-space-y: 0px;
   --calcite-internal-tile-spacing: 0;
-
   --calcite-action-bar-background-color: #0e426b;
-  
+  --calcite-color-text-hover:#fff
+    --calcite-action-text-color: #ffffff;
+    --calcite-button-text-color: #ffffff;
+
   height: 100%;
   width: 100%;
 } 
 
+calcite-action[active] {
+  background-color: var(--calcite-color-brand);
+  --calcite-action-text-color-press: #11233f;
+}
+
+calcite-action[active]:hover {
+  background-color: var(--calcite-color-brand);
+  --calcite-action-text-color-press: #fff;
+}
 
 calcite-action {
-  --calcite-action-background-color: transparent;
   --calcite-action-background-color-hover: var(--calcite-color-brand-hover);
-  --calcite-action-background-color-press: var(--calcite-color-brand-pressed);
+  --calcite-action-background-color-press: var(--calcite-color-brand-press);
   --calcite-action-background-color-focus: var(--calcite-color-brand-focus);
   --calcite-action-text-color: #ffffff;
   --calcite-action-text-color-hover: #ffffff;
-  --calcite-action-text-color-press: #11233f;
+  --calcite-action-text-color-press: #FFF;
   --calcite-action-text-color-focus: #ffffff;
   --calcite-action-background-color-press: #E4CA85;
 
@@ -173,6 +182,8 @@ arcgis-feature-table.show-table.show-map {
 .tile-icon img {
   max-width: 80px;
   height: auto;
+  filter: drop-shadow(4px 6px 8px rgba(0, 0, 0, 0.6));
+
 }
 
 .tile-text {

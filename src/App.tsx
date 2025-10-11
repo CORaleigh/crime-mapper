@@ -67,8 +67,9 @@ type Description = {
   descriptions: { description: string; count: number }[];
 };
 
-// Main App component
 function App() {
+  // const [searchParams, setSearchParams] = useSearchParams();
+
   const [whereClause, setWhereClause] = useState("1=1");
   const [whenClause, setWhenClause] = useState("CURRENT_TIMESTAMP - 90");
   const [combinedWhere, setCombinedWhere] = useState("1=1");
