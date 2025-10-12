@@ -19,13 +19,13 @@ body {
   --calcite-action-bar-background-color: #0e426b;
   --calcite-color-text-hover:#fff;
     --calcite-action-text-color: #ffffff;
-    --calcite-button-text-color: #ffffff;
+    --calcite-button-text-color-hover: #ffffff;
 --calcite-fab-shadow: 4px 6px 8px rgba(0, 0, 0, 0.6);
   height: 100%;
   width: 100%;
 } 
 
-calcite
+
 
 calcite-action[active] {
   background-color: var(--calcite-color-brand);
