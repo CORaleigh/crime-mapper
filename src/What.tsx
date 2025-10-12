@@ -56,6 +56,7 @@ export default function What({
       showAll: boolean,
       categoryTable: __esri.FeatureLayer
     ) => {
+      
       if (categoryTable && !showAll) {
         if (field === "top_crime") {
           // Query the categories table for all categories where top_crime = 'Yes'
@@ -84,6 +85,7 @@ export default function What({
         }
       } else {
         // Show all crimes
+        
         onWhereChange("1=1");
       }
     },
@@ -163,6 +165,8 @@ export default function What({
     } else if (filterTopCrimes) {
       // If no groups or descriptions are selected but top crimes filter is on, filter by top crimes
       filterByTopOrViolentCrimes("top_crime", false, categoryTable);
+    } else {
+      onWhereChange("1=1");
     }
   }, [
     allSelectedDescriptions,
