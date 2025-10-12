@@ -93,7 +93,7 @@ export default function Where({
     if (!arcgisMap || !arcgisMap.view || !arcgisMap.view.map) return;
     let sketchLayer = arcgisMap.view.map.findLayerById("sketch-layer");
     if (!sketchLayer) {
-      sketchLayer = new GraphicsLayer({ id: "sketch-layer", listMode: "hide", blendMode: "destination-in" });
+      sketchLayer = new GraphicsLayer({ id: "sketch-layer", listMode: "hide" });
       arcgisMap.view.map.add(sketchLayer, arcgisMap.view.map.layers.length + 1);
     }
     return sketchLayer as __esri.GraphicsLayer;

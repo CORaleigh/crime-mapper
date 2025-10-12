@@ -12,7 +12,6 @@ import "@arcgis/map-components/dist/components/arcgis-legend";
 import "@arcgis/map-components/dist/components/arcgis-expand";
 import "@arcgis/map-components/dist/components/arcgis-locate";
 import "@arcgis/map-components/dist/components/arcgis-feature-table";
-import "@arcgis/map-components/dist/components/arcgis-placement";
 
 // Import the chart component
 import "@arcgis/charts-components/dist/components/arcgis-chart";
@@ -384,10 +383,10 @@ function App() {
 
   const arcgisMapEl = (
     <arcgis-map
-      ref={arcgisMap}
       itemId="8a9abcc6b1bd4b6492923810c88cc879"
       onarcgisViewReadyChange={handleViewReady}
       className="map-panel"
+      ref={arcgisMap}
     >
       <arcgis-expand position="top-right" group="top-right" label="Search">
         <arcgis-search
