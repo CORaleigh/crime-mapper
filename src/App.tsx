@@ -1,5 +1,3 @@
-import { useEffect, useRef, useState, useCallback } from "react";
-
 import "./App.css";
 import "@esri/calcite-components";
 
@@ -12,6 +10,7 @@ import "@arcgis/map-components/dist/components/arcgis-legend";
 import "@arcgis/map-components/dist/components/arcgis-expand";
 import "@arcgis/map-components/dist/components/arcgis-locate";
 import "@arcgis/map-components/dist/components/arcgis-feature-table";
+import "@arcgis/map-components/components/arcgis-basemap-toggle";
 
 // Import the chart component
 import "@arcgis/charts-components/dist/components/arcgis-chart";
@@ -39,13 +38,11 @@ import "@esri/calcite-components/components/calcite-dropdown-group";
 import "@esri/calcite-components/components/calcite-dropdown-item";
 import "@esri/calcite-components/components/calcite-action-bar";
 import "@esri/calcite-components/components/calcite-action-group";
-import "@esri/calcite-components/components/calcite-action";
 import "@esri/calcite-components/components/calcite-select";
 import "@esri/calcite-components/components/calcite-option";
 import "@esri/calcite-components/components/calcite-switch";
 import "@esri/calcite-components/components/calcite-alert";
-
-import type { TargetedEvent } from "@esri/calcite-components";
+import "@esri/calcite-components/components/calcite-sheet";
 
 // Import custom components
 import What from "./What";
@@ -60,326 +57,51 @@ import Definitions from "./Definitions";
 import Collection from "@arcgis/core/core/Collection";
 import LocatorSearchSource from "@arcgis/core/widgets/Search/LocatorSearchSource";
 
-// Description type
-type Description = {
-  group: string;
-  descriptions: { description: string; count: number }[];
-};
+// Import the custom hook
+import { useApp } from "./useApp";
 
 function App() {
-  // const [searchParams, setSearchParams] = useSearchParams();
-
-  const [whereClause, setWhereClause] = useState("1=1");
-  const [whenClause, setWhenClause] = useState("CURRENT_TIMESTAMP - 90");
-  const [combinedWhere, setCombinedWhere] = useState("1=1");
-  const [geometryFilter, setFilterGeometry] = useState<__esri.Geometry | null>(
-    null
-  );
-  const [showMap, setShowMap] = useState(true);
-  const [showTable, setShowTable] = useState(false);
-  const [showFilter, setShowFilter] = useState(true);
-  const [showCharts, setShowCharts] = useState(false);
-
-  const [selectedChart, setSelectedChart] = useState(undefined);
-
-  const [categories, setCategories] = useState<__esri.Graphic[]>([]);
-
-  const [allDescriptions, setAllDescriptions] = useState<Description[]>([]);
-  const [selectedSegment, setSelectedSegment] = useState("what");
-  const arcgisMap = useRef<HTMLArcgisMapElement>(null);
-  const arcgisFeatureTable = useRef<HTMLArcgisFeatureTableElement>(null);
-
-  const [showDataDictionary, setShowDataDictionary] = useState(false);
-  const [showDefinitions, setShowDefinitions] = useState(false);
-
-  const [showDisclaimer, setShowDisclaimer] = useState(true);
-
-  const incidentsLayer = useRef<__esri.FeatureLayer | null>(null);
-
-  const crimeTypes = useRef<string[]>([]);
-
-  const [showViolentCrimeOnly, setShowViolentCrimeOnly] = useState(false);
-
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== "undefined" ? window.innerWidth >= 900 : false
-  );
-
-  useEffect(() => {
-    const handleResize = () => {
-      const isMobileView = window.innerWidth < 900;
-      setIsMobile(isMobileView);
-      setShowFilter(!isMobileView);
-    };
-
-    handleResize(); // call once to initialize
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const handleTableReady = (
-    event: TargetedEvent<HTMLArcgisFeatureTableElement>
-  ) => {
-    event.target.tableTemplate = {
-      columnTemplates: [
-        {
-          type: "field",
-          fieldName: "case_number",
-        },
-        {
-          type: "field",
-          fieldName: "crime_category",
-          label: "Crime Category",
-        },
-        {
-          type: "field",
-          fieldName: "crime_code",
-        },
-        {
-          type: "field",
-          fieldName: "crime_description",
-        },
-
-        {
-          type: "field",
-          fieldName: "crime_type",
-        },
-        {
-          type: "field",
-          fieldName: "reported_block_address",
-        },
-        {
-          type: "field",
-          fieldName: "city",
-        },
-        {
-          type: "field",
-          fieldName: "district",
-        },
-        {
-          type: "field",
-          fieldName: "reported_date",
-        },
-        {
-          type: "field",
-          fieldName: "reported_dayofwk",
-        },
-      ],
-    } as __esri.TableTemplate;
-  };
-  const handleViewReady = async (
-    event: TargetedEvent<HTMLArcgisMapElement, void>
-  ) => {
-    const view = await event.target.view.when();
-    const layer = view.map.allLayers.find(
-      (layer: __esri.Layer) => layer.title === "Incidents"
-    ) as __esri.FeatureLayer;
-
-    incidentsLayer.current = layer as __esri.FeatureLayer;
-    if (layer && layer.charts && layer.charts.length > 0) {
-      setSelectedChart(layer.charts[0]);
-    }
-
-    updateCategories("1=1");
-  };
-
-  const updateCategories = async (where: string) => {
-    const table = arcgisMap.current?.view.map?.allTables.getItemAt(0);
-    if (table?.type === "feature") {
-      const results = await (table as __esri.FeatureLayer).queryFeatures({
-        where: where,
-        returnGeometry: false,
-        outFields: ["*"],
-        orderByFields: ["crime_group", "crime_category"],
-      });
-      setCategories(results.features);
-    }
-  };
-
-  const toTitleCase = (str: string) => {
-    return str
-      .toLowerCase()
-      .split(" ")
-      .map((word) => {
-        // Capitalize after slash as well
-        return word
-          .split("/")
-          .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-          .join("/");
-      })
-      .join(" ");
-  };
-
-  const fetchAllDescriptions = useCallback(async () => {
-    if (!arcgisMap.current) return;
-    if (!arcgisMap.current.ready) return;
-    const layer = arcgisMap.current.view.map?.allLayers.find(
-      (layer) => layer.title === "Incidents"
-    ) as __esri.FeatureLayer | undefined;
-    if (!layer) return;
-
-    const where = showViolentCrimeOnly
-      ? `crime_code in ('11','12','13','17A','20A','20B','25G')`
-      : Array.isArray(crimeTypes.current) && crimeTypes.current.length > 0
-      ? `crime_category IN ('${crimeTypes.current.join(
-          "', '"
-        )}') and ${whenClause}`
-      : "1=1";
-
-    const results = await (layer as __esri.FeatureLayer).queryFeatures({
-      returnDistinctValues: true,
-      outFields: ["crime_category", "crime_description"],
-      where: where,
-      geometry: geometryFilter,
-      orderByFields: ["crime_category", "crime_description"],
-    });
-
-    const countResults = await (layer as __esri.FeatureLayer).queryFeatures({
-      where: where,
-      returnGeometry: false,
-      outStatistics: [
-        {
-          statisticType: "count",
-          onStatisticField: "crime_description",
-          outStatisticFieldName: "description_count",
-        },
-      ],
-      groupByFieldsForStatistics: ["crime_description"],
-
-      outFields: ["description_count", "crime_description"],
-      orderByFields: ["crime_description"],
-    });
-
-    // Build a map of description to count
-    const descriptionCountMap: Record<string, number> = {};
-    countResults.features.forEach((f) => {
-      descriptionCountMap[f.attributes.crime_description] =
-        f.attributes.description_count;
-    });
-
-    // Map crime_category to its group
-    const categoryToGroup: Record<string, string> = {};
-    categories.forEach((category) => {
-      categoryToGroup[category.attributes.crime_category] =
-        category.attributes.crime_group;
-    });
-
-    // Group descriptions by group, and include counts
-    const groupDescriptions: Record<
-      string,
-      { description: string; count: number }[]
-    > = {};
-    results.features.forEach((feature) => {
-      const { crime_category, crime_description } = feature.attributes;
-      const group = categoryToGroup[crime_category];
-      if (!group) return;
-      if (!groupDescriptions[group]) {
-        groupDescriptions[group] = [];
-      }
-      const desc = toTitleCase(crime_description);
-      const count = descriptionCountMap[crime_description] ?? 0;
-      // Avoid duplicates
-      if (!groupDescriptions[group].some((d) => d.description === desc)) {
-        groupDescriptions[group].push({ description: desc, count });
-      }
-    });
-
-    // Convert to desired array format, now with counts
-    const result: {
-      group: string;
-      descriptions: { description: string; count: number }[];
-    }[] = Object.entries(groupDescriptions).map(([group, descArr]) => ({
-      group,
-      descriptions: descArr.sort((a, b) =>
-        a.description.localeCompare(b.description)
-      ),
-    }));
-
-    setAllDescriptions(result.filter((item) => item.descriptions.length > 0));
-  }, [showViolentCrimeOnly, whenClause, geometryFilter, categories]);
-  const handleDescriptionShow = (show: boolean) => {
-    if (show) {
-      //if (categories.length > 0) {
-
-      fetchAllDescriptions();
-      //}
-    }
-  };
-
-  useEffect(() => {
-    if (selectedSegment === "what") {
-      fetchAllDescriptions();
-    }
-  }, [fetchAllDescriptions, selectedSegment]);
-
-  const handleCrimeTypeChange = (types: string[]) => {
-    if (types.length > 0) {
-      crimeTypes.current = types;
-    }
-  };
-  // Combine the two where clauses
-  useEffect(() => {
-    const combined =
-      [whereClause, whenClause].filter((c) => c !== "1=1").join(" AND ") ||
-      "1=1";
-    setCombinedWhere(combined);
-  }, [whereClause, whenClause]);
-
-  // Apply the combined where clause to the map
-  useEffect(() => {
-    if (!arcgisMap.current) return;
-    if (!arcgisFeatureTable.current) if (!arcgisMap.current.ready) return;
-    const layerView = arcgisMap.current?.layerViews.find(
-      (layerView) => layerView.layer.title === "Incidents"
-    );
-    if (layerView && layerView.layer.type === "feature") {
-      (layerView as __esri.FeatureLayerView).filter = {
-        where: combinedWhere,
-        geometry: geometryFilter,
-      };
-      if (arcgisFeatureTable.current?.layerView) {
-        (
-          arcgisFeatureTable.current.layerView as __esri.FeatureLayerView
-        ).filter = {
-          where: combinedWhere,
-          geometry: geometryFilter,
-        };
-        (
-          arcgisFeatureTable.current.layer as __esri.FeatureLayer
-        ).definitionExpression = combinedWhere;
-        arcgisFeatureTable.current.filterGeometry =
-          geometryFilter as unknown as
-            | __esri.Extent
-            | __esri.Multipoint
-            | __esri.Point
-            | __esri.Polygon
-            | __esri.Polyline
-            | __esri.Mesh
-            | null;
-        arcgisFeatureTable.current.refresh();
-      }
-    }
-  }, [combinedWhere, geometryFilter]);
-  // If map or table turns on, hide charts
-  useEffect(() => {
-    if (showMap || showTable) {
-      setShowCharts(false);
-    }
-  }, [showMap, showTable]);
-
-  // If charts turn on, hide map and table
-  useEffect(() => {
-    if (showCharts) {
-      setShowMap(false);
-      setShowTable(false);
-    }
-  }, [showCharts]);
-
-  // If none are active, default to showing the map
-  useEffect(() => {
-    if (!showMap && !showTable && !showCharts) {
-      setShowMap(true);
-    }
-  }, [showMap, showTable, showCharts]);
+  const {
+    showFilter,
+    setShowFilter,
+    showMap,
+    setShowMap,
+    showTable,
+    setShowTable,
+    showCharts,
+    setShowCharts,
+    showDataDictionary,
+    setShowDataDictionary,
+    showDefinitions,
+    setShowDefinitions,
+    showDisclaimer,
+    setShowDisclaimer,
+    showSettings,
+    setShowSettings,
+    saveSearch,
+    selectedSegment,
+    setSelectedSegment,
+    selectedChart,
+    categories,
+    allDescriptions,
+    isMobile,
+    darkTheme,
+    arcgisMap,
+    arcgisFeatureTable,
+    incidentsLayer,
+    handleTableReady,
+    handleViewReady,
+    handleDescriptionShow,
+    handleCrimeTypeChange,
+    setWhereClause,
+    setWhenClause,
+    setFilterGeometry,
+    chartSelected,
+    handleViolentCrimeFilterChange,
+    handleTopCrimeFilterChange,
+    handleSaveSearchSettingsChange,
+    handleThemeChange,
+  } = useApp();
 
   const arcgisMapEl = (
     <arcgis-map
@@ -388,26 +110,29 @@ function App() {
       className="map-panel"
       ref={arcgisMap}
     >
-      <arcgis-expand position="top-right" group="top-right" label="Search">
+      <arcgis-expand slot="top-right" group="top-right" label="Search">
         <arcgis-search
           includeDefaultSourcesDisabled
-          sources={new Collection([
-            new LocatorSearchSource({
-              url: "https://maps.raleighnc.gov/arcgis/rest/services/Locators/Locator/GeocodeServer",
-              placeholder: "Search by address",
-              maxResults: 6,
-            })  ,
-          ])}
+          sources={
+            new Collection([
+              new LocatorSearchSource({
+                url: "https://maps.raleighnc.gov/arcgis/rest/services/Locators/Locator/GeocodeServer",
+                placeholder: "Search by address",
+                maxResults: 6,
+              }),
+            ])
+          }
         />
       </arcgis-expand>
-      <arcgis-zoom position="top-left" />
-      <arcgis-locate position="top-left" />
-      <arcgis-expand position="top-right" group="top-right" label="Layers">
+      <arcgis-zoom slot="top-left" />
+      <arcgis-locate slot="top-left" />
+      <arcgis-expand slot="top-right" group="top-right" label="Layers">
         <arcgis-layer-list visibilityAppearance="checkbox" />
       </arcgis-expand>
-      <arcgis-expand position="top-right" group="top-right" label="Legend">
+      <arcgis-expand slot="top-right" group="top-right" label="Legend">
         <arcgis-legend />
       </arcgis-expand>
+      <arcgis-basemap-toggle slot="bottom-right" />
     </arcgis-map>
   );
 
@@ -450,12 +175,6 @@ function App() {
       )}
     </>
   );
-
-  const chartSelected = (
-    event: TargetedEvent<HTMLCalciteSelectElement, void>
-  ) => {
-    setSelectedChart(event.target.selectedOption.value);
-  };
 
   return (
     <>
@@ -548,6 +267,14 @@ function App() {
                 onClick={() => setShowCharts((prev) => !prev)}
               ></calcite-action>
             </calcite-action-group>
+            <calcite-action-group slot="actions-end" menuPlacement="bottom-end">
+              <calcite-action
+                icon="gear"
+                textEnabled
+                text="Settings"
+                onClick={() => setShowSettings((prev) => !prev)}
+              ></calcite-action>
+            </calcite-action-group>
           </calcite-action-bar>
           <FilterSegmentedControl
             selectedSegment={selectedSegment}
@@ -564,18 +291,15 @@ function App() {
                 isMobile={isMobile}
                 onFilterPanelClose={() => setShowFilter(false)}
                 open={showFilter}
-                onViolentCrimeFilterChange={(show: boolean) => {
-                  updateCategories(show ? "violent_crime = 'Yes'" : "1=1");
-                  setShowViolentCrimeOnly(show);
-                }}
-                onTopCrimeFilterChange={(show: boolean) => {
-                  updateCategories(show ? "top_crime = 'Yes'" : "1=1");
-                }}
+                onViolentCrimeFilterChange={handleViolentCrimeFilterChange}
+                onTopCrimeFilterChange={handleTopCrimeFilterChange}
                 categoryTable={
                   arcgisMap.current?.view.map?.allTables.getItemAt(
                     0
                   ) as __esri.FeatureLayer
                 }
+                incidentsLayer={incidentsLayer.current}
+                arcgisMap={arcgisMap.current}
               />
             </div>
             <div hidden={selectedSegment !== "when"}>
@@ -593,6 +317,7 @@ function App() {
                 isMobile={isMobile}
                 onFilterPanelClose={() => setShowFilter(false)}
                 open={showFilter}
+                incidentsLayer={incidentsLayer.current}
               />
             </div>
           </calcite-panel>
@@ -647,6 +372,49 @@ function App() {
         open={showDisclaimer}
         onClose={() => setShowDisclaimer(false)}
       />
+      <calcite-sheet
+        label={"Settings"}
+        open={showSettings}
+        displayMode="float"
+        position="block-end"
+      >
+        <calcite-panel
+          closable
+          heading="Settings"
+          oncalcitePanelClose={() => setShowSettings(false)}
+          closed={!showSettings}
+        >
+          <div style={{ padding: "1rem" }}>
+            <calcite-label layout="inline">
+              Theme
+              <calcite-icon icon="brightness"></calcite-icon>
+              <calcite-switch
+                label="Theme"
+                checked={darkTheme}
+                oncalciteSwitchChange={handleThemeChange}
+              />
+              <calcite-icon icon="moon"></calcite-icon>
+            </calcite-label>
+            <calcite-label layout="inline">
+              <calcite-switch
+                label="Save Filter to Local Storage"
+                checked={saveSearch}
+                oncalciteSwitchChange={handleSaveSearchSettingsChange}
+              />
+              Save Last Search
+            </calcite-label>
+            <calcite-button
+              width="auto"
+              color="danger"
+              onClick={() => {
+                localStorage.clear();
+              }}
+            >
+              Clear Local Storage
+            </calcite-button>
+          </div>
+        </calcite-panel>
+      </calcite-sheet>
     </>
   );
 }
