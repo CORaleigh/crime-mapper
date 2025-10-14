@@ -313,16 +313,26 @@ export const useApp = () => {
     }
   }, [showMap, showTable, showCharts]);
 
-  useEffect(() => {
-    
-    if (!darkTheme) {
-      document.body.classList.remove("calcite-mode-dark");
-      document.body.classList.add("calcite-mode-light");
+   useEffect(() => {
+console.log(darkTheme ? "dark" : "light")
+    // Remove previous theme
+    const oldLink = document.querySelector(`link[data-arcgis-theme]`);
+    if (oldLink) oldLink.remove();
 
-    } else {
-      document.body.classList.remove("calcite-mode-light");
-    }
-  }, []);
+    // ArcGIS CDN theme URLs (adjust version to match your SDK)
+    const href =
+      darkTheme
+        ? "https://js.arcgis.com/4.33/esri/themes/dark/main.css"
+        : "https://js.arcgis.com/4.33/esri/themes/light/main.css";
+
+    // Create <link> element
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = href;
+    link.dataset.arcgisTheme = darkTheme ? "dark" : "light";
+
+    document.head.appendChild(link);
+  }, [darkTheme]);
 
   const chartSelected = (
     event: TargetedEvent<HTMLCalciteSelectElement, void>
@@ -338,6 +348,9 @@ export const useApp = () => {
   const handleTopCrimeFilterChange = (show: boolean) => {
     updateCategories(show ? "top_crime = 'Yes'" : "1=1");
   };
+
+
+
 
   return {
     // State

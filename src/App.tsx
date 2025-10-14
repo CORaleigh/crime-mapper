@@ -110,7 +110,7 @@ function App() {
       className="map-panel"
       ref={arcgisMap}
     >
-      <arcgis-expand slot="top-right" group="top-right" label="Search">
+      <arcgis-expand position="top-right" group="top-right" label="Search">
         <arcgis-search
           includeDefaultSourcesDisabled
           sources={
@@ -124,15 +124,15 @@ function App() {
           }
         />
       </arcgis-expand>
-      <arcgis-zoom slot="top-left" />
-      <arcgis-locate slot="top-left" />
-      <arcgis-expand slot="top-right" group="top-right" label="Layers">
+      <arcgis-zoom position="top-left" />
+      <arcgis-locate position="top-left" />
+      <arcgis-expand position="top-right" group="top-right" label="Layers">
         <arcgis-layer-list visibilityAppearance="checkbox" />
       </arcgis-expand>
-      <arcgis-expand slot="top-right" group="top-right" label="Legend">
+      <arcgis-expand position="top-right" group="top-right" label="Legend">
         <arcgis-legend />
       </arcgis-expand>
-      <arcgis-basemap-toggle slot="bottom-right" />
+      <arcgis-basemap-toggle position="bottom-right" />
     </arcgis-map>
   );
 
