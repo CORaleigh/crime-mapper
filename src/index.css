@@ -17,7 +17,7 @@ body.calcite-mode-dark {
   --calcite-fab-shadow: 4px 6px 8px rgba(0, 0, 0, 0.6);
   --calcite-color-text-inverse: #11233f;
   --calcite-internal-button-text-color: #ffffff;
-  --calcite-button-text-color: #ffffff;
+  --calcite-button-text-color: #11233f;
 }
 
 body.calcite-mode-light {

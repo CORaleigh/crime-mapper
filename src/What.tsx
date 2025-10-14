@@ -1,7 +1,7 @@
 // (no direct React imports needed)
 import type { TargetedEvent } from "@esri/calcite-components";
 import { useWhat } from "./useWhat";
-import type { Description } from "./types";
+import { updateLocalStorage, type Description } from "./types";
 
 interface WhatProps {
   categories: __esri.Graphic[];
@@ -33,7 +33,7 @@ export default function What(props: WhatProps) {
     onTopCrimeFilterChange,
     categoryTable,
     incidentsLayer,
-    arcgisMap
+    arcgisMap,
   } = props;
 
   const {
@@ -59,7 +59,7 @@ export default function What(props: WhatProps) {
     incidentsLayer,
     onViolentCrimeFilterChange,
     onTopCrimeFilterChange,
-    arcgisMap
+    arcgisMap,
   });
 
   return (
@@ -80,14 +80,15 @@ export default function What(props: WhatProps) {
                 textEnabled
                 onClick={() => {
                   setSelectedCrimeGroups([]);
-                  localStorage.setItem(
+
+                  updateLocalStorage(
                     "crimeMapper.groupSelections",
                     JSON.stringify([])
-                  );      
-                  localStorage.setItem(
+                  );
+                  updateLocalStorage(
                     "crimeMapper.selectedCrimeGroups",
                     JSON.stringify([])
-                  );                       
+                  );
                 }}
               ></calcite-action>
             </div>
@@ -107,11 +108,11 @@ export default function What(props: WhatProps) {
             }}
           >
             <calcite-label layout="inline">
-                <calcite-switch
-                  label="Violent Crimes"
-                  checked={filterViolentCrimes}
-                  oncalciteSwitchChange={handleViolentCrimeSwitchChange}
-                />
+              <calcite-switch
+                label="Violent Crimes"
+                checked={filterViolentCrimes}
+                oncalciteSwitchChange={handleViolentCrimeSwitchChange}
+              />
               Violent Crimes
             </calcite-label>
             <calcite-label layout="inline">
@@ -166,7 +167,6 @@ export default function What(props: WhatProps) {
                 </div>
                 <div slot="content-bottom" className="tile-text">
                   <h3>{category.attributes.crime_group}</h3>
-
                 </div>
               </calcite-tile>
             ))}

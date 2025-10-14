@@ -348,12 +348,12 @@ function App() {
                       );
                     })}
                   </calcite-select>
-
                   <arcgis-chart
                     view={arcgisMap.current.view}
                     layer={incidentsLayer.current}
                     model={selectedChart}
-                    legendPosition={isMobile ? "bottom" : "right"}
+                    legendPosition="right"
+                    autoDisposeChart
                   ></arcgis-chart>
                 </>
               )}

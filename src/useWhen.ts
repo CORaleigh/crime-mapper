@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { updateLocalStorage } from "./types";
 
 export type Preset = "week" | "month" | "90days" | "";
 
@@ -51,13 +52,17 @@ interface UseWhenProps {
  * Custom hook that handles date filtering logic for the "When" filter.
  */
 export function useWhen({ onWhereChange }: UseWhenProps) {
-  const [preset, setPreset] = useState<Preset>("90days");
+  const [preset, setPreset] = useState<Preset>(() => {
+    const storedDateFilter = localStorage.getItem('crimeMapper.dateFilter');
+    return storedDateFilter ? storedDateFilter as Preset : '90days'
+  });
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [rangeError, setRangeError] = useState("");
 
   // Update dates when preset changes
   useEffect(() => {
+    updateLocalStorage("crimeMapper.dateFilter", preset);
     if (preset !== "") {
       const { start, end } = getPresetDates(preset);
       setStartDate(start);
@@ -99,6 +104,13 @@ export function useWhen({ onWhereChange }: UseWhenProps) {
 
     onWhereChange(where);
   }, [preset, startDate, endDate, onWhereChange]);
+
+  useEffect(() => {
+    const storedPreset = localStorage.getItem('crimeMapper.dateFilter');
+    if (storedPreset) {
+        setPreset(storedPreset as Preset);
+    }
+  },[]);
 
   return {
     preset,

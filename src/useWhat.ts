@@ -304,7 +304,7 @@ export function useWhat({
 
   // On mount, restore from localStorage
   useEffect(() => {
-    if (!incidentsLayer || !arcgisMap) return;
+    if (!incidentsLayer || !arcgisMap || categories.length === 0) return;
     (async () => {
       await arcgisMap?.whenLayerView(incidentsLayer as __esri.FeatureLayer);
       const violentCrimes =
@@ -316,11 +316,21 @@ export function useWhat({
       } else if (violentCrimes) {
         violentCrimeSelected(true);
       }
-      const selectedCrimeGroups = localStorage.getItem(
+      const storedCrimeGroups = localStorage.getItem(
         "crimeMapper.selectedCrimeGroups"
       );
-      if (selectedCrimeGroups) {
-        setSelectedCrimeGroups(JSON.parse(selectedCrimeGroups));
+      
+      if (storedCrimeGroups) {
+        setSelectedCrimeGroups(JSON.parse(storedCrimeGroups));
+        console.log(categories)
+        const crimeTypes = categories
+            .filter((c) =>
+            storedCrimeGroups.includes(c.attributes.crime_group)
+            )
+            .map((c) => c.attributes.crime_category);
+        console.log(storedCrimeGroups);
+
+        setSelectedCrimeTypes(crimeTypes);        
       }
       const groupSelections = localStorage.getItem(
         "crimeMapper.groupSelections"
@@ -329,7 +339,7 @@ export function useWhat({
         setGroupSelections(JSON.parse(groupSelections));
       }
     })();
-  }, [arcgisMap, incidentsLayer]);
+  }, [arcgisMap, incidentsLayer, categories]);
   return {
     // State
     descriptions,
