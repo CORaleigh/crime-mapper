@@ -339,7 +339,7 @@ export function useWhat({
         setGroupSelections(JSON.parse(groupSelections));
       }
     })();
-  }, [arcgisMap, incidentsLayer, categories]);
+  }, [arcgisMap, incidentsLayer, categories.length]);
   return {
     // State
     descriptions,

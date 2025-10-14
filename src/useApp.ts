@@ -45,6 +45,8 @@ export const useApp = () => {
   const arcgisMap = useRef<HTMLArcgisMapElement>(null);
   const arcgisFeatureTable = useRef<HTMLArcgisFeatureTableElement>(null);
   const incidentsLayer = useRef<__esri.FeatureLayer | null>(null);
+  const incidentsLayerView = useRef<__esri.FeatureLayerView | null>(null);
+
   const crimeTypes = useRef<string[]>([]);
 
   useEffect(() => {
@@ -87,7 +89,12 @@ export const useApp = () => {
     ) as __esri.FeatureLayer;
 
     incidentsLayer.current = layer as __esri.FeatureLayer;
+
     if (layer && layer.charts && layer.charts.length > 0) {
+      incidentsLayerView.current = (await event.target.whenLayerView(
+        layer
+      )) as __esri.FeatureLayerView;
+
       setSelectedChart(layer.charts[0]);
     }
 
@@ -270,16 +277,19 @@ export const useApp = () => {
         where: combinedWhere,
         geometry: geometryFilter,
       };
-      if (arcgisFeatureTable.current?.layerView) {
-        (
-          arcgisFeatureTable.current.layerView as __esri.FeatureLayerView
-        ).filter = {
+      if (incidentsLayerView.current && arcgisFeatureTable.current) {
+        incidentsLayerView.current.filter = {
           where: combinedWhere,
           geometry: geometryFilter,
         };
+        // (arcgisFeatureTable.current.layerView as __esri.FeatureLayerView).filter = {
+        //   where: combinedWhere,
+        //   geometry: geometryFilter,
+        // };
         (
           arcgisFeatureTable.current.layer as __esri.FeatureLayer
         ).definitionExpression = combinedWhere;
+
         arcgisFeatureTable.current.filterGeometry =
           geometryFilter as unknown as
             | __esri.Extent
@@ -313,26 +323,24 @@ export const useApp = () => {
     }
   }, [showMap, showTable, showCharts]);
 
-   useEffect(() => {
-console.log(darkTheme ? "dark" : "light")
-    // Remove previous theme
-    const oldLink = document.querySelector(`link[data-arcgis-theme]`);
-    if (oldLink) oldLink.remove();
+//   useEffect(() => {
+//     // Remove previous theme
+//     const oldLink = document.querySelector(`link[data-arcgis-theme]`);
+//     if (oldLink) oldLink.remove();
 
-    // ArcGIS CDN theme URLs (adjust version to match your SDK)
-    const href =
-      darkTheme
-        ? "https://js.arcgis.com/4.33/esri/themes/dark/main.css"
-        : "https://js.arcgis.com/4.33/esri/themes/light/main.css";
+//     // ArcGIS CDN theme URLs (adjust version to match your SDK)
+//     const href = darkTheme
+//       ? "https://js.arcgis.com/4.33/esri/themes/dark/main.css"
+//       : "https://js.arcgis.com/4.33/esri/themes/light/main.css";
 
-    // Create <link> element
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = href;
-    link.dataset.arcgisTheme = darkTheme ? "dark" : "light";
+//     // Create <link> element
+//     const link = document.createElement("link");
+//     link.rel = "stylesheet";
+//     link.href = href;
+//     link.dataset.arcgisTheme = darkTheme ? "dark" : "light";
 
-    document.head.appendChild(link);
-  }, [darkTheme]);
+//     document.head.appendChild(link);
+//   }, [darkTheme]);
 
   const chartSelected = (
     event: TargetedEvent<HTMLCalciteSelectElement, void>
@@ -348,9 +356,6 @@ console.log(darkTheme ? "dark" : "light")
   const handleTopCrimeFilterChange = (show: boolean) => {
     updateCategories(show ? "top_crime = 'Yes'" : "1=1");
   };
-
-
-
 
   return {
     // State
@@ -383,6 +388,7 @@ console.log(darkTheme ? "dark" : "light")
     arcgisMap,
     arcgisFeatureTable,
     incidentsLayer,
+    incidentsLayerView,
 
     // Handlers
     handleTableReady,

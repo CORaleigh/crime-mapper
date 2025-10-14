@@ -89,6 +89,7 @@ function App() {
     arcgisMap,
     arcgisFeatureTable,
     incidentsLayer,
+    incidentsLayerView,
     handleTableReady,
     handleViewReady,
     handleDescriptionShow,
@@ -332,7 +333,7 @@ function App() {
           <calcite-panel className="charts-panel">
             {arcgisMap.current &&
               incidentsLayer.current &&
-              incidentsLayer.current.charts && (
+              incidentsLayer.current.charts && incidentsLayerView.current && (
                 <>
                   <calcite-select
                     label={"Select chart"}
@@ -348,13 +349,16 @@ function App() {
                       );
                     })}
                   </calcite-select>
+                  {arcgisFeatureTable.current &&
                   <arcgis-chart
                     view={arcgisMap.current.view}
-                    layer={incidentsLayer.current}
+                    layer={arcgisFeatureTable.current?.layer as __esri.FeatureLayer}
                     model={selectedChart}
                     legendPosition="right"
                     autoDisposeChart
+                    ignoreViewExtent
                   ></arcgis-chart>
+}
                 </>
               )}
           </calcite-panel>
