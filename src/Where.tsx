@@ -8,10 +8,9 @@ import "@esri/calcite-components/components/calcite-action-group";
 import "@esri/calcite-components/components/calcite-action";
 import "@arcgis/map-components/dist/components/arcgis-search";
 import { useWhere } from "./useWhere";
-import { updateLocalStorage } from "./types";
 
 interface WhereProps {
-  onGeometryChange: (geometry: __esri.Geometry | null) => void;
+  onGeometryChange: (geometry: __esri.Polygon | null) => void;
   onFilterPanelClose: () => void;
   arcgisMap: HTMLArcgisMapElement | null;
   open: boolean;
@@ -135,11 +134,7 @@ export default function Where({
               oncalciteInputNumberChange={(e) => {
                 setBufferDistance(
                   Number((e.target as HTMLCalciteInputNumberElement).value)
-                );
-                updateLocalStorage(
-                  "crimeMapper.bufferDistance",
-                  (e.target as HTMLCalciteInputNumberElement).value
-                );
+                )
               }}
             >
               <calcite-action

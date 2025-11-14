@@ -9,13 +9,13 @@ import Polygon from "@arcgis/core/geometry/Polygon";
 import type { TargetedEvent } from "@esri/calcite-components";
 import Graphic from "@arcgis/core/Graphic";
 import * as generalizeOperator from "@arcgis/core/geometry/operators/generalizeOperator.js";
-import { updateLocalStorage } from "./types";
+import { useSearchParamHelpers } from "./useSearchParamHelpers";
 
 type Mode = "city" | "extent" | "draw" | "search";
 
 interface UseWhereProps {
   arcgisMap: HTMLArcgisMapElement | null;
-  onGeometryChange: (geometry: __esri.Geometry | null) => void;
+  onGeometryChange: (geometry: __esri.Polygon | null) => void;
   incidentsLayer?: __esri.FeatureLayer | null;
 }
 
@@ -24,17 +24,12 @@ export function useWhere({
   onGeometryChange,
   incidentsLayer,
 }: UseWhereProps) {
-  const [mode, setMode] = useState<Mode>(
-    localStorage.getItem("crimeMapper.whereFilterMode")
-      ? (localStorage.getItem("crimeMapper.whereFilterMode") as Mode)
-      : "city"
-  );
-  const [bufferDistance, setBufferDistance] = useState<number>(
-    localStorage.getItem("crimeMapper.bufferDistance")
-      ? Number(localStorage.getItem("crimeMapper.bufferDistance"))
-      : 0
-  );
+  const [mode, setMode] = useState<Mode>("city");
+  const [bufferDistance, setBufferDistance] = useState<number>(0);
   const [selectedTool, setSelectedTool] = useState<string>("");
+  const { updateSearchParam, deleteSearchParam, getSearchParam } =
+    useSearchParamHelpers();
+
   const arcgisSearch = useRef<HTMLArcgisSearchElement>(null);
   const sketchVm = useRef<SketchViewModel | null>(null);
   const graphic = useRef<__esri.Graphic | null>(null);
@@ -109,16 +104,17 @@ export function useWhere({
 
       sketchLayer.removeAll();
       sketchLayer.add(newGraphic);
-      requestAnimationFrame(() => arcgisMap?.view.goTo(newGraphic));
-      updateLocalStorage(
-        "crimeMapper.filterGeometry",
-        JSON.stringify(
-          generalizeOperator
-            .execute(newGraphic.geometry as __esri.GeometryUnion, 5)
-            ?.toJSON()
-        )
+      setTimeout(() => arcgisMap?.view.goTo(newGraphic), 1000);
+
+      const generalized = generalizeOperator
+        .execute(newGraphic.geometry as __esri.GeometryUnion, 5)
+        ?.toJSON();
+      updateSearchParam(
+        "where",
+        JSON.stringify(generalized)
       );
-      onGeometryChange(newGraphic.geometry as __esri.Geometry);
+
+      onGeometryChange(new Polygon(generalized));
     },
     [arcgisMap?.view, onGeometryChange]
   );
@@ -126,7 +122,7 @@ export function useWhere({
   /** Clear all graphics and reset */
   const clear = useCallback(() => {
     onGeometryChange(null);
-    updateLocalStorage("crimeMapper.filterGeometry", "");
+    deleteSearchParam("where");
     graphic.current = null;
     if (!arcgisMap) return;
     const sketchLayer = getSketchLayer(arcgisMap);
@@ -139,8 +135,7 @@ export function useWhere({
       const value = (e.target as HTMLCalciteSelectElement).value as Mode;
       setMode(value);
 
-      updateLocalStorage("crimeMapper.whereFilterMode", value);
-      updateLocalStorage("crimeMapper.filterGeometry", "");
+      deleteSearchParam("where");
 
       getSketchLayer(arcgisMap as HTMLArcgisMapElement)?.removeAll();
       // Clear existing graphics when switching modes
@@ -153,7 +148,7 @@ export function useWhere({
         extentWatcher.current = arcgisMap.view.watch("extent", (extent) => {
           if (extent) onGeometryChange(extent.clone());
         });
-        onGeometryChange(arcgisMap.view.extent.clone());
+        onGeometryChange(new Polygon(arcgisMap.view.extent.clone()));
       } else {
         onGeometryChange(null);
         extentWatcher.current?.remove?.();
@@ -200,7 +195,6 @@ export function useWhere({
           ? 1
           : bufferDistance;
       setBufferDistance(distance);
-      updateLocalStorage("crimeMapper.bufferDistance", distance.toString());
 
       const sketchLayer = getSketchLayer(arcgisMap);
       if (!sketchLayer) return;
@@ -290,9 +284,9 @@ export function useWhere({
     (async () => {
       await arcgisMap?.whenLayerView(incidentsLayer as __esri.FeatureLayer);
       // On mount, check for stored geometry
-      const storedGeometry = localStorage.getItem("crimeMapper.filterGeometry")
-        ? localStorage.getItem("crimeMapper.filterGeometry")
-        : null;
+      const storedGeometry = getSearchParam("where")
+        ? getSearchParam("where") : null;
+
       if (storedGeometry) {
         const geometry = Polygon.fromJSON(JSON.parse(storedGeometry));
         graphic.current = new Graphic({ geometry });

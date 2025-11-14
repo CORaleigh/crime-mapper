@@ -1,12 +1,12 @@
 // (no direct React imports needed)
 import type { TargetedEvent } from "@esri/calcite-components";
 import { useWhat } from "./useWhat";
-import { updateLocalStorage, type Description } from "./types";
+import { type Description } from "./types";
 
 interface WhatProps {
   categories: __esri.Graphic[];
   allDescriptions: Description[];
-  onWhereChange: (where: string) => void;
+  onWhereChange: (where: string | undefined) => void;
   onDescriptionShow: (show: boolean) => void;
   onCrimeTypeChange: (types: string[]) => void;
   onFilterPanelClose: () => void;
@@ -37,18 +37,21 @@ export default function What(props: WhatProps) {
   } = props;
 
   const {
+   // State
     descriptions,
     selectedCrimeGroups,
     showDescriptionFilter,
     groupSelections,
     filterViolentCrimes,
     filterTopCrimes,
-    setSelectedCrimeGroups,
+    // Setters
     setShowDescriptionFilter,
+    // Handlers
+    tileSelected,
     listItemSelect,
     handleViolentCrimeSwitchChange,
     handleTopCrimeSwitchChange,
-    tileSelected,
+    removeAllFilters,
   } = useWhat({
     categories,
     allDescriptions,
@@ -78,18 +81,7 @@ export default function What(props: WhatProps) {
                 icon="trash"
                 text="Remove Filter"
                 textEnabled
-                onClick={() => {
-                  setSelectedCrimeGroups([]);
-
-                  updateLocalStorage(
-                    "crimeMapper.groupSelections",
-                    JSON.stringify([])
-                  );
-                  updateLocalStorage(
-                    "crimeMapper.selectedCrimeGroups",
-                    JSON.stringify([])
-                  );
-                }}
+                onClick={removeAllFilters}
               ></calcite-action>
             </div>
           )}

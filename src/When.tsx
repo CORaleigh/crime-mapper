@@ -6,7 +6,7 @@ import "@esri/calcite-components/components/calcite-option";
 import { useWhen } from "./useWhen";
 
 interface WhenProps {
-  onWhereChange: (where: string) => void;
+  onWhereChange: (where: string | undefined) => void;
   onFilterPanelClose: () => void;
   open: boolean;
   isMobile: boolean;
@@ -20,12 +20,7 @@ export default function When({
 }: WhenProps) {
   const {
     preset,
-    setPreset,
-    startDate,
-    endDate,
-    setStartDate,
-    setEndDate,
-    rangeError,
+    setPreset
   } = useWhen({ onWhereChange });
 
   return (
@@ -37,7 +32,7 @@ export default function When({
     >
       <div style={{ padding: "1rem" }}>
         <calcite-label>
-          Show incidents in
+          Show incidents in {preset}
           <calcite-select
             label="Preset"
             value={preset}
@@ -54,31 +49,6 @@ export default function When({
             {/* <calcite-option value="">Custom Range</calcite-option> */}
           </calcite-select>
         </calcite-label>
-
-        {preset === "" && (
-          <calcite-label style={{ marginTop: "1rem" }}>
-            Date Range:
-            <calcite-input-date-picker
-              range
-              value={`${startDate},${endDate}`}
-              oncalciteInputDatePickerChange={(e) => {
-                setStartDate(e.target.value[0] || "");
-                setEndDate(e.target.value[1] || "");
-              }}
-              style={{ marginLeft: "0.5rem" }}
-            />
-            {rangeError && (
-              <div
-                style={{
-                  color: "var(--calcite-color-status-danger)",
-                  marginTop: "0.5rem",
-                }}
-              >
-                {rangeError}
-              </div>
-            )}
-          </calcite-label>
-        )}
       </div>
     </calcite-panel>
   );

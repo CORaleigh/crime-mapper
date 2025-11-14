@@ -1,12 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useCallback } from "react";
 import type { TargetedEvent } from "@esri/calcite-components";
-import { updateLocalStorage, type Description } from "./types";
+import { type Description } from "./types";
+import { useSearchParamHelpers } from "./useSearchParamHelpers";
 
 interface UseWhatParams {
   categories: __esri.Graphic[];
   allDescriptions: Description[];
-  onWhereChange: (where: string) => void;
+  onWhereChange: (where: string | undefined) => void;
   onDescriptionShow: (show: boolean) => void;
   onCrimeTypeChange: (types: string[]) => void;
   categoryTable: __esri.FeatureLayer;
@@ -38,6 +39,8 @@ export function useWhat({
   const [filterViolentCrimes, setFilterViolentCrimes] = useState(false);
   const [filterTopCrimes, setFilterTopCrimes] = useState(false);
 
+  const { updateSearchParam, deleteSearchParam, getSearchParam } =
+    useSearchParamHelpers();
   // Filter helper
   const filterByTopOrViolentCrimes = useCallback(
     async (field: string, showAll: boolean) => {
@@ -59,7 +62,7 @@ export function useWhat({
           );
         }
       } else {
-        onWhereChange("1=1");
+        onWhereChange(undefined);
       }
     },
     [categoryTable, onWhereChange]
@@ -82,28 +85,17 @@ export function useWhat({
 
       setSelectedCrimeTypes(crimeTypes);
       onCrimeTypeChange(crimeTypes);
-      updateLocalStorage(
-        "crimeMapper.selectedCrimeGroups",
-        JSON.stringify(newSelectedCrimeGroups)
-      );
 
-      // Remove deselected groups from groupSelections in localStorage
-      const storedSelections = JSON.parse(
-        localStorage.getItem("crimeMapper.groupSelections") || "{}"
-      );
-
-      // Keep only the selected groups
-      const updatedSelections: Record<string, string[]> = {};
-      for (const group of newSelectedCrimeGroups) {
-        if (storedSelections[group]) {
-          updatedSelections[group] = storedSelections[group];
-        }
+      if (newSelectedCrimeGroups.length > 0) {
+        updateSearchParam(
+          "selectedCrimeGroups",
+          JSON.stringify(newSelectedCrimeGroups)
+        );
+      } else {
+        deleteSearchParam("selectedCrimeGroups");
       }
 
-      updateLocalStorage(
-        "crimeMapper.groupSelections",
-        JSON.stringify(updatedSelections)
-      );
+
     },
     [categories, onCrimeTypeChange]
   );
@@ -130,8 +122,8 @@ export function useWhat({
         [item.group]: Array.from(new Set(next)),
       }));
 
-      updateLocalStorage(
-        "crimeMapper.groupSelections",
+      updateSearchParam(
+        "groupSelections",
         JSON.stringify({
           ...groupSelections,
           [item.group]: Array.from(new Set(next)),
@@ -143,10 +135,11 @@ export function useWhat({
 
   const violentCrimeSelected = useCallback(
     async (checked: boolean) => {
-      updateLocalStorage(
-        "crimeMapper.filterViolentCrimes",
-        checked ? "true" : "false"
-      );
+      if (checked) {
+        updateSearchParam("filterViolentCrimes", "true");
+      } else {
+        deleteSearchParam("filterViolentCrimes");
+      }
 
       setFilterViolentCrimes(checked);
       // Clear any selected groups or descriptions
@@ -156,7 +149,8 @@ export function useWhat({
 
       // If violent crimes is being checked, uncheck top crimes
       if (checked) {
-        updateLocalStorage("crimeMapper.filterTopCrimes", "false");
+        deleteSearchParam("filterTopCrimes");
+
         setFilterTopCrimes(false);
       }
 
@@ -184,17 +178,19 @@ export function useWhat({
   const handleViolentCrimeSwitchChange = useCallback(
     async (event: TargetedEvent<HTMLCalciteSwitchElement, void>) => {
       violentCrimeSelected(event.target.checked);
-      updateLocalStorage("crimeMapper.groupSelections", JSON.stringify([]));
+      deleteSearchParam("groupSelections");
+      deleteSearchParam("selectedCrimeGroups");
     },
     [violentCrimeSelected]
   );
 
   const topCrimeSelected = useCallback(
     async (checked: boolean) => {
-      updateLocalStorage(
-        "crimeMapper.filterTopCrimes",
-        checked ? "true" : "false"
-      );
+      if (checked) {
+        updateSearchParam("filterTopCrimes", "true");
+      } else {
+        deleteSearchParam("filterTopCrimes");
+      }
 
       setFilterTopCrimes(checked);
       // Clear any selected groups or descriptions
@@ -204,7 +200,8 @@ export function useWhat({
 
       // If top crimes is being checked, uncheck violent crimes
       if (checked) {
-        updateLocalStorage("crimeMapper.filterViolentCrimes", "false");
+        deleteSearchParam("filterViolentCrimes");
+
         setFilterViolentCrimes(false);
       }
       // Provide to parent
@@ -232,11 +229,17 @@ export function useWhat({
   const handleTopCrimeSwitchChange = useCallback(
     async (event: TargetedEvent<HTMLCalciteSwitchElement, void>) => {
       topCrimeSelected(event.target.checked);
-      updateLocalStorage("crimeMapper.groupSelections", JSON.stringify([]));
+      deleteSearchParam("groupSelections");
+      deleteSearchParam("selectedCrimeGroups");
     },
     [topCrimeSelected]
   );
 
+  const removeAllFilters = () => {
+    setSelectedCrimeGroups([]);
+    deleteSearchParam("groupSelections");
+    deleteSearchParam("selectedCrimeGroups");
+  };
   // Derived data
   const allSelectedDescriptions = descriptions.flatMap(
     (desc) => groupSelections[desc.group] ?? []
@@ -271,7 +274,6 @@ export function useWhat({
   }, [selectedCrimeGroups, allDescriptions]);
 
   useEffect(() => {
-    console.log("useWhat - Evaluating WHERE clause");
     if (allSelectedDescriptions.length > 0) {
       // If any descriptions are selected, filter by them
       onWhereChange(
@@ -289,7 +291,7 @@ export function useWhat({
       // If no groups or descriptions are selected but top crimes filter is on, filter by top crimes
       filterByTopOrViolentCrimes("top_crime", false);
     } else {
-      onWhereChange("1=1");
+      onWhereChange(undefined);
     }
   }, [
     allSelectedDescriptions.join(","),
@@ -302,39 +304,31 @@ export function useWhat({
     onDescriptionShow(showDescriptionFilter);
   }, [showDescriptionFilter, onDescriptionShow]);
 
-  // On mount, restore from localStorage
+
   useEffect(() => {
     if (!incidentsLayer || !arcgisMap || categories.length === 0) return;
     (async () => {
       await arcgisMap?.whenLayerView(incidentsLayer as __esri.FeatureLayer);
-      const violentCrimes =
-        localStorage.getItem("crimeMapper.filterViolentCrimes") === "true";
-      const topCrimes =
-        localStorage.getItem("crimeMapper.filterTopCrimes") === "true";
+      const violentCrimes = getSearchParam("filterViolentCrimes") === "true";
+      const topCrimes = getSearchParam("filterTopCrimes") === "true";
+
       if (topCrimes) {
         topCrimeSelected(true);
       } else if (violentCrimes) {
         violentCrimeSelected(true);
       }
-      const storedCrimeGroups = localStorage.getItem(
-        "crimeMapper.selectedCrimeGroups"
-      );
-      
+      const storedCrimeGroups = getSearchParam("selectedCrimeGroups");
+
       if (storedCrimeGroups) {
         setSelectedCrimeGroups(JSON.parse(storedCrimeGroups));
-        console.log(categories)
         const crimeTypes = categories
-            .filter((c) =>
-            storedCrimeGroups.includes(c.attributes.crime_group)
-            )
-            .map((c) => c.attributes.crime_category);
-        console.log(storedCrimeGroups);
+          .filter((c) => storedCrimeGroups.includes(c.attributes.crime_group))
+          .map((c) => c.attributes.crime_category);
 
-        setSelectedCrimeTypes(crimeTypes);        
+        setSelectedCrimeTypes(crimeTypes);
       }
-      const groupSelections = localStorage.getItem(
-        "crimeMapper.groupSelections"
-      );
+
+      const groupSelections = getSearchParam("groupSelections");
       if (groupSelections) {
         setGroupSelections(JSON.parse(groupSelections));
       }
@@ -344,24 +338,17 @@ export function useWhat({
     // State
     descriptions,
     selectedCrimeGroups,
-    selectedCrimeTypes,
     showDescriptionFilter,
     groupSelections,
     filterViolentCrimes,
     filterTopCrimes,
     // Setters
-    setSelectedCrimeGroups,
-    setSelectedCrimeTypes,
-    setDescriptions,
     setShowDescriptionFilter,
-    setGroupSelections,
-    setFilterViolentCrimes,
-    setFilterTopCrimes,
     // Handlers
     tileSelected,
     listItemSelect,
     handleViolentCrimeSwitchChange,
     handleTopCrimeSwitchChange,
-    filterByTopOrViolentCrimes,
+    removeAllFilters,
   };
 }

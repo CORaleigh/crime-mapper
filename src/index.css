@@ -1,5 +1,5 @@
-@import url("https://js.arcgis.com/4.33/@arcgis/core/assets/esri/themes/light/main.css");
-@import url("https://js.arcgis.com/calcite-components/3.2.1/calcite.css");
+@import url("https://js.arcgis.com/4.34/@arcgis/core/assets/esri/themes/light/main.css");
+@import url("https://js.arcgis.com/calcite-components/3.3.3/calcite.css");
 body.calcite-mode-dark {
   --calcite-color-brand: #e4ca85;
   --calcite-color-brand-hover: #007ab8;

@@ -8,10 +8,10 @@ type Description = {
 };
 
 export const useApp = () => {
-  const [whereClause, setWhereClause] = useState("1=1");
-  const [whenClause, setWhenClause] = useState("CURRENT_TIMESTAMP - 90");
-  const [combinedWhere, setCombinedWhere] = useState("1=1");
-  const [geometryFilter, setFilterGeometry] = useState<__esri.Geometry | null>(
+  const [whereClause, setWhereClause] = useState<string | undefined>(undefined);
+  const [whenClause, setWhenClause] = useState<string | undefined>(undefined);
+  const [combinedWhere, setCombinedWhere] = useState<string | undefined>(undefined);
+  const [geometryFilter, setFilterGeometry] = useState<__esri.Polygon | null>(
     null
   );
   const [showMap, setShowMap] = useState(true);
@@ -25,17 +25,6 @@ export const useApp = () => {
   const [showDataDictionary, setShowDataDictionary] = useState(false);
   const [showDefinitions, setShowDefinitions] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(true);
-  const [showSettings, setShowSettings] = useState(false);
-  const [darkTheme, setDarkTheme] = useState(() => {
-    const value = localStorage.getItem("crimeMapper.darkTheme");
-    if (!value) return true;
-    return value === "true";
-  });
-  const [saveSearch, setSaveSearch] = useState(() => {
-    const value = localStorage.getItem("crimeMapper.saveSearch");
-    if (!value) return true;
-    return value === "true";
-  });
 
   const [showViolentCrimeOnly, setShowViolentCrimeOnly] = useState(false);
   const [isMobile, setIsMobile] = useState(
@@ -215,38 +204,8 @@ export const useApp = () => {
     }
   };
 
-  const handleSaveSearchSettingsChange = (
-    event: TargetedEvent<HTMLCalciteSwitchElement, void>
-  ) => {
-    setSaveSearch(event.target.checked);
-    if (event.target.checked) {
-      localStorage.setItem("crimeMapper.saveSearch", "true");
-    } else {
-      localStorage.clear();
-      localStorage.setItem("crimeMapper.saveSearch", "false");
-    }
-  };
-
-  const handleThemeChange = (
-    event: TargetedEvent<HTMLCalciteSwitchElement, void>
-  ) => {
-    setDarkTheme(event.target.checked);
-    localStorage.setItem(
-      "crimeMapper.darkTheme",
-      event.target.checked ? "true" : "false"
-    );
-    if (event.target.checked) {
-      document.body.classList.remove("calcite-mode-light");
-      document.body.classList.add("calcite-mode-dark");
-    } else {
-      document.body.classList.remove("calcite-mode-dark");
-      document.body.classList.add("calcite-mode-light");
-    }
-  };
 
   useEffect(() => {
-    console.log("selectedSegment changed:", selectedSegment);
-    console.log("fetchAllDescriptions function");
     if (selectedSegment === "what") {
       fetchAllDescriptions();
     }
@@ -259,50 +218,29 @@ export const useApp = () => {
   };
 
   useEffect(() => {
+    if (whereClause === undefined && whenClause === undefined) return;
     const combined =
-      [whereClause, whenClause].filter((c) => c !== "1=1").join(" AND ") ||
-      "1=1";
+      [whereClause, whenClause].filter((c) => c !== undefined).join(" AND ");
+
     setCombinedWhere(combined);
-    console.log("Combined Where Clause:", combined);
   }, [whereClause, whenClause]);
 
-  useEffect(() => {
-    if (!arcgisMap.current) return;
-    if (!arcgisFeatureTable.current) if (!arcgisMap.current.ready) return;
-    const layerView = arcgisMap.current?.layerViews.find(
-      (layerView) => layerView.layer.title === "Incidents"
-    );
-    if (layerView && layerView.layer.type === "feature") {
-      (layerView as __esri.FeatureLayerView).filter = {
-        where: combinedWhere,
-        geometry: geometryFilter,
-      };
-      if (incidentsLayerView.current && arcgisFeatureTable.current) {
-        incidentsLayerView.current.filter = {
-          where: combinedWhere,
-          geometry: geometryFilter,
-        };
-        // (arcgisFeatureTable.current.layerView as __esri.FeatureLayerView).filter = {
-        //   where: combinedWhere,
-        //   geometry: geometryFilter,
-        // };
-        (
-          arcgisFeatureTable.current.layer as __esri.FeatureLayer
-        ).definitionExpression = combinedWhere;
+  // 1️⃣ ArcGIS update
+useEffect(() => {
+    
+  if (!incidentsLayerView.current) return;
 
-        arcgisFeatureTable.current.filterGeometry =
-          geometryFilter as unknown as
-            | __esri.Extent
-            | __esri.Multipoint
-            | __esri.Point
-            | __esri.Polygon
-            | __esri.Polyline
-            | __esri.Mesh
-            | null;
-        arcgisFeatureTable.current.refresh();
-      }
-    }
-  }, [combinedWhere, geometryFilter]);
+  incidentsLayerView.current.filter = { where: combinedWhere, geometry: geometryFilter };
+  if (arcgisFeatureTable.current) {
+    const layer = arcgisFeatureTable.current.layer as __esri.FeatureLayer;
+    layer.definitionExpression = combinedWhere;
+    arcgisFeatureTable.current.filterGeometry = geometryFilter;
+    arcgisFeatureTable.current.refresh();
+  }
+}, [combinedWhere, geometryFilter, incidentsLayerView.current]);
+
+// 2️⃣ URL sync (debounced, optional)
+
 
   useEffect(() => {
     if (showMap || showTable) {
@@ -323,25 +261,6 @@ export const useApp = () => {
     }
   }, [showMap, showTable, showCharts]);
 
-//   useEffect(() => {
-//     // Remove previous theme
-//     const oldLink = document.querySelector(`link[data-arcgis-theme]`);
-//     if (oldLink) oldLink.remove();
-
-//     // ArcGIS CDN theme URLs (adjust version to match your SDK)
-//     const href = darkTheme
-//       ? "https://js.arcgis.com/4.33/esri/themes/dark/main.css"
-//       : "https://js.arcgis.com/4.33/esri/themes/light/main.css";
-
-//     // Create <link> element
-//     const link = document.createElement("link");
-//     link.rel = "stylesheet";
-//     link.href = href;
-//     link.dataset.arcgisTheme = darkTheme ? "dark" : "light";
-
-//     document.head.appendChild(link);
-//   }, [darkTheme]);
-
   const chartSelected = (
     event: TargetedEvent<HTMLCalciteSelectElement, void>
   ) => {
@@ -356,6 +275,8 @@ export const useApp = () => {
   const handleTopCrimeFilterChange = (show: boolean) => {
     updateCategories(show ? "top_crime = 'Yes'" : "1=1");
   };
+
+
 
   return {
     // State
@@ -373,17 +294,13 @@ export const useApp = () => {
     setShowDefinitions,
     showDisclaimer,
     setShowDisclaimer,
-    showSettings,
-    setShowSettings,
-    saveSearch,
     selectedSegment,
     setSelectedSegment,
     selectedChart,
     categories,
     allDescriptions,
     isMobile,
-    darkTheme,
-
+    whereClause,
     // Refs
     arcgisMap,
     arcgisFeatureTable,
@@ -397,11 +314,10 @@ export const useApp = () => {
     handleCrimeTypeChange,
     setWhereClause,
     setWhenClause,
+    geometryFilter,    
     setFilterGeometry,
     chartSelected,
     handleViolentCrimeFilterChange,
     handleTopCrimeFilterChange,
-    handleSaveSearchSettingsChange,
-    handleThemeChange,
   };
 };

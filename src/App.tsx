@@ -43,6 +43,7 @@ import "@esri/calcite-components/components/calcite-option";
 import "@esri/calcite-components/components/calcite-switch";
 import "@esri/calcite-components/components/calcite-alert";
 import "@esri/calcite-components/components/calcite-sheet";
+import "@esri/calcite-components/components/calcite-notice";
 
 // Import custom components
 import What from "./What";
@@ -76,16 +77,12 @@ function App() {
     setShowDefinitions,
     showDisclaimer,
     setShowDisclaimer,
-    showSettings,
-    setShowSettings,
-    saveSearch,
     selectedSegment,
     setSelectedSegment,
     selectedChart,
     categories,
     allDescriptions,
     isMobile,
-    darkTheme,
     arcgisMap,
     arcgisFeatureTable,
     incidentsLayer,
@@ -96,12 +93,13 @@ function App() {
     handleCrimeTypeChange,
     setWhereClause,
     setWhenClause,
+    geometryFilter,
     setFilterGeometry,
     chartSelected,
     handleViolentCrimeFilterChange,
     handleTopCrimeFilterChange,
-    handleSaveSearchSettingsChange,
-    handleThemeChange,
+    // handleSaveSearchSettingsChange,
+    // handleThemeChange,
   } = useApp();
 
   const arcgisMapEl = (
@@ -125,15 +123,15 @@ function App() {
           }
         />
       </arcgis-expand>
-      <arcgis-zoom position="top-left" />
-      <arcgis-locate position="top-left" />
-      <arcgis-expand position="top-right" group="top-right" label="Layers">
+      <arcgis-zoom slot="top-left" />
+      <arcgis-locate slot="top-left" />
+      <arcgis-expand slot="top-right" group="top-right" label="Layers">
         <arcgis-layer-list visibilityAppearance="checkbox" />
       </arcgis-expand>
-      <arcgis-expand position="top-right" group="top-right" label="Legend">
+      <arcgis-expand slot="top-right" group="top-right" label="Legend">
         <arcgis-legend />
       </arcgis-expand>
-      <arcgis-basemap-toggle position="bottom-right" />
+      <arcgis-basemap-toggle slot="bottom-right" />
     </arcgis-map>
   );
 
@@ -268,14 +266,14 @@ function App() {
                 onClick={() => setShowCharts((prev) => !prev)}
               ></calcite-action>
             </calcite-action-group>
-            <calcite-action-group slot="actions-end" menuPlacement="bottom-end">
+            {/* <calcite-action-group slot="actions-end" menuPlacement="bottom-end">
               <calcite-action
-                icon="gear"
+                icon="bell"
                 textEnabled
-                text="Settings"
-                onClick={() => setShowSettings((prev) => !prev)}
+                text="Subscriptions"
+                onClick={() => setShowSubscriptions((prev) => !prev)}
               ></calcite-action>
-            </calcite-action-group>
+            </calcite-action-group> */}
           </calcite-action-bar>
           <FilterSegmentedControl
             selectedSegment={selectedSegment}
@@ -333,7 +331,8 @@ function App() {
           <calcite-panel className="charts-panel">
             {arcgisMap.current &&
               incidentsLayer.current &&
-              incidentsLayer.current.charts && incidentsLayerView.current && (
+              incidentsLayer.current.charts &&
+              incidentsLayerView.current && (
                 <>
                   <calcite-select
                     label={"Select chart"}
@@ -349,16 +348,19 @@ function App() {
                       );
                     })}
                   </calcite-select>
-                  {arcgisFeatureTable.current &&
-                  <arcgis-chart
-                    view={arcgisMap.current.view}
-                    layer={arcgisFeatureTable.current?.layer as __esri.FeatureLayer}
-                    model={selectedChart}
-                    legendPosition="right"
-                    autoDisposeChart
-                    ignoreViewExtent
-                  ></arcgis-chart>
-}
+                  {arcgisFeatureTable.current && (
+                    <arcgis-chart
+                      view={arcgisMap.current.view}
+                      layer={
+                        arcgisFeatureTable.current?.layer as __esri.FeatureLayer
+                      }
+                      model={selectedChart}
+                      legendPosition="right"
+                      runtimeDataFilters={{
+                        geometry: geometryFilter?.toJSON(),
+                      }}
+                    ></arcgis-chart>
+                  )}
                 </>
               )}
           </calcite-panel>
@@ -376,49 +378,6 @@ function App() {
         open={showDisclaimer}
         onClose={() => setShowDisclaimer(false)}
       />
-      <calcite-sheet
-        label={"Settings"}
-        open={showSettings}
-        displayMode="float"
-        position="block-end"
-      >
-        <calcite-panel
-          closable
-          heading="Settings"
-          oncalcitePanelClose={() => setShowSettings(false)}
-          closed={!showSettings}
-        >
-          <div style={{ padding: "1rem" }}>
-            <calcite-label layout="inline">
-              Theme
-              <calcite-icon icon="brightness"></calcite-icon>
-              <calcite-switch
-                label="Theme"
-                checked={darkTheme}
-                oncalciteSwitchChange={handleThemeChange}
-              />
-              <calcite-icon icon="moon"></calcite-icon>
-            </calcite-label>
-            <calcite-label layout="inline">
-              <calcite-switch
-                label="Save Filter to Local Storage"
-                checked={saveSearch}
-                oncalciteSwitchChange={handleSaveSearchSettingsChange}
-              />
-              Save Last Search
-            </calcite-label>
-            <calcite-button
-              width="auto"
-              color="danger"
-              onClick={() => {
-                localStorage.clear();
-              }}
-            >
-              Clear Local Storage
-            </calcite-button>
-          </div>
-        </calcite-panel>
-      </calcite-sheet>
     </>
   );
 }
