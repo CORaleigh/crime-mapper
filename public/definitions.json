@@ -22,6 +22,11 @@
         "title": "Simple Assault",
         "definition": "An unlawful physical attack by one person upon another where neither the offender displays a weapon, nor the victim suffers obvious, severe, or aggravated bodily injury involving apparent broken bones, loss of teeth, possible internal injury, severe laceration, or loss of consciousness.",
         "definitions": []
+      },
+      {
+        "title": "Intimidation",
+        "definition": "To unlawfully place another person in reasonable fear of bodily harm through the use of threatening words and/or other conduct, but without displaying a weapon or subjecting the victim to actual physical attack.",
+        "definitions": []
       }
     ]
   },
@@ -174,11 +179,6 @@
         "definitions": []
       }
     ]
-  },
-  {
-    "title": "Intimidation",
-    "definition": "To unlawfully place another person in reasonable fear of bodily harm through the use of threatening words and/or other conduct, but without displaying a weapon or subjecting the victim to actual physical attack.",
-    "definitions": []
   },
   {
     "title": "Homicide",
