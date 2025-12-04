@@ -1,5 +1,3 @@
-@import url("https://js.arcgis.com/4.34/@arcgis/core/assets/esri/themes/light/main.css");
-@import url("https://js.arcgis.com/calcite-components/3.3.3/calcite.css");
 body.calcite-mode-dark {
   --calcite-color-brand: #e4ca85;
   --calcite-color-brand-hover: #007ab8;
@@ -11,7 +9,6 @@ body.calcite-mode-dark {
   --calcite-navigation-logo-heading-text-color: #ffffff;
   --calcite-tab-content-space-y: 0px;
   --calcite-internal-tile-spacing: 0;
-  --calcite-action-bar-background-color: #0e426b;
   --calcite-color-text-hover: #fff;
   --calcite-button-text-color: #11233f;
   --calcite-fab-shadow: 4px 6px 8px rgba(0, 0, 0, 0.6);
@@ -31,7 +28,6 @@ body.calcite-mode-light {
   --calcite-navigation-logo-heading-text-color: #ffffff;
   --calcite-tab-content-space-y: 0px;
   --calcite-internal-tile-spacing: 0;
-  --calcite-action-bar-background-color: #0e426b;
   --calcite-fab-shadow: 4px 6px 8px rgba(0, 0, 0, 0.6);
   --calcite-internal-action-text-color: #ffffff;
   --calcite-internal-button-text-color: #11233f;
@@ -47,24 +43,25 @@ body {
   width: 100%;
 }
 
-calcite-action-bar calcite-action[active] {
+.shellActionBar calcite-action[active] {
   background-color: #e4ca85;
   --calcite-action-text-color-press: #11233f;
 }
-calcite-action-bar calcite-action[active]:hover {
+.shellActionBar calcite-action[active]:hover {
   background-color: #11233f;
   --calcite-action-text-color-press: #fff;
 }
 
-calcite-action-bar {
+.shellActionBar {
   --calcite-color-brand-hover: #11233f;
   --calcite-color-foreground-2: var(--calcite-color-brand-hover);
   --calcite-color-text-1: #ffffff;
   --calcite-internal-action-text-color: #ffffff;
   --calcite-action-text-color: #ffffff;
+  --calcite-action-bar-background-color: #0e426b;
 }
 
-calcite-action-bar calcite-action {
+.shellActionBar calcite-action {
   --calcite-action-background-color-hover: var(--calcite-color-brand-hover);
   --calcite-action-background-color-press: var(--calcite-color-brand-press);
   --calcite-action-background-color-focus: var(--calcite-color-brand-focus);
@@ -91,7 +88,6 @@ body calcite-segmented-control {
   --calcite-color-text-inverse: #11233f;
   --calcite-color-foreground-3: #007ab8;
 }
-
 
 /* body.calcite-mode-dark calcite-segmented-control {
   --calcite-color-foreground-1: #0e426b;

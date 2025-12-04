@@ -46,13 +46,13 @@ import "@esri/calcite-components/components/calcite-sheet";
 import "@esri/calcite-components/components/calcite-notice";
 
 // Import custom components
-import What from "./What";
-import When from "./When";
-import Where from "./Where";
-import DataDictionary from "./DataDictionary";
-import Disclaimer from "./Disclaimer";
-import FilterSegmentedControl from "./FilterSegmentedControl";
-import Definitions from "./Definitions";
+import What from "./components/What/What";
+import When from "./components/When/When";
+import Where from "./components/Where/Where";
+import DataDictionary from "./components/DataDictionary/DataDictionary";
+import Disclaimer from "./components/Disclaimer/Disclaimer";
+import FilterSegmentedControl from "./components/FilterSegmentedControl/FilterSegmentedControl";
+import Definitions from "./components/Definitions/Definitions";
 
 // ArcGIS SDK imports
 import Collection from "@arcgis/core/core/Collection";
@@ -230,6 +230,7 @@ function App() {
           collapsed={!showFilter}
         >
           <calcite-action-bar
+            className="shellActionBar"
             slot="action-bar"
             expanded={!isMobile}
             expandDisabled={isMobile}

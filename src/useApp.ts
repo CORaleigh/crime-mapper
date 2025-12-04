@@ -74,7 +74,7 @@ export const useApp = () => {
   ) => {
     const view = await event.target.view.when();
     const layer = view.map.allLayers.find(
-      (layer: __esri.Layer) => layer.title === "Incidents"
+      (layer: __esri.Layer) => layer.title === "Offenses"
     ) as __esri.FeatureLayer;
 
     incidentsLayer.current = layer as __esri.FeatureLayer;
@@ -120,7 +120,7 @@ export const useApp = () => {
     if (!arcgisMap.current) return;
     if (!arcgisMap.current.ready) return;
     const layer = arcgisMap.current.view.map?.allLayers.find(
-      (layer) => layer.title === "Incidents"
+      (layer) => layer.title === "Offenses"
     ) as __esri.FeatureLayer | undefined;
     if (!layer) return;
 
