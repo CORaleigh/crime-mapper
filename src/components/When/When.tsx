@@ -32,7 +32,7 @@ export default function When({
     >
       <div style={{ padding: "1rem" }}>
         <calcite-label>
-          Show incidents in {preset}
+          Show offenses in {preset}
           <calcite-select
             label="Preset"
             value={preset}
