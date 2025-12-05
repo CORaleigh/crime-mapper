@@ -109,11 +109,11 @@ export default function What(props: WhatProps) {
             </calcite-label>
             <calcite-label layout="inline">
               <calcite-switch
-                label="Top Crimes"
+                label="Top Requested Crimes"
                 checked={filterTopCrimes}
                 oncalciteSwitchChange={handleTopCrimeSwitchChange}
               />
-              Top Crimes
+              Top Requested Crimes
             </calcite-label>
           </div>
           <calcite-alert
