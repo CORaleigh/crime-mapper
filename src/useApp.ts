@@ -10,7 +10,9 @@ type Description = {
 export const useApp = () => {
   const [whereClause, setWhereClause] = useState<string | undefined>(undefined);
   const [whenClause, setWhenClause] = useState<string | undefined>(undefined);
-  const [combinedWhere, setCombinedWhere] = useState<string | undefined>(undefined);
+  const [combinedWhere, setCombinedWhere] = useState<string | undefined>(
+    undefined
+  );
   const [geometryFilter, setFilterGeometry] = useState<__esri.Polygon | null>(
     null
   );
@@ -25,6 +27,7 @@ export const useApp = () => {
   const [showDataDictionary, setShowDataDictionary] = useState(false);
   const [showDefinitions, setShowDefinitions] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(true);
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
 
   const [showViolentCrimeOnly, setShowViolentCrimeOnly] = useState(false);
   const [isMobile, setIsMobile] = useState(
@@ -204,7 +207,21 @@ export const useApp = () => {
     }
   };
 
-
+  const handleThemeChange = useCallback(() => {
+    setTheme((prev: "light" | "dark") => {
+      const newTheme = prev === "light" ? "dark" : "light";
+      const body = document.querySelector("body");
+      if (body) {
+        body.classList.remove(
+          newTheme === "light" ? "calcite-mode-dark" : "calcite-mode-light"
+        );
+        body.classList.add(
+          newTheme === "light" ? "calcite-mode-light" : "calcite-mode-dark"
+        );
+      }
+      return newTheme;
+    });
+  }, []);
   useEffect(() => {
     if (selectedSegment === "what") {
       fetchAllDescriptions();
@@ -219,28 +236,30 @@ export const useApp = () => {
 
   useEffect(() => {
     if (whereClause === undefined && whenClause === undefined) return;
-    const combined =
-      [whereClause, whenClause].filter((c) => c !== undefined).join(" AND ");
+    const combined = [whereClause, whenClause]
+      .filter((c) => c !== undefined)
+      .join(" AND ");
 
     setCombinedWhere(combined);
   }, [whereClause, whenClause]);
 
   // 1️⃣ ArcGIS update
-useEffect(() => {
-    
-  if (!incidentsLayerView.current) return;
+  useEffect(() => {
+    if (!incidentsLayerView.current) return;
 
-  incidentsLayerView.current.filter = { where: combinedWhere, geometry: geometryFilter };
-  if (arcgisFeatureTable.current) {
-    const layer = arcgisFeatureTable.current.layer as __esri.FeatureLayer;
-    layer.definitionExpression = combinedWhere;
-    arcgisFeatureTable.current.filterGeometry = geometryFilter;
-    arcgisFeatureTable.current.refresh();
-  }
-}, [combinedWhere, geometryFilter, incidentsLayerView.current]);
+    incidentsLayerView.current.filter = {
+      where: combinedWhere,
+      geometry: geometryFilter,
+    };
+    if (arcgisFeatureTable.current) {
+      const layer = arcgisFeatureTable.current.layer as __esri.FeatureLayer;
+      layer.definitionExpression = combinedWhere;
+      arcgisFeatureTable.current.filterGeometry = geometryFilter;
+      arcgisFeatureTable.current.refresh();
+    }
+  }, [combinedWhere, geometryFilter, incidentsLayerView.current]);
 
-// 2️⃣ URL sync (debounced, optional)
-
+  // 2️⃣ URL sync (debounced, optional)
 
   useEffect(() => {
     if (showMap || showTable) {
@@ -276,8 +295,6 @@ useEffect(() => {
     updateCategories(show ? "top_crime = 'Yes'" : "1=1");
   };
 
-
-
   return {
     // State
     showFilter,
@@ -301,6 +318,7 @@ useEffect(() => {
     allDescriptions,
     isMobile,
     whereClause,
+    theme,
     // Refs
     arcgisMap,
     arcgisFeatureTable,
@@ -314,10 +332,11 @@ useEffect(() => {
     handleCrimeTypeChange,
     setWhereClause,
     setWhenClause,
-    geometryFilter,    
+    geometryFilter,
     setFilterGeometry,
     chartSelected,
     handleViolentCrimeFilterChange,
     handleTopCrimeFilterChange,
+    handleThemeChange
   };
 };

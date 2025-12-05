@@ -109,10 +109,7 @@ export function useWhere({
       const generalized = generalizeOperator
         .execute(newGraphic.geometry as __esri.GeometryUnion, 5)
         ?.toJSON();
-      updateSearchParam(
-        "where",
-        JSON.stringify(generalized)
-      );
+      updateSearchParam("where", JSON.stringify(generalized));
 
       onGeometryChange(new Polygon(generalized));
     },
@@ -274,6 +271,15 @@ export function useWhere({
       "COUNCIL_PERSON",
       1
     );
+    setTimeout(() => {
+      const input = arcgisSearch.current?.shadowRoot
+        ?.querySelector("calcite-autocomplete")
+        ?.shadowRoot?.querySelector("calcite-input")
+        ?.shadowRoot?.querySelector("input");
+      if (input) {
+        input.style.fontSize = "16px";
+      }
+    }, 500);
   }, [addSource]);
 
   /** On mount, check for stored geometry */
@@ -285,7 +291,8 @@ export function useWhere({
       await arcgisMap?.whenLayerView(incidentsLayer as __esri.FeatureLayer);
       // On mount, check for stored geometry
       const storedGeometry = getSearchParam("where")
-        ? getSearchParam("where") : null;
+        ? getSearchParam("where")
+        : null;
 
       if (storedGeometry) {
         const geometry = Polygon.fromJSON(JSON.parse(storedGeometry));

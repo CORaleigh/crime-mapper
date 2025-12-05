@@ -83,6 +83,7 @@ function App() {
     categories,
     allDescriptions,
     isMobile,
+    theme,
     arcgisMap,
     arcgisFeatureTable,
     incidentsLayer,
@@ -98,8 +99,7 @@ function App() {
     chartSelected,
     handleViolentCrimeFilterChange,
     handleTopCrimeFilterChange,
-    // handleSaveSearchSettingsChange,
-    // handleThemeChange,
+    handleThemeChange,
   } = useApp();
 
   const arcgisMapEl = (
@@ -267,14 +267,14 @@ function App() {
                 onClick={() => setShowCharts((prev) => !prev)}
               ></calcite-action>
             </calcite-action-group>
-            {/* <calcite-action-group slot="actions-end" menuPlacement="bottom-end">
+            <calcite-action-group slot="actions-end" menuPlacement="bottom-end">
               <calcite-action
-                icon="bell"
+                text={theme === "light" ? "Light" : "Dark"}
+                icon={theme === "light" ? "brightness" : "moon"}
                 textEnabled
-                text="Subscriptions"
-                onClick={() => setShowSubscriptions((prev) => !prev)}
+                onClick={handleThemeChange}
               ></calcite-action>
-            </calcite-action-group> */}
+            </calcite-action-group>
           </calcite-action-bar>
           <FilterSegmentedControl
             selectedSegment={selectedSegment}

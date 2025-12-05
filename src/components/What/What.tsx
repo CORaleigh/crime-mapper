@@ -37,7 +37,7 @@ export default function What(props: WhatProps) {
   } = props;
 
   const {
-   // State
+    // State
     descriptions,
     selectedCrimeGroups,
     showDescriptionFilter,

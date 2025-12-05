@@ -72,6 +72,7 @@ export function useWhat({
   const tileSelected = useCallback(
     (event: TargetedEvent<HTMLCalciteTileGroupElement, void>) => {
       const selectedTiles = event.target.selectedItems;
+      event.target.querySelectorAll('calcite-tile').forEach(tile => tile.blur());
       const newSelectedCrimeGroups = Array.from(selectedTiles).map(
         (tile) => tile.dataset.crimeGroup as string
       );
