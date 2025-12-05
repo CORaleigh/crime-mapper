@@ -109,7 +109,7 @@ function App() {
       className="map-panel"
       ref={arcgisMap}
     >
-      <arcgis-expand position="top-right" group="top-right" label="Search">
+      <arcgis-expand slot="top-right" group="top-right" label="Search">
         <arcgis-search
           includeDefaultSourcesDisabled
           sources={
