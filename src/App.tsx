@@ -118,6 +118,7 @@ function App() {
                 url: "https://maps.raleighnc.gov/arcgis/rest/services/Locators/Locator/GeocodeServer",
                 placeholder: "Search by address",
                 maxResults: 6,
+                singleLineFieldName: "SingleLine"
               }),
             ])
           }

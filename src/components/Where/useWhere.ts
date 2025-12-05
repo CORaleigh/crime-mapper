@@ -245,6 +245,7 @@ export function useWhere({
     const locatorSource = new LocatorSearchSource({
       name: "Address or Place",
       url: "https://maps.raleighnc.gov/arcgis/rest/services/Locators/Locator/GeocodeServer",
+      singleLineFieldName: "SingleLine"
     });
     arcgisSearch.current.sources.add(locatorSource);
     addSource(
