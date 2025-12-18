@@ -40,8 +40,7 @@ export default function Where({
     handleSearchComplete,
     handleSearchReady,
     refreshDistance,
-    clear,
-    handleSuggestionsComplete
+    clear
   } = useWhere({ arcgisMap, onGeometryChange, incidentsLayer });
 
   return (
@@ -111,7 +110,6 @@ export default function Where({
               includeDefaultSourcesDisabled
               onarcgisSearchComplete={handleSearchComplete}
               onarcgisSearchClear={handleClearClick}
-              onarcgisSuggestComplete={handleSuggestionsComplete}
               resultGraphicDisabled
               onarcgisReady={handleSearchReady}
               allPlaceholder="Search by address or area"
