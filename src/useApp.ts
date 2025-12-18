@@ -120,6 +120,7 @@ export const useApp = () => {
   };
 
   const fetchAllDescriptions = useCallback(async () => {
+    
     if (!arcgisMap.current) return;
     if (!arcgisMap.current.ready) return;
     const layer = arcgisMap.current.view.map?.allLayers.find(
@@ -197,15 +198,15 @@ export const useApp = () => {
         a.description.localeCompare(b.description)
       ),
     }));
-
     setAllDescriptions(result.filter((item) => item.descriptions.length > 0));
   }, [showViolentCrimeOnly, whenClause, geometryFilter, categories]);
 
-  const handleDescriptionShow = (show: boolean) => {
+  const handleDescriptionShow = useCallback((show: boolean) => {
     if (show) {
+      
       fetchAllDescriptions();
     }
-  };
+  }, [fetchAllDescriptions]);
 
   const handleThemeChange = useCallback(() => {
     setTheme((prev: "light" | "dark") => {
@@ -224,9 +225,10 @@ export const useApp = () => {
   }, []);
   useEffect(() => {
     if (selectedSegment === "what") {
+
       fetchAllDescriptions();
     }
-  }, [selectedSegment]);
+  }, [selectedSegment, fetchAllDescriptions]);
 
   const handleCrimeTypeChange = (types: string[]) => {
     if (types.length > 0) {
