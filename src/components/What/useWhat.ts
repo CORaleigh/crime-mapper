@@ -122,7 +122,10 @@ export function useWhat({
         ...prevState,
         [item.group]: Array.from(new Set(next)),
       }));
-
+console.log( JSON.stringify({
+          ...groupSelections,
+          [item.group]: Array.from(new Set(next)),
+        }))
       updateSearchParam(
         "groupSelections",
         JSON.stringify({
@@ -133,6 +136,28 @@ export function useWhat({
     },
     [groupSelections, setGroupSelections]
   );
+
+  const selectAllInGroup = useCallback(
+  (item: Description, selectAll: boolean) => {
+    const next = selectAll
+      ? item.descriptions.map((d) => d.description) // ALL
+      : []; // CLEAR
+
+    setGroupSelections((prevState) => ({
+      ...prevState,
+      [item.group]: next,
+    }));
+    
+    updateSearchParam(
+      "groupSelections",
+      JSON.stringify({
+        ...groupSelections,
+        [item.group]: next,
+      })
+    );
+  },
+  [groupSelections]
+);
 
   const violentCrimeSelected = useCallback(
     async (checked: boolean) => {
@@ -351,5 +376,6 @@ export function useWhat({
     handleViolentCrimeSwitchChange,
     handleTopCrimeSwitchChange,
     removeAllFilters,
+    selectAllInGroup
   };
 }

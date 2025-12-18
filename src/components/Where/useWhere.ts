@@ -10,6 +10,7 @@ import type { TargetedEvent } from "@esri/calcite-components";
 import Graphic from "@arcgis/core/Graphic";
 import * as generalizeOperator from "@arcgis/core/geometry/operators/generalizeOperator.js";
 import { useSearchParamHelpers } from "../../useSearchParamHelpers";
+import * as unionOperator from "@arcgis/core/geometry/operators/unionOperator.js";
 
 type Mode = "city" | "extent" | "draw" | "search";
 
@@ -232,6 +233,57 @@ export function useWhere({
         searchFields: searchFields,
         displayField: displayField,
         minSuggestCharacters: minSuggestCharacters,
+        getSuggestions: async (params: __esri.GetSuggestionsParametersParams) => {
+          if (layer.type !== "feature") return [];
+
+          const domain = (layer as __esri.FeatureLayer).getFieldDomain(searchFields[0]);
+          if (domain && domain.type === "coded-value") {
+            const codedValues = (domain as __esri.CodedValueDomain).codedValues.filter((cv) =>
+              cv.name.toLowerCase().includes(params.suggestTerm.toLowerCase())
+            );
+            return codedValues.map((cv: __esri.CodedValue) => ({
+              key: cv.code,
+              text: cv.name,
+              sourceIndex: params.sourceIndex,
+            }));
+          }
+          const results = await (layer as __esri.FeatureLayer).queryFeatures({
+            returnDistinctValues: true,
+            outFields,
+            returnGeometry: false,
+            orderByFields: searchFields,
+            num: 6,
+            where: `${searchFields[0]} LIKE '%${params.suggestTerm}%'`
+          });
+
+          return results.features.map((feature: __esri.Graphic) => ({
+            key: feature.getAttribute(outFields[0]),
+            text: feature.getAttribute(outFields[0]),
+            sourceIndex: params.sourceIndex,
+          }));
+        },
+        getResults: async (params: __esri.GetResultsHandlerParams): Promise<__esri.SearchResult[]>  => {
+          
+          if (layer.type !== "feature") return [];
+
+          const results = await (layer as __esri.FeatureLayer).queryFeatures({
+            outFields,
+            returnGeometry: true,
+            where: `${searchFields[0]} = '${params.suggestResult.key}'`
+          });
+          const geoms = results.features.map((feature: __esri.Graphic) => {
+            return feature.geometry;
+          });
+          const union = unionOperator.executeMany(geoms as __esri.GeometryUnion[]);
+          return [{
+            feature: new Graphic({ attributes: results.features[0].attributes, geometry: union }),
+            name: layerName,
+          }] as __esri.SearchResult[]
+          // return results.features.map((feature: __esri.Graphic) => ({
+          //   feature: { geometry: union},
+          //   name: layerName,
+          // })) as __esri.SearchResult[];
+        }
       });
       arcgisSearch.sources.add(source);
     },
@@ -245,7 +297,7 @@ export function useWhere({
     const locatorSource = new LocatorSearchSource({
       name: "Address or Place",
       url: "https://maps.raleighnc.gov/arcgis/rest/services/Locators/Locator/GeocodeServer",
-      singleLineFieldName: "SingleLine"
+      singleLineFieldName: "SingleLine",
     });
     arcgisSearch.current.sources.add(locatorSource);
     addSource(
@@ -259,9 +311,9 @@ export function useWhere({
     addSource(
       arcgisSearch.current,
       "Raleigh Neighborhood Registry",
-      ["NAME"],
-      ["NAME"],
-      "NAME",
+      ["Name"],
+      ["Name"],
+      "Name",
       3
     );
     addSource(

@@ -41,6 +41,7 @@ export default function Where({
     handleSearchReady,
     refreshDistance,
     clear,
+    handleSuggestionsComplete
   } = useWhere({ arcgisMap, onGeometryChange, incidentsLayer });
 
   return (
@@ -110,6 +111,7 @@ export default function Where({
               includeDefaultSourcesDisabled
               onarcgisSearchComplete={handleSearchComplete}
               onarcgisSearchClear={handleClearClick}
+              onarcgisSuggestComplete={handleSuggestionsComplete}
               resultGraphicDisabled
               onarcgisReady={handleSearchReady}
               allPlaceholder="Search by address or area"
@@ -134,7 +136,7 @@ export default function Where({
               oncalciteInputNumberChange={(e) => {
                 setBufferDistance(
                   Number((e.target as HTMLCalciteInputNumberElement).value)
-                )
+                );
               }}
             >
               <calcite-action

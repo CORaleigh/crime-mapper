@@ -52,6 +52,7 @@ export default function What(props: WhatProps) {
     handleViolentCrimeSwitchChange,
     handleTopCrimeSwitchChange,
     removeAllFilters,
+    selectAllInGroup,
   } = useWhat({
     categories,
     allDescriptions,
@@ -180,6 +181,34 @@ export default function What(props: WhatProps) {
             >
               {descriptions?.map((item: Description) => (
                 <calcite-list-item-group key={item.group} heading={item.group}>
+                  <div
+                    style={{
+                      display: "flex",
+                      position: "absolute",
+                      right: "1rem",
+                    }}
+                  >
+                    <calcite-action
+                      text="Select All"
+                      scale="s"
+                      textEnabled
+                      icon="check-square"
+                      onClick={() => {
+                        selectAllInGroup(item, true);
+                      }}
+                      style={{ marginTop: "0.5rem" }}
+                    ></calcite-action>
+                    <calcite-action
+                      text="Select None"
+                      scale="s"
+                      textEnabled
+                      icon="square"
+                      onClick={() => {
+                        selectAllInGroup(item, false);
+                      }}
+                      style={{ marginTop: "0.5rem" }}
+                    ></calcite-action>
+                  </div>
                   {item.descriptions.map(
                     (description: { description: string; count: number }) => (
                       <calcite-list-item

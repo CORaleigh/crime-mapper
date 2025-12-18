@@ -3,6 +3,7 @@ import "@esri/calcite-components";
 
 // Import the map components
 import "@arcgis/map-components/dist/components/arcgis-map";
+
 import "@arcgis/map-components/dist/components/arcgis-layer-list";
 import "@arcgis/map-components/dist/components/arcgis-search";
 import "@arcgis/map-components/dist/components/arcgis-zoom";
@@ -118,7 +119,7 @@ function App() {
                 url: "https://maps.raleighnc.gov/arcgis/rest/services/Locators/Locator/GeocodeServer",
                 placeholder: "Search by address",
                 maxResults: 6,
-                singleLineFieldName: "SingleLine"
+                singleLineFieldName: "SingleLine",
               }),
             ])
           }
@@ -303,14 +304,7 @@ function App() {
                 arcgisMap={arcgisMap.current}
               />
             </div>
-            <div hidden={selectedSegment !== "when"}>
-              <When
-                onWhereChange={setWhenClause}
-                isMobile={isMobile}
-                onFilterPanelClose={() => setShowFilter(false)}
-                open={showFilter}
-              />
-            </div>
+
             <div hidden={selectedSegment !== "where"}>
               <Where
                 arcgisMap={arcgisMap.current}
@@ -319,6 +313,14 @@ function App() {
                 onFilterPanelClose={() => setShowFilter(false)}
                 open={showFilter}
                 incidentsLayer={incidentsLayer.current}
+              />
+            </div>
+            <div hidden={selectedSegment !== "when"}>
+              <When
+                onWhereChange={setWhenClause}
+                isMobile={isMobile}
+                onFilterPanelClose={() => setShowFilter(false)}
+                open={showFilter}
               />
             </div>
           </calcite-panel>
