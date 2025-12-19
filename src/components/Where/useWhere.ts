@@ -302,7 +302,7 @@ export function useWhere({
     arcgisSearch.current.sources.add(locatorSource);
     addSource(
       arcgisSearch.current,
-      "Raleigh Police Districts",
+      "Police Districts",
       ["DISTRICT"],
       ["DISTRICT"],
       "DISTRICT",
@@ -318,7 +318,7 @@ export function useWhere({
     );
     addSource(
       arcgisSearch.current,
-      "Raleigh City Council Districts",
+      "City Council Districts",
       ["COUNCIL_PERSON", "COUNCIL_DIST"],
       ["COUNCIL_PERSON", "COUNCIL_DIST"],
       "COUNCIL_PERSON",

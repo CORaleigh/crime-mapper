@@ -133,6 +133,7 @@ function App() {
       <arcgis-expand slot="top-right" group="top-right" label="Legend">
         <arcgis-legend />
       </arcgis-expand>
+
       <arcgis-basemap-toggle slot="bottom-right" />
     </arcgis-map>
   );
@@ -270,6 +271,14 @@ function App() {
               ></calcite-action>
             </calcite-action-group>
             <calcite-action-group slot="actions-end" menuPlacement="bottom-end">
+              <calcite-action
+                icon="speech-bubble-exclamation"
+                textEnabled
+                text="Report Crime"
+                onClick={() =>
+                  window.open("https://crc.raleighpd.org/", "_blank")
+                }
+              ></calcite-action>
               <calcite-action
                 text={theme === "light" ? "Light" : "Dark"}
                 icon={theme === "light" ? "brightness" : "moon"}
