@@ -249,7 +249,7 @@ arcgis-feature-table.show-table.show-map {
 }
 
 calcite-tile-group {
-  height: calc(100vh - 180px);
+  height: calc(100vh - 220px);
 }
 calcite-flow-item calcite-list {
   height: calc(100vh - 160px);
