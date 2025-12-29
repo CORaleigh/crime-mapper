@@ -109,6 +109,7 @@ calcite-shell-panel {
   --calcite-action-background-color: transparent;
 }
 
+
 :host([checked]) .label {
   background-color: #e4ca85;
   color: #11233f;

@@ -6,8 +6,11 @@ import "@esri/calcite-components/components/calcite-input-number";
 import "@esri/calcite-components/components/calcite-action-bar";
 import "@esri/calcite-components/components/calcite-action-group";
 import "@esri/calcite-components/components/calcite-action";
+import "@esri/calcite-components/components/calcite-combobox";
+import "@esri/calcite-components/components/calcite-combobox-item";
+
 import "@arcgis/map-components/dist/components/arcgis-search";
-import { useWhere } from "./useWhere";
+import { useWhere, type FilterLayer } from "./useWhere";
 
 interface WhereProps {
   onGeometryChange: (geometry: __esri.Polygon | null) => void;
@@ -40,7 +43,13 @@ export default function Where({
     handleSearchComplete,
     handleSearchReady,
     refreshDistance,
-    clear
+    clear,
+    filterLayers,
+    handleFilterLayerChange,
+    selectedFilterLayerName,
+    handleComboboxChange,
+    handleUnitsChanged,
+    bufferUnits
   } = useWhere({ arcgisMap, onGeometryChange, incidentsLayer });
 
   return (
@@ -49,6 +58,7 @@ export default function Where({
       closed={!open}
       closable={isMobile}
       oncalcitePanelClose={onFilterPanelClose}
+      style={{ height: "100vh" }}
     >
       {graphic.current && (
         <div slot="header-actions-end">
@@ -71,8 +81,9 @@ export default function Where({
           >
             <calcite-option value="city">City-wide</calcite-option>
             <calcite-option value="extent">Current Extent</calcite-option>
+            <calcite-option value="search">Address</calcite-option>
+            <calcite-option value="district">District or Place</calcite-option>
             <calcite-option value="draw">Drawn Graphic</calcite-option>
-            <calcite-option value="search">Address or Area</calcite-option>
           </calcite-select>
         </calcite-label>
 
@@ -118,32 +129,76 @@ export default function Where({
             />
           </calcite-label>
         )}
+        {mode === "district" && (
+          <>
+            <calcite-label>
+              Select layer name
+              <calcite-select
+                scale="l"
+                label="Select layer name"
+                oncalciteSelectChange={handleFilterLayerChange}
+              >
+                {filterLayers.map((layer: FilterLayer) => (
+                  <calcite-option key={layer.name} value={layer.name}>
+                    {layer.name}
+                  </calcite-option>
+                ))}
+              </calcite-select>
+            </calcite-label>
+            {filterLayers.find((l) => l.name === selectedFilterLayerName)
+              ?.values && (
+              <calcite-label>
+                <calcite-combobox
+                  scale="l"
+                  label="Select feature"
+                  selectionMode="single"
+                  oncalciteComboboxChange={handleComboboxChange}
+                  placeholder="Select feature"
+                >
+                  {filterLayers
+                    .find((l) => l.name === selectedFilterLayerName)
+                    ?.values?.map((v) => (
+                      <calcite-combobox-item
+                        key={v}
+                        text-label={v}
+                        value={v}
+                      ></calcite-combobox-item>
+                    ))}
+                </calcite-combobox>
+              </calcite-label>
+            )}
+          </>
+        )}
 
-        {(mode === "draw" || mode === "search") && (
+        {(mode === "draw" || mode === "search" || mode === "district") && (
           <calcite-label>
             Buffer Distance:
-            <calcite-input-number
-              ref={distanceInput}
-              step={0.1}
-              min={0}
-              max={5}
-              suffixText="miles"
-              value={bufferDistance.toString()}
-              scale="l"
-              clearable
-              oncalciteInputNumberChange={(e) => {
-                setBufferDistance(
-                  Number((e.target as HTMLCalciteInputNumberElement).value)
-                );
-              }}
-            >
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <calcite-input-number
+                ref={distanceInput}
+                step={bufferUnits === "miles" ? 0.1 : 50}
+                min={0}
+                max={bufferUnits === "miles" ? 5 : 20000}
+                value={bufferDistance.toString()}
+                scale="l"
+                clearable
+                oncalciteInputNumberChange={(e) => {
+                  
+                  setBufferDistance(
+                    Number((e.target as HTMLCalciteInputNumberElement).value)
+                  );
+                }}
+              ></calcite-input-number>
+              <calcite-select label="units" scale="l" oncalciteSelectChange={handleUnitsChanged}>
+                <calcite-option selected={bufferUnits === "miles"} value="miles">miles</calcite-option>
+                <calcite-option selected={bufferUnits === "feet"} value="feet">feet</calcite-option>
+              </calcite-select>
               <calcite-action
                 icon="refresh"
-                slot="action"
                 text="Refresh"
                 onClick={refreshDistance}
               />
-            </calcite-input-number>
+            </div>
           </calcite-label>
         )}
       </div>

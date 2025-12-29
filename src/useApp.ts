@@ -258,6 +258,8 @@ export const useApp = () => {
       layer.definitionExpression = combinedWhere;
       arcgisFeatureTable.current.filterGeometry = geometryFilter;
       arcgisFeatureTable.current.refresh();
+      layer.refresh();
+      if (geometryFilter)arcgisMap.current?.view.goTo(geometryFilter?.extent?.clone().expand(1.5));
     }
   }, [combinedWhere, geometryFilter, incidentsLayerView.current]);
 

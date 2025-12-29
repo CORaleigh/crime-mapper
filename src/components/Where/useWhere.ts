@@ -12,8 +12,15 @@ import * as generalizeOperator from "@arcgis/core/geometry/operators/generalizeO
 import { useSearchParamHelpers } from "../../useSearchParamHelpers";
 import * as unionOperator from "@arcgis/core/geometry/operators/unionOperator.js";
 
-type Mode = "city" | "extent" | "draw" | "search";
-
+type Mode = "city" | "extent" | "draw" | "search" | "district";
+export type FilterLayer = {
+  name: string;
+  field?: string;
+  values?: string[];
+  prompt?: boolean;
+  distance?: number;
+  units?: string;
+};
 interface UseWhereProps {
   arcgisMap: HTMLArcgisMapElement | null;
   onGeometryChange: (geometry: __esri.Polygon | null) => void;
@@ -27,6 +34,7 @@ export function useWhere({
 }: UseWhereProps) {
   const [mode, setMode] = useState<Mode>("city");
   const [bufferDistance, setBufferDistance] = useState<number>(0);
+  const [bufferUnits, setBufferUnits] = useState<string>("miles");
   const [selectedTool, setSelectedTool] = useState<string>("");
   const { updateSearchParam, deleteSearchParam, getSearchParam } =
     useSearchParamHelpers();
@@ -36,6 +44,47 @@ export function useWhere({
   const graphic = useRef<__esri.Graphic | null>(null);
   const distanceInput = useRef<HTMLCalciteInputNumberElement>(null);
   const extentWatcher = useRef<IHandle | null>(null);
+  const [selectedFilterLayerName, setSelectedFilterLayerName] =
+    useState<string>("");
+  const [filterLayers, setFilterLayers] = useState<FilterLayer[]>([
+    { name: "Select a layer...", prompt: true },
+    {
+      name: "Police Districts",
+      field: "DISTRICT",
+      values: [],
+      distance: 0,
+      units: "miles",
+    },
+    {
+      name: "Raleigh Neighborhood Registry",
+      field: "Name",
+      values: [],
+      distance: 0,
+      units: "miles",
+    },
+    {
+      name: "Raleigh Parks",
+      field: "NAME",
+      values: [],
+      distance: 0,
+      units: "miles",
+    },
+    {
+      name: "Raleigh Greenway Trails",
+      field: "TRAIL_NAME",
+      values: [],
+      distance: 200,
+      units: "feet",
+    },
+    {
+      name: "City Council Districts",
+      field: "COUNCIL_DIST",
+      values: [],
+      distance: 0,
+      units: "miles",
+    },
+    { name: "Hospitality District", distance: 0, units: "miles" },
+  ]);
 
   /** Helper — get or create the sketch layer */
   const getSketchLayer = useCallback((mapEl: HTMLArcgisMapElement) => {
@@ -43,7 +92,9 @@ export function useWhere({
     let sketchLayer = mapEl.view.map.findLayerById("sketch-layer");
     if (!sketchLayer) {
       sketchLayer = new GraphicsLayer({ id: "sketch-layer", listMode: "hide" });
-      mapEl.view.map.add(sketchLayer);
+      (sketchLayer as __esri.GraphicsLayer).effect =
+        "drop-shadow(4px 0px 8px rgba(0, 0, 0, 0.8))";
+      mapEl.view.map.add(sketchLayer, 1);
     }
     return sketchLayer as __esri.GraphicsLayer;
   }, []);
@@ -86,10 +137,9 @@ export function useWhere({
     (sketchLayer: __esri.GraphicsLayer, distance: number) => {
       if (!graphic.current) return;
       const newGraphic = graphic.current.clone();
-
       if (distance > 0 && newGraphic.geometry) {
         const buffered = bufferOperator.execute(newGraphic.geometry, distance, {
-          unit: "miles",
+          unit: bufferUnits === "feet" ? "feet" : "miles",
         });
         newGraphic.geometry = buffered;
       }
@@ -105,7 +155,7 @@ export function useWhere({
 
       sketchLayer.removeAll();
       sketchLayer.add(newGraphic);
-      setTimeout(() => arcgisMap?.view.goTo(newGraphic), 1000);
+      arcgisMap?.view.goTo(newGraphic);
 
       const generalized = generalizeOperator
         .execute(newGraphic.geometry as __esri.GeometryUnion, 5)
@@ -114,7 +164,7 @@ export function useWhere({
 
       onGeometryChange(new Polygon(generalized));
     },
-    [arcgisMap?.view, onGeometryChange]
+    [arcgisMap?.view, onGeometryChange, bufferUnits]
   );
 
   /** Clear all graphics and reset */
@@ -125,6 +175,7 @@ export function useWhere({
     if (!arcgisMap) return;
     const sketchLayer = getSketchLayer(arcgisMap);
     sketchLayer?.removeAll();
+    setMode("city");
   }, [arcgisMap, getSketchLayer, onGeometryChange]);
 
   /** Handle area filter select */
@@ -137,7 +188,7 @@ export function useWhere({
 
       getSketchLayer(arcgisMap as HTMLArcgisMapElement)?.removeAll();
       // Clear existing graphics when switching modes
-
+      setSelectedFilterLayerName(filterLayers[0].name);
       if (value === "city" || value === "extent") clear();
 
       if (value === "extent" && arcgisMap?.view) {
@@ -153,6 +204,141 @@ export function useWhere({
       }
     },
     [arcgisMap, clear, onGeometryChange]
+  );
+
+  const getDistinctValues = useCallback(
+    async (layerName: string, fieldName: string) => {
+      if (!arcgisMap?.view?.map) return [];
+      const layer = arcgisMap.view.map.allLayers.find(
+        (layer: __esri.Layer) => layer.title === layerName
+      );
+      if (!layer) return [];
+      const field = (layer as __esri.FeatureLayer).fields.find(
+        (f: __esri.Field) => f.name === fieldName
+      );
+      if (!field) return [];
+
+      const results = await (layer as __esri.FeatureLayer).queryFeatures({
+        where: `${fieldName} IS NOT NULL`,
+        returnDistinctValues: true,
+        outFields: [fieldName],
+        returnGeometry: false,
+        orderByFields: [fieldName],
+      });
+      return results.features.map((feature: __esri.Graphic) => {
+        if (field.domain && field.domain.type === "coded-value") {
+          const codedValue = (
+            field.domain as __esri.CodedValueDomain
+          ).codedValues.find(
+            (cv: __esri.CodedValue) =>
+              cv.code === feature.getAttribute(fieldName)
+          );
+          return codedValue?.name;
+        }
+        return feature.getAttribute(fieldName);
+      });
+    },
+    [arcgisMap]
+  );
+  const handleUnitsChanged = useCallback(
+    (e: TargetedEvent<HTMLCalciteSelectElement, void>) => {
+      if (e.target.value === "feet") {
+        setBufferDistance(parseFloat((bufferDistance * 5280).toFixed(0)));
+      } else {
+        setBufferDistance(parseFloat((bufferDistance / 5280).toFixed(1)));
+      }
+      setBufferUnits(e.target.value);
+    },
+    [bufferDistance]
+  );
+
+  const handleFilterLayerChange = useCallback(
+    async (e: TargetedEvent<HTMLCalciteSelectElement, void>) => {
+      const layerName = e.target.value;
+      setSelectedFilterLayerName(layerName);
+
+      const filterLayer = filterLayers.find((l) => l.name === layerName);
+      if (!filterLayer || filterLayer.prompt) return;
+      setBufferDistance(filterLayer.distance || 0);
+      setBufferUnits(filterLayer.units as string);
+      if (!filterLayer.field) {
+        const layer = arcgisMap?.view.map?.allLayers.find(
+          (l: __esri.Layer) => l.title === layerName
+        );
+        const results = await (layer as __esri.FeatureLayer).queryFeatures({
+          outFields: [],
+          returnGeometry: true,
+          where: `1=1`,
+        });
+        if (results.features.length > 0) {
+          const sketchLayer = getSketchLayer(arcgisMap as HTMLArcgisMapElement);
+          if (!sketchLayer) return;
+          graphic.current = results.features[0];
+          updateGeometry(sketchLayer, bufferDistance);
+        }
+        return;
+      }
+      // fetch values only if not already cached
+      if (!filterLayer.values || filterLayer.values.length === 0) {
+        const distinctValues = await getDistinctValues(
+          filterLayer.name,
+          filterLayer.field
+        ); // your existing function
+        setFilterLayers((prev) =>
+          prev.map((l) =>
+            l.name === layerName ? { ...l, values: distinctValues } : l
+          )
+        );
+      }
+    },
+    [filterLayers, getDistinctValues]
+  );
+
+  const handleComboboxChange = useCallback(
+    async (e: TargetedEvent<HTMLCalciteComboboxElement, void>) => {
+      const layerName = selectedFilterLayerName;
+      const filterLayer = filterLayers.find((l) => l.name === layerName);
+      if (!filterLayer || !filterLayer.field) return;
+      let value = e.target.value as string;
+      if (!value) clear();
+      const layer = arcgisMap?.view.map?.allLayers.find(
+        (l: __esri.Layer) => l.title === layerName
+      );
+      if (!layer) return;
+
+      const field = (layer as __esri.FeatureLayer).fields.find(
+        (f: __esri.Field) => f.name === filterLayer.field
+      );
+      if (!field) return;
+
+      if (field.domain && field.domain.type === "coded-value") {
+        const codedValue = (
+          field.domain as __esri.CodedValueDomain
+        ).codedValues.find(
+          (cv: __esri.CodedValue) =>
+            cv.name.toLowerCase() === value.toLowerCase()
+        );
+        if (codedValue) {
+          value = codedValue.code as string;
+        }
+      }
+
+      const results = await (layer as __esri.FeatureLayer).queryFeatures({
+        outFields: [filterLayer.field],
+        returnGeometry: true,
+        where: `${filterLayer.field} = '${value}'`,
+      });
+      const geoms = results.features.map((feature: __esri.Graphic) => {
+        return feature.geometry;
+      });
+      const union = unionOperator.executeMany(geoms as __esri.GeometryUnion[]);
+
+      const sketchLayer = getSketchLayer(arcgisMap as HTMLArcgisMapElement);
+      if (!sketchLayer) return;
+      graphic.current = new Graphic({ geometry: union });
+      updateGeometry(sketchLayer, bufferDistance);
+    },
+    [selectedFilterLayerName]
   );
 
   /** Handle draw tool button clicks */
@@ -233,57 +419,71 @@ export function useWhere({
         searchFields: searchFields,
         displayField: displayField,
         minSuggestCharacters: minSuggestCharacters,
-        getSuggestions: async (params: __esri.GetSuggestionsParametersParams) => {
-          if (layer.type !== "feature") return [];
+        // getSuggestions: async (
+        //   params: __esri.GetSuggestionsParametersParams
+        // ) => {
+        //   if (layer.type !== "feature") return [];
 
-          const domain = (layer as __esri.FeatureLayer).getFieldDomain(searchFields[0]);
-          if (domain && domain.type === "coded-value") {
-            const codedValues = (domain as __esri.CodedValueDomain).codedValues.filter((cv) =>
-              cv.name.toLowerCase().includes(params.suggestTerm.toLowerCase())
-            );
-            return codedValues.map((cv: __esri.CodedValue) => ({
-              key: cv.code,
-              text: cv.name,
-              sourceIndex: params.sourceIndex,
-            }));
-          }
-          const results = await (layer as __esri.FeatureLayer).queryFeatures({
-            returnDistinctValues: true,
-            outFields,
-            returnGeometry: false,
-            orderByFields: searchFields,
-            num: 6,
-            where: `${searchFields[0]} LIKE '%${params.suggestTerm}%'`
-          });
+        //   const domain = (layer as __esri.FeatureLayer).getFieldDomain(
+        //     searchFields[0]
+        //   );
+        //   if (domain && domain.type === "coded-value") {
+        //     const codedValues = (
+        //       domain as __esri.CodedValueDomain
+        //     ).codedValues.filter((cv) =>
+        //       cv.name.toLowerCase().includes(params.suggestTerm.toLowerCase())
+        //     );
+        //     return codedValues.map((cv: __esri.CodedValue) => ({
+        //       key: cv.code,
+        //       text: cv.name,
+        //       sourceIndex: params.sourceIndex,
+        //     }));
+        //   }
+        //   const results = await (layer as __esri.FeatureLayer).queryFeatures({
+        //     returnDistinctValues: true,
+        //     outFields,
+        //     returnGeometry: false,
+        //     orderByFields: searchFields,
+        //     num: 6,
+        //     where: `${searchFields[0]} LIKE '%${params.suggestTerm}%'`,
+        //   });
 
-          return results.features.map((feature: __esri.Graphic) => ({
-            key: feature.getAttribute(outFields[0]),
-            text: feature.getAttribute(outFields[0]),
-            sourceIndex: params.sourceIndex,
-          }));
-        },
-        getResults: async (params: __esri.GetResultsHandlerParams): Promise<__esri.SearchResult[]>  => {
-          
-          if (layer.type !== "feature") return [];
+        //   return results.features.map((feature: __esri.Graphic) => ({
+        //     key: feature.getAttribute(outFields[0]),
+        //     text: feature.getAttribute(outFields[0]),
+        //     sourceIndex: params.sourceIndex,
+        //   }));
+        // },
+        // getResults: async (
+        //   params: __esri.GetResultsHandlerParams
+        // ): Promise<__esri.SearchResult[]> => {
+        //   if (layer.type !== "feature") return [];
 
-          const results = await (layer as __esri.FeatureLayer).queryFeatures({
-            outFields,
-            returnGeometry: true,
-            where: `${searchFields[0]} = '${params.suggestResult.key}'`
-          });
-          const geoms = results.features.map((feature: __esri.Graphic) => {
-            return feature.geometry;
-          });
-          const union = unionOperator.executeMany(geoms as __esri.GeometryUnion[]);
-          return [{
-            feature: new Graphic({ attributes: results.features[0].attributes, geometry: union }),
-            name: layerName,
-          }] as __esri.SearchResult[]
-          // return results.features.map((feature: __esri.Graphic) => ({
-          //   feature: { geometry: union},
-          //   name: layerName,
-          // })) as __esri.SearchResult[];
-        }
+        //   const results = await (layer as __esri.FeatureLayer).queryFeatures({
+        //     outFields,
+        //     returnGeometry: true,
+        //     where: `${searchFields[0]} = '${params.suggestResult.key}'`,
+        //   });
+        //   const geoms = results.features.map((feature: __esri.Graphic) => {
+        //     return feature.geometry;
+        //   });
+        //   const union = unionOperator.executeMany(
+        //     geoms as __esri.GeometryUnion[]
+        //   );
+        //   return [
+        //     {
+        //       feature: new Graphic({
+        //         attributes: results.features[0].attributes,
+        //         geometry: union,
+        //       }),
+        //       name: layerName,
+        //     },
+        //   ] as __esri.SearchResult[];
+        //   // return results.features.map((feature: __esri.Graphic) => ({
+        //   //   feature: { geometry: union},
+        //   //   name: layerName,
+        //   // })) as __esri.SearchResult[];
+        // },
       });
       arcgisSearch.sources.add(source);
     },
@@ -300,30 +500,46 @@ export function useWhere({
       singleLineFieldName: "SingleLine",
     });
     arcgisSearch.current.sources.add(locatorSource);
-    addSource(
-      arcgisSearch.current,
-      "Police Districts",
-      ["DISTRICT"],
-      ["DISTRICT"],
-      "DISTRICT",
-      3
-    );
-    addSource(
-      arcgisSearch.current,
-      "Raleigh Neighborhood Registry",
-      ["Name"],
-      ["Name"],
-      "Name",
-      3
-    );
-    addSource(
-      arcgisSearch.current,
-      "City Council Districts",
-      ["COUNCIL_PERSON", "COUNCIL_DIST"],
-      ["COUNCIL_PERSON", "COUNCIL_DIST"],
-      "COUNCIL_PERSON",
-      1
-    );
+    // addSource(
+    //   arcgisSearch.current,
+    //   "Police Districts",
+    //   ["DISTRICT"],
+    //   ["DISTRICT"],
+    //   "DISTRICT",
+    //   3
+    // );
+    // addSource(
+    //   arcgisSearch.current,
+    //   "Raleigh Neighborhood Registry",
+    //   ["Name"],
+    //   ["Name"],
+    //   "Name",
+    //   3
+    // );
+    // addSource(
+    //   arcgisSearch.current,
+    //   "Raleigh Parks",
+    //   ["NAME"],
+    //   ["NAME"],
+    //   "NAME",
+    //   3
+    // );
+    // addSource(
+    //   arcgisSearch.current,
+    //   "Raleigh Greenway Trails",
+    //   ["TRAIL_NAME"],
+    //   ["TRAIL_NAME"],
+    //   "TRAIL_NAME",
+    //   3
+    // );
+    // addSource(
+    //   arcgisSearch.current,
+    //   "City Council Districts",
+    //   ["COUNCIL_PERSON", "COUNCIL_DIST"],
+    //   ["COUNCIL_PERSON", "COUNCIL_DIST"],
+    //   "COUNCIL_PERSON",
+    //   1
+    // );
     setTimeout(() => {
       const input = arcgisSearch.current?.shadowRoot
         ?.querySelector("calcite-autocomplete")
@@ -371,5 +587,11 @@ export function useWhere({
     handleSearchReady,
     refreshDistance,
     clear,
+    filterLayers,
+    handleFilterLayerChange,
+    selectedFilterLayerName,
+    handleComboboxChange,
+    handleUnitsChanged,
+    bufferUnits,
   };
 }
