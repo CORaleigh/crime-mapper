@@ -154,7 +154,7 @@ export default function What(props: WhatProps) {
               >
                 <div slot="content-top" className="tile-icon">
                   <img
-                    src={category.attributes.icon}
+                    src={`./icons/${category.attributes.icon_svg}`}
                     alt={category.attributes.crime_group}
                   />
                 </div>
