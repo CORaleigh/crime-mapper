@@ -13,7 +13,7 @@ export const useApp = () => {
   const [combinedWhere, setCombinedWhere] = useState<string | undefined>(
     undefined
   );
-  const [geometryFilter, setFilterGeometry] = useState<__esri.Polygon | null>(
+  const [geometryFilter, setFilterGeometry] = useState<__esri.Polygon | __esri.Extent | null>(
     null
   );
   const [showMap, setShowMap] = useState(true);
@@ -248,7 +248,7 @@ export const useApp = () => {
   // 1️⃣ ArcGIS update
   useEffect(() => {
     if (!incidentsLayerView.current) return;
-
+    console.log(geometryFilter)
     incidentsLayerView.current.filter = {
       where: combinedWhere,
       geometry: geometryFilter,
@@ -259,7 +259,6 @@ export const useApp = () => {
       arcgisFeatureTable.current.filterGeometry = geometryFilter;
       arcgisFeatureTable.current.refresh();
       layer.refresh();
-      if (geometryFilter)arcgisMap.current?.view.goTo(geometryFilter?.extent?.clone().expand(1.5));
     }
   }, [combinedWhere, geometryFilter, incidentsLayerView.current]);
 

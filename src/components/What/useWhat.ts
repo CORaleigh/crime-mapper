@@ -122,10 +122,6 @@ export function useWhat({
         ...prevState,
         [item.group]: Array.from(new Set(next)),
       }));
-console.log( JSON.stringify({
-          ...groupSelections,
-          [item.group]: Array.from(new Set(next)),
-        }))
       updateSearchParam(
         "groupSelections",
         JSON.stringify({

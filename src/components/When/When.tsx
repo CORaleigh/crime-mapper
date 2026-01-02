@@ -31,8 +31,8 @@ export default function When({
       oncalcitePanelClose={onFilterPanelClose}
     >
       <div style={{ padding: "1rem" }}>
-        <calcite-label>
-          Show offenses in {preset}
+        <calcite-label scale="l" layout="inline">
+          Show offenses in the
           <calcite-select
             label="Preset"
             value={preset}
@@ -43,9 +43,9 @@ export default function When({
             }
             style={{ marginLeft: "0.5rem", width: "160px" }}
           >
-            <calcite-option value="90days">Past 90 Days</calcite-option>
-            <calcite-option value="month">Past Month</calcite-option>
-            <calcite-option value="week">Past Week</calcite-option>
+            <calcite-option value="90days">past 90 days</calcite-option>
+            <calcite-option value="month">past month</calcite-option>
+            <calcite-option value="week">past week</calcite-option>
             {/* <calcite-option value="">Custom Range</calcite-option> */}
           </calcite-select>
         </calcite-label>

@@ -13,7 +13,7 @@ import "@arcgis/map-components/dist/components/arcgis-search";
 import { useWhere, type FilterLayer } from "./useWhere";
 
 interface WhereProps {
-  onGeometryChange: (geometry: __esri.Polygon | null) => void;
+  onGeometryChange: (geometry: __esri.Polygon | __esri.Extent | null) => void;
   onFilterPanelClose: () => void;
   arcgisMap: HTMLArcgisMapElement | null;
   open: boolean;
@@ -33,7 +33,6 @@ export default function Where({
     graphic,
     mode,
     bufferDistance,
-    setBufferDistance,
     selectedTool,
     arcgisSearch,
     distanceInput,
@@ -42,12 +41,13 @@ export default function Where({
     handleClearClick,
     handleSearchComplete,
     handleSearchReady,
-    refreshDistance,
     clear,
     filterLayers,
     handleFilterLayerChange,
     selectedFilterLayerName,
+    selectedFeatureValue,
     handleComboboxChange,
+    handleDistanceChange,
     handleUnitsChanged,
     bufferUnits
   } = useWhere({ arcgisMap, onGeometryChange, incidentsLayer });
@@ -71,19 +71,19 @@ export default function Where({
         </div>
       )}
       <div style={{ padding: "1rem" }}>
-        <calcite-label>
-          Area Filter:
+        <calcite-label scale="l">
+          Filter by
           <calcite-select
             label="Area Filter"
             value={mode}
             oncalciteSelectChange={handleSelectChange}
             scale="l"
           >
-            <calcite-option value="city">City-wide</calcite-option>
-            <calcite-option value="extent">Current Extent</calcite-option>
-            <calcite-option value="search">Address</calcite-option>
-            <calcite-option value="district">District or Place</calcite-option>
-            <calcite-option value="draw">Drawn Graphic</calcite-option>
+            <calcite-option selected={mode === "city"} value="city">City-wide</calcite-option>
+            <calcite-option selected={mode === "extent"} value="extent">Current Extent</calcite-option>
+            <calcite-option selected={mode === "address"} value="address">Address</calcite-option>
+            <calcite-option selected={mode === "district"} value="district">District or Place</calcite-option>
+            <calcite-option selected={mode === "draw"} value="draw">Drawn Graphic</calcite-option>
           </calcite-select>
         </calcite-label>
 
@@ -113,7 +113,7 @@ export default function Where({
           </calcite-action-bar>
         )}
 
-        {mode === "search" && arcgisMap && (
+        {mode === "address" && arcgisMap && (
           <calcite-label>
             <arcgis-search
               ref={arcgisSearch}
@@ -123,23 +123,23 @@ export default function Where({
               onarcgisSearchClear={handleClearClick}
               resultGraphicDisabled
               onarcgisReady={handleSearchReady}
-              allPlaceholder="Search by address or area"
-              placeholder="Search by address or area"
+              allPlaceholder="Search by address"
+              placeholder="Search by address"
               popupDisabled
             />
           </calcite-label>
         )}
         {mode === "district" && (
           <>
-            <calcite-label>
-              Select layer name
+            <calcite-label scale="l">
+              Select layer
               <calcite-select
                 scale="l"
-                label="Select layer name"
+                label="Select layer"
                 oncalciteSelectChange={handleFilterLayerChange}
               >
                 {filterLayers.map((layer: FilterLayer) => (
-                  <calcite-option key={layer.name} value={layer.name}>
+                  <calcite-option key={layer.name} value={layer.name} selected={layer.name === selectedFilterLayerName}>
                     {layer.name}
                   </calcite-option>
                 ))}
@@ -147,13 +147,14 @@ export default function Where({
             </calcite-label>
             {filterLayers.find((l) => l.name === selectedFilterLayerName)
               ?.values && (
-              <calcite-label>
+              <calcite-label scale="l">
+                Select feature {selectedFeatureValue}
                 <calcite-combobox
                   scale="l"
-                  label="Select feature"
+                  label="Select feature..."
                   selectionMode="single"
                   oncalciteComboboxChange={handleComboboxChange}
-                  placeholder="Select feature"
+                  placeholder="Select feature..."
                 >
                   {filterLayers
                     .find((l) => l.name === selectedFilterLayerName)
@@ -162,6 +163,7 @@ export default function Where({
                         key={v}
                         text-label={v}
                         value={v}
+                        selected={v === selectedFeatureValue}
                       ></calcite-combobox-item>
                     ))}
                 </calcite-combobox>
@@ -170,10 +172,10 @@ export default function Where({
           </>
         )}
 
-        {(mode === "draw" || mode === "search" || mode === "district") && (
-          <calcite-label>
-            Buffer Distance:
-            <div style={{ display: "flex", alignItems: "center" }}>
+        {(mode === "draw" || mode === "address" || mode === "district") && (
+          <calcite-label scale="l">
+            Buffer Distance
+            <div className="buffer-distance">
               <calcite-input-number
                 ref={distanceInput}
                 step={bufferUnits === "miles" ? 0.1 : 50}
@@ -182,23 +184,20 @@ export default function Where({
                 value={bufferDistance.toString()}
                 scale="l"
                 clearable
-                oncalciteInputNumberChange={(e) => {
-                  
-                  setBufferDistance(
-                    Number((e.target as HTMLCalciteInputNumberElement).value)
-                  );
-                }}
+                oncalciteInputNumberChange={handleDistanceChange}
               ></calcite-input-number>
               <calcite-select label="units" scale="l" oncalciteSelectChange={handleUnitsChanged}>
                 <calcite-option selected={bufferUnits === "miles"} value="miles">miles</calcite-option>
                 <calcite-option selected={bufferUnits === "feet"} value="feet">feet</calcite-option>
               </calcite-select>
-              <calcite-action
+
+            </div>
+                          {/* <calcite-action
                 icon="refresh"
                 text="Refresh"
+                textEnabled
                 onClick={refreshDistance}
-              />
-            </div>
+              /> */}
           </calcite-label>
         )}
       </div>

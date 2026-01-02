@@ -1,25 +1,29 @@
-import { useSearchParams } from "react-router-dom";
+import { useCallback } from "react";
 
 export function useSearchParamHelpers() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  /** Get the current value of a param */
+  const getSearchParam = useCallback((key: string) => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get(key);
+  }, []);
 
-  const updateSearchParam = (key: string, value: string) => {
-    setSearchParams(() => {
-      const newParams = new URLSearchParams(window.location.search);
-      newParams.set(key, value);  
-      return newParams;
-    });
-  };
+  /** Update or add a search param without reloading */
+  const updateSearchParam = useCallback((key: string, value: string) => {
+    const params = new URLSearchParams(window.location.search);
+    params.set(key, value);
+    const newUrl =
+      window.location.pathname + "?" + params.toString() + window.location.hash;
+    window.history.replaceState({}, "", newUrl);
+  }, []);
 
-  const deleteSearchParam = (key: string) => {
-    setSearchParams(() => {
-      const newParams = new URLSearchParams(window.location.search);
-      newParams.delete(key);  
-      return newParams;
-    });
-  };
+  /** Delete a search param without reloading */
+  const deleteSearchParam = useCallback((key: string) => {
+    const params = new URLSearchParams(window.location.search);
+    params.delete(key);
+    const newUrl =
+      window.location.pathname + "?" + params.toString() + window.location.hash;
+    window.history.replaceState({}, "", newUrl);
+  }, []);
 
-  const getSearchParam = (key: string) => searchParams.get(key);
-
-  return { updateSearchParam, deleteSearchParam, getSearchParam };
+  return { getSearchParam, updateSearchParam, deleteSearchParam };
 }

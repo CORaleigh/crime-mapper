@@ -15,7 +15,10 @@ body.calcite-mode-dark {
   --calcite-color-text-inverse: #11233f;
   --calcite-internal-button-text-color: #ffffff;
   --calcite-button-text-color: #11233f;
-  --calcite-button-icon-color: var(--calcite-color-text-1);
+}
+
+body.calcite-mode-dark calcite-fab {
+    --calcite-button-icon-color: #11233f;
 }
 
 body.calcite-mode-light {
@@ -33,9 +36,13 @@ body.calcite-mode-light {
   --calcite-internal-action-text-color: #ffffff;
   --calcite-internal-button-text-color: #11233f;
   --calcite-button-text-color: #ffffff;
-  --calcite-button-icon-color: var(--calcite-color-text-1);
 
 }
+
+body.calcite-mode-light calcite-fab {
+    --calcite-button-icon-color: #ffffff;
+}
+
 
 #root,
 html,
@@ -319,5 +326,17 @@ arcgis-chart {
 
 arcgis-search {
   width: 100%;
+}
+
+.buffer-distance calcite-input-number {
+  width: 180px;
+}
+
+.buffer-distance {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    flex: 0.1 1 auto;
+    align-items: stretch;
 }
 

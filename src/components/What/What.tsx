@@ -70,6 +70,7 @@ export default function What(props: WhatProps) {
     <>
       <calcite-flow>
         <calcite-flow-item
+          id="crime-group-flow"
           heading="Filter by Crime Group"
           selected={!showDescriptionFilter}
           closable={isMobile}
