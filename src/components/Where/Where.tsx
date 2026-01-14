@@ -148,7 +148,7 @@ export default function Where({
             {filterLayers.find((l) => l.name === selectedFilterLayerName)
               ?.values && (
               <calcite-label scale="l">
-                Select feature {selectedFeatureValue}
+                Select feature
                 <calcite-combobox
                   scale="l"
                   label="Select feature..."
