@@ -174,7 +174,7 @@ export default function Where({
 
         {(mode === "draw" || mode === "address" || mode === "district") && (
           <calcite-label scale="l">
-            Buffer Distance
+            Search Distance
             <div className="buffer-distance">
               <calcite-input-number
                 ref={distanceInput}

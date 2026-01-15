@@ -13,9 +13,9 @@ export const useApp = () => {
   const [combinedWhere, setCombinedWhere] = useState<string | undefined>(
     undefined
   );
-  const [geometryFilter, setFilterGeometry] = useState<__esri.Polygon | __esri.Extent | null>(
-    null
-  );
+  const [geometryFilter, setFilterGeometry] = useState<
+    __esri.Polygon | __esri.Extent | null
+  >(null);
   const [showMap, setShowMap] = useState(true);
   const [showTable, setShowTable] = useState(false);
   const [showFilter, setShowFilter] = useState(true);
@@ -27,6 +27,9 @@ export const useApp = () => {
   const [showDataDictionary, setShowDataDictionary] = useState(false);
   const [showDefinitions, setShowDefinitions] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(true);
+  const [showAbout, setShowAbout] = useState(false);
+  const [showFaq, setShowFaq] = useState(false);
+
   const [theme, setTheme] = useState<"light" | "dark">("dark");
 
   const [showViolentCrimeOnly, setShowViolentCrimeOnly] = useState(false);
@@ -120,7 +123,6 @@ export const useApp = () => {
   };
 
   const fetchAllDescriptions = useCallback(async () => {
-    
     if (!arcgisMap.current) return;
     if (!arcgisMap.current.ready) return;
     const layer = arcgisMap.current.view.map?.allLayers.find(
@@ -201,12 +203,14 @@ export const useApp = () => {
     setAllDescriptions(result.filter((item) => item.descriptions.length > 0));
   }, [showViolentCrimeOnly, whenClause, geometryFilter, categories]);
 
-  const handleDescriptionShow = useCallback((show: boolean) => {
-    if (show) {
-      
-      fetchAllDescriptions();
-    }
-  }, [fetchAllDescriptions]);
+  const handleDescriptionShow = useCallback(
+    (show: boolean) => {
+      if (show) {
+        fetchAllDescriptions();
+      }
+    },
+    [fetchAllDescriptions]
+  );
 
   const handleThemeChange = useCallback(() => {
     setTheme((prev: "light" | "dark") => {
@@ -225,7 +229,6 @@ export const useApp = () => {
   }, []);
   useEffect(() => {
     if (selectedSegment === "what") {
-
       fetchAllDescriptions();
     }
   }, [selectedSegment, fetchAllDescriptions]);
@@ -248,7 +251,7 @@ export const useApp = () => {
   // 1️⃣ ArcGIS update
   useEffect(() => {
     if (!incidentsLayerView.current) return;
-    console.log(geometryFilter)
+    console.log(geometryFilter);
     incidentsLayerView.current.filter = {
       where: combinedWhere,
       geometry: geometryFilter,
@@ -314,6 +317,10 @@ export const useApp = () => {
     setShowDefinitions,
     showDisclaimer,
     setShowDisclaimer,
+    showAbout,
+    setShowAbout,
+    showFaq,
+    setShowFaq,
     selectedSegment,
     setSelectedSegment,
     selectedChart,
@@ -340,6 +347,6 @@ export const useApp = () => {
     chartSelected,
     handleViolentCrimeFilterChange,
     handleTopCrimeFilterChange,
-    handleThemeChange
+    handleThemeChange,
   };
 };

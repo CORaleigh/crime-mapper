@@ -61,6 +61,8 @@ import LocatorSearchSource from "@arcgis/core/widgets/Search/LocatorSearchSource
 
 // Import the custom hook
 import { useApp } from "./useApp";
+import About from "./components/About/About";
+import Faq from "./components/Faq/Faq";
 
 function App() {
   const {
@@ -78,6 +80,10 @@ function App() {
     setShowDefinitions,
     showDisclaimer,
     setShowDisclaimer,
+    showAbout,
+    setShowAbout,
+    showFaq,
+    setShowFaq,
     selectedSegment,
     setSelectedSegment,
     selectedChart,
@@ -197,6 +203,25 @@ function App() {
                 text={"Menu"}
               ></calcite-action>
               <calcite-dropdown-group selectionMode="none" groupTitle="Menu">
+                <calcite-dropdown-item
+                  onClick={() => setShowAbout(true)}
+                  iconStart="information"
+                >
+                  About
+                </calcite-dropdown-item>
+                <calcite-dropdown-item
+                  iconStart="file-pdf"
+                  href="./crime-mapper-help.pdf"
+                  target="_blank"
+                >
+                  Help
+                </calcite-dropdown-item>
+                <calcite-dropdown-item
+                  onClick={() => setShowFaq(true)}
+                  iconStart="information"
+                >
+                  FAQ
+                </calcite-dropdown-item>
                 <calcite-dropdown-item
                   onClick={() => setShowDataDictionary(true)}
                   iconStart="book"
@@ -391,6 +416,8 @@ function App() {
         open={showDisclaimer}
         onClose={() => setShowDisclaimer(false)}
       />
+      <About open={showAbout} onClose={() => setShowAbout(false)} />
+      <Faq open={showFaq} onClose={() => setShowFaq(false)} />
     </>
   );
 }

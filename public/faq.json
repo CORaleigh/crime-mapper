@@ -1,0 +1,114 @@
+{
+  "sections": [
+    {
+      "id": "about",
+      "title": "About",
+      "faqs": [
+        {
+          "id": "data-source",
+          "question": "Where does Crime Mapper obtain the crime data?",
+          "answer": "All data shown on this site is provided with the knowledge and approval of the Raleigh Police Department. Data is extracted and published through authorized processes (not web scraping or other unapproved collection)."
+        },
+        {
+          "id": "update-frequency",
+          "question": "How often is the crime data updated?",
+          "answer": "Crime Mapper is updated daily and displays a rolling 90 days of activity. Incidents are displayed with a 1-day delay to enhance privacy and allow for improved offense coding accuracy."
+        },
+        {
+          "id": "crime-types",
+          "question": "What types of crimes are displayed?",
+          "answer": "Crime Mapper displays selected categories of reported incidents. Use the map legend to view each crime type and its definition. Certain sensitive offense types are excluded to protect privacy."
+        },
+        {
+          "id": "cost",
+          "question": "Is there a cost to use Crime Mapper?",
+          "answer": "No. Crime Mapper is provided as a free public resource."
+        },
+        {
+          "id": "more-details",
+          "question": "How can I get more detailed information about a crime?",
+          "answer": "For additional incident details, use the Raleigh Police Department’s process for obtaining a police report:",
+          "link": {
+            "label": "Raleigh Police Report Request",
+            "url": "https://raleighnc.gov/police/services/how-obtain-police-report"
+          }
+        },
+        {
+          "id": "older-data",
+          "question": "How can I get data that is older than 90 days?",
+          "answer": "For data beyond what appears in Crime Mapper, visit Raleigh’s open data portal (search \"police\" or related terms).. You may also request certain records through the police report/public records process above.",
+          "link": {
+            "label": "Raleigh Open Data Portal",
+            "url": "https://data.raleighnc.gov/search?q=police"
+          }
+        }
+      ]
+    },
+    {
+      "id": "data-privacy",
+      "title": "Data & Privacy",
+      "faqs": [
+        {
+          "id": "missing-incident",
+          "question": "Why is a crime I know about not showing on the map?",
+          "answer": "Crime Mapper is an overview and is not all-inclusive. An incident may not appear because:",
+          "list": [
+            "It is within the 1-day display delay.",
+            "It has not yet been entered or confirmed at the time of upload.",
+            "It was handled by another agency.",
+            "It is a sensitive offense that is excluded to protect privacy.",
+            "The incident was updated or reclassified after upload."
+          ]
+        },
+        {
+          "id": "address-accuracy",
+          "question": "Are addresses exact?",
+          "answer": "No. Locations are generalized to the block level, and incidents are randomly stacked on the block. The point shown does not represent an exact address."
+        },
+        {
+          "id": "time-shown",
+          "question": "Does the time shown represent when the crime occurred or when it was reported?",
+          "answer": "The time shown represents the report date and time."
+        }
+      ]
+    },
+    {
+      "id": "using-map",
+      "title": "Using the Map",
+      "faqs": [
+        {
+          "id": "chart-types",
+          "question": "Why don’t the charts show every crime type?",
+          "answer": "Charts and reports reflect the incidents currently included in your map view and filters. To see different results, adjust the date range (within 90 days), zoom, or change crime type selections, then refresh the report or charts."
+        }
+      ]
+    },
+    {
+      "id": "issues",
+      "title": "Issues & Troubleshooting",
+      "faqs": [
+        {
+          "id": "map-not-loading",
+          "question": "The map doesn’t load. What should I do?",
+          "answer": "Try refreshing your browser (Ctrl+R or Shift+Reload). If the issue continues, clear your browser cache or try another browser."
+        },
+        {
+          "id": "supported-browsers",
+          "question": "What browsers are supported?",
+          "answer": "Crime Mapper supports most modern browsers including Chrome, Edge, Firefox, and Safari."
+        }
+      ]
+    },
+    {
+      "id": "accessibility",
+      "title": "Accessibility",
+      "faqs": [
+        {
+          "id": "ada",
+          "question": "How can I request accessibility accommodations?",
+          "answer": "If you need accommodations or materials in alternate formats, please contact the City of Raleigh ADA Coordinator or submit an accessibility request through the City’s official channels."
+        }
+      ]
+    }
+  ]
+}
