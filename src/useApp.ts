@@ -29,6 +29,7 @@ export const useApp = () => {
   const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [showAbout, setShowAbout] = useState(false);
   const [showFaq, setShowFaq] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   const [theme, setTheme] = useState<"light" | "dark">("dark");
 
@@ -321,6 +322,8 @@ export const useApp = () => {
     setShowAbout,
     showFaq,
     setShowFaq,
+    showHelp,
+    setShowHelp,
     selectedSegment,
     setSelectedSegment,
     selectedChart,

@@ -18,7 +18,10 @@ interface FaqSection {
   title: string;
   faqs: FaqItem[];
 }
-
+interface FaqLink {
+  label: string;
+  url: string;
+}
 interface FaqData {
   sections: FaqSection[];
 }
@@ -28,10 +31,7 @@ interface FaqProps {
   onClose: () => void;
 }
 
-interface FaqLink {
-  label: string;
-  url: string;
-}
+
 
 export default function Faq({ open, onClose }: FaqProps) {
   const [sections, setSections] = useState<FaqSection[]>([]);

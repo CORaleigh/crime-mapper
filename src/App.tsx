@@ -63,6 +63,7 @@ import LocatorSearchSource from "@arcgis/core/widgets/Search/LocatorSearchSource
 import { useApp } from "./useApp";
 import About from "./components/About/About";
 import Faq from "./components/Faq/Faq";
+import Help from "./components/Help/Help";
 
 function App() {
   const {
@@ -84,6 +85,8 @@ function App() {
     setShowAbout,
     showFaq,
     setShowFaq,
+    showHelp,
+    setShowHelp,
     selectedSegment,
     setSelectedSegment,
     selectedChart,
@@ -211,8 +214,9 @@ function App() {
                 </calcite-dropdown-item>
                 <calcite-dropdown-item
                   iconStart="file-pdf"
-                  href="./crime-mapper-help.pdf"
-                  target="_blank"
+                  onClick={() => setShowHelp(true)}
+                  // href="./crime-mapper-help.pdf"
+                  // target="_blank"
                 >
                   Help
                 </calcite-dropdown-item>
@@ -330,7 +334,7 @@ function App() {
                 onViolentCrimeFilterChange={handleViolentCrimeFilterChange}
                 onTopCrimeFilterChange={handleTopCrimeFilterChange}
                 categoryTable={
-                  arcgisMap.current?.view.map?.allTables.getItemAt(
+                  arcgisMap.current?.view?.map?.allTables?.getItemAt(
                     0
                   ) as __esri.FeatureLayer
                 }
@@ -418,6 +422,7 @@ function App() {
       />
       <About open={showAbout} onClose={() => setShowAbout(false)} />
       <Faq open={showFaq} onClose={() => setShowFaq(false)} />
+      <Help open={showHelp} onClose={() => setShowHelp(false)} />
     </>
   );
 }

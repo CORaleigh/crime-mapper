@@ -1,7 +1,7 @@
 {
   "sections": [
     {
-      "id": "about",
+      "id": "faq-about",
       "title": "About",
       "faqs": [
         {
@@ -45,7 +45,7 @@
       ]
     },
     {
-      "id": "data-privacy",
+      "id": "faq-data-privacy",
       "title": "Data & Privacy",
       "faqs": [
         {
@@ -73,7 +73,7 @@
       ]
     },
     {
-      "id": "using-map",
+      "id": "faq-using-map",
       "title": "Using the Map",
       "faqs": [
         {
@@ -84,7 +84,7 @@
       ]
     },
     {
-      "id": "issues",
+      "id": "faq-issues",
       "title": "Issues & Troubleshooting",
       "faqs": [
         {
@@ -100,7 +100,7 @@
       ]
     },
     {
-      "id": "accessibility",
+      "id": "faq-accessibility",
       "title": "Accessibility",
       "faqs": [
         {
