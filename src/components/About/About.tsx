@@ -15,6 +15,7 @@ export default function About({ open, onClose }: AboutProps) {
       modal
       heading="About Crime Mapper"
       oncalciteDialogClose={onClose}
+      placement="cover"
     >
       <p>
         The Raleigh Police Department’s Crime Mapper provides the public with

@@ -30,6 +30,7 @@ export default function Definitions({ open, onClose }: DefinitionsProps) {
       modal
       heading="Offense Definitions"
       oncalciteDialogClose={onClose}
+      placement="cover"
     >
       <calcite-list
         label={""}

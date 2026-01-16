@@ -29,6 +29,7 @@ export default function DataDictionary({ open, onClose }: DataDictionaryProps) {
       modal
       heading="Data Dictionary"
       oncalciteDialogClose={onClose}
+      placement="cover"
     >
       <calcite-list label={""}>
         {entries.map((entry) => (

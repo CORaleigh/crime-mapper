@@ -48,6 +48,7 @@ export default function Faq({ open, onClose }: FaqProps) {
       modal
       heading="Frequently Asked Questions"
       oncalciteDialogClose={onClose}
+      placement="cover"
     >
       {sections.map((section) => (
         <div key={section.id} style={{ marginBottom: "1.5rem" }}>
