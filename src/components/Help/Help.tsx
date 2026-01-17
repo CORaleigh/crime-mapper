@@ -341,10 +341,10 @@ export default function Help({ open, onClose }: HelpProps) {
               interested in. The map will update to show only incidents in the
               selected categories.
             </p>
-            <img style={{ maxWidth: "500px" }} src="help/image004.png" />
+            <img style={{ width: "500px", maxWidth: "100%" }} src="help/image004.png" />
             <p>To clear all selections, click Remove All in the header.</p>
             <p>
-              <img style={{ maxWidth: "500px" }} src="help/image005.png" />
+              <img style={{ width: "500px", maxWidth: "100%" }} src="help/image005.png" />
             </p>
             <h3 id="filtering-desc">Filtering by Description</h3>
             When one or more groups are selected, the Filter by Description
@@ -352,12 +352,12 @@ export default function Help({ open, onClose }: HelpProps) {
             descriptions for the selected groups, allowing you to further refine
             your selection.
             <p>
-              <img style={{ maxWidth: "500px" }} src="help/image006.png" />
+              <img style={{ width: "500px", maxWidth: "100%" }} src="help/image006.png" />
             </p>
             In the list of descriptions, uncheck any you are not interested in
             and check the ones you want to include.
             <p>
-              <img style={{ maxWidth: "500px" }} src="help/image007.png" />
+              <img style={{ width: "500px", maxWidth: "100%" }} src="help/image007.png" />
             </p>
             <p>
               Use the Select All or Select None options to quickly select or
@@ -397,7 +397,7 @@ export default function Help({ open, onClose }: HelpProps) {
             These options allow you to focus your analysis on specific locations
             or regions of interest.
             <h3 id="address">Address</h3>
-            <img style={{ maxWidth: "600px" }} src="help/image008.png"></img>
+            <img style={{ width: "600px", maxWidth: "100%" }} src="help/image008.png"></img>
             <div>
               <ol>
                 <li>
@@ -422,7 +422,7 @@ export default function Help({ open, onClose }: HelpProps) {
                   feet.
                   <p>
                     <img
-                      style={{ maxWidth: "600px" }}
+                      style={{ width: "600px", maxWidth: "100%" }}
                       src="help/image009.png"
                     ></img>
                   </p>
@@ -434,7 +434,7 @@ export default function Help({ open, onClose }: HelpProps) {
               </ol>
             </div>
             <h3 id="district">District or Place</h3>
-            <img style={{ maxWidth: "600px" }} src="help/image010.png"></img>
+            <img style={{ width: "600px", maxWidth: "100%" }} src="help/image010.png"></img>
             Use the District or Place option to filter crimes by specific areas
             within the city. Follow these steps:
             <ol>
@@ -473,7 +473,7 @@ export default function Help({ open, onClose }: HelpProps) {
               </li>
             </ol>
             <h3 id="drawing">Drawing a Graphic</h3>
-            <img style={{ maxWidth: "600px" }} src="help/image011.png"></img>
+            <img style={{ width: "600px", maxWidth: "100%" }} src="help/image011.png"></img>
             The Draw Graphic option allows you to filter crimes by manually
             drawing an area on the map. Follow these steps:
             <ol>
@@ -511,7 +511,7 @@ export default function Help({ open, onClose }: HelpProps) {
               </li>
             </ol>
             <h2 id="when">When</h2>
-            <img style={{ maxWidth: "500px" }} src="help/image012.png" />
+            <img style={{ width: "500px", maxWidth: "100%" }} src="help/image012.png" />
             The When tab allows you to filter crimes based on a three date
             ranges:
             <ol>
@@ -599,7 +599,7 @@ export default function Help({ open, onClose }: HelpProps) {
                 </li>
               </ul>
             </div>
-            <img style={{ maxWidth: "300px" }} src="help/image013.png" />
+            <img style={{ width: "300px", maxWidth: "100%" }} src="help/image013.png" />
             The list of offenses in a cluster displays:
             <ul>
               <li>
@@ -609,7 +609,7 @@ export default function Help({ open, onClose }: HelpProps) {
                 <strong>Date of Crime</strong> – When the offense occurred.
               </li>
             </ul>
-            <img style={{ maxWidth: "300px" }} src="help/image014.png" />
+            <img style={{ width: "300px", maxWidth: "100%" }} src="help/image014.png" />
             <p>
               Selecting an offense from the list will display additional
               information about that specific crime, allowing you to view
@@ -625,14 +625,14 @@ export default function Help({ open, onClose }: HelpProps) {
                   the bottom-right corner (e.g., "5 of 24" in the screenshot).
                 </li>
               </ul>
-              <img style={{ maxWidth: "300px" }} src="help/image015.png" />
+              <img style={{ width: "300px", maxWidth: "100%" }} src="help/image015.png" />
             </p>
             This makes it easy to browse through multiple offenses without
             returning to the main map each time.
             <h2 id="map-tools">Using Map Tools</h2>
             The map includes several tools to help you navigate and explore data
             more effectively.
-            <img style={{ maxWidth: "600px" }} src="help/image016.png" />
+            <img style={{ width: "600px", maxWidth: "100%" }} src="help/image016.png" />
             <h3>Top-Left Tools</h3>
             The following tools are available in the top-left corner of the map:
             <ol>
@@ -657,21 +657,21 @@ export default function Help({ open, onClose }: HelpProps) {
                 Note: This tool does not filter the crimes; it only navigates
                 the map.
                 <p>
-                  <img style={{ maxWidth: "300px" }} src="help/image017.png" />
+                  <img style={{ width: "300px", maxWidth: "100%" }} src="help/image017.png" />
                 </p>
               </li>
               <li>
                 <strong>Layers</strong> – Display additional layers on the map.
                 Check or uncheck the layers you want to show or hide.
                 <p>
-                  <img style={{ maxWidth: "300px" }} src="help/image018.png" />
+                  <img style={{ width: "300px", maxWidth: "100%" }} src="help/image018.png" />
                 </p>
               </li>
               <li>
                 <strong>Legend</strong> – Display a legend that explains the
                 meaning of the symbols and icons shown on the map.
                 <p>
-                  <img style={{ maxWidth: "300px" }} src="help/image019.png" />
+                  <img style={{ width: "300px", maxWidth: "100%" }} src="help/image019.png" />
                 </p>
               </li>
             </ol>
@@ -680,10 +680,10 @@ export default function Help({ open, onClose }: HelpProps) {
             Street base map and Satellite imagery. Simply click the box to
             toggle between the two views.
             <p>
-              <img style={{ maxWidth: "300px" }} src="help/image020.png" />
+              <img style={{ width: "300px", maxWidth: "100%" }} src="help/image020.png" />
             </p>
             <p>
-              <img style={{ maxWidth: "300px" }} src="help/image021.png" />
+              <img style={{ width: "300px", maxWidth: "100%" }} src="help/image021.png" />
             </p>
             <h1 id="table">Table</h1>
             The table provides a detailed view of all crime incidents displayed
@@ -691,7 +691,7 @@ export default function Help({ open, onClose }: HelpProps) {
             a tabular format. Using the table, you can quickly find specific
             crimes, view details such as offense type, date, and location, and
             navigate directly to the corresponding feature on the map.
-            <img style={{ maxWidth: "1000px" }} src="help/image022.png" />
+            <img style={{ width: "1000px", maxWidth: "100%" }} src="help/image022.png" />
             <h2 id="sort">Sort by Column</h2>
             To sort the table by a specific column:
             <ol>
@@ -720,7 +720,7 @@ export default function Help({ open, onClose }: HelpProps) {
               </li>
             </ol>
             <p>
-              <img style={{ maxWidth: "300px" }} src="help/image023.png" />
+              <img style={{ width: "300px", maxWidth: "100%" }} src="help/image023.png" />
             </p>
             <h2 id="export">Exporting the Table to CSV</h2>
             To export the table of offenses:
@@ -737,7 +737,7 @@ export default function Help({ open, onClose }: HelpProps) {
             This allows you to save and work with the data outside of the
             application.
             <p>
-              <img style={{ maxWidth: "500px" }} src="help/image024.png" />
+              <img style={{ width: "500px", maxWidth: "100%" }} src="help/image024.png" />
             </p>
             <h2 id="zoom-offense">Zooming to a Specific Offense</h2>
             To locate a specific offense on the map:
@@ -749,7 +749,7 @@ export default function Help({ open, onClose }: HelpProps) {
               </li>
             </ol>
             <p>
-              <img style={{ maxWidth: "300px" }} src="help/image025.png" />
+              <img style={{ width: "300px", maxWidth: "100%" }} src="help/image025.png" />
             </p>
             <h1 id="menu">Menu</h1>
             Use the hamburger menu (☰) in the top-right corner of the header to
@@ -787,7 +787,7 @@ export default function Help({ open, onClose }: HelpProps) {
                 </li>
               </ul>
               <p>
-                <img style={{ maxWidth: "300px" }} src="help/image026.png" />
+                <img style={{ width: "300px", maxWidth: "100%" }} src="help/image026.png" />
               </p>
             </p>
             <h1 id="faq">Frequently Asked Questions</h1>
