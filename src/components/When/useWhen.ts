@@ -58,6 +58,7 @@ export function useWhen({ onWhereChange }: UseWhenProps) {
     }
 
     onWhereChange(where);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preset]);
 
   useEffect(() => {
@@ -65,6 +66,7 @@ export function useWhen({ onWhereChange }: UseWhenProps) {
     if (storedPreset) {
       setPreset(storedPreset as Preset);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
