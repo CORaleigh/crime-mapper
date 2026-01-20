@@ -1,0 +1,51 @@
+.tileIcon {
+  width: 100%;
+  height: 100%;
+  align-items: center;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.tileIcon img {
+  max-width: 80px;
+  min-width: 80px;
+  filter: drop-shadow(4px 6px 8px rgba(0, 0, 0, 0.6));
+}
+
+.tileText {
+  width: 100%;
+  height: 100%;
+  align-items: center;
+}
+
+.tileText h3 {
+  text-align: center;
+}
+
+calcite-tile-group {
+  height: calc(100vh - 220px);
+}
+calcite-flow-item calcite-list {
+  height: calc(100vh - 160px);
+}
+
+calcite-segmented-control {
+  --calcite-color-foreground-1: #0e426b;
+  --calcite-color-text-3: #ffffff;
+  --calcite-color-text-1: #ffffff;
+
+  --calcite-color-foreground-2: #11233f;
+  --calcite-color-brand: #e4ca85;
+  --calcite-color-text-inverse: #11233f;
+  --calcite-color-foreground-3: #007ab8;
+}
+
+calcite-switch {
+  --calcite-color-brand-hover: #007ab8;
+}
+
+:host([checked]) .label {
+  background-color: #e4ca85;
+  color: #11233f;
+}

@@ -1,0 +1,12 @@
+.bufferDistance calcite-input-number {
+  width: 180px;
+}
+
+.bufferDistance {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  flex: 0.1 1 auto;
+  align-items: stretch;
+}
+

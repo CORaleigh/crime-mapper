@@ -1,0 +1,178 @@
+arcgis-chart {
+  height: 100vh;
+}
+
+arcgis-search {
+  width: 100%;
+}
+
+arcgis-legend {
+  max-height: 80vh;
+}
+
+calcite-shell-panel .esri-search {
+  width: 100%;
+}
+
+calcite-navigation {
+  --calcite-action-text-color: #ffffff;
+  --calcite-action-text-color-press: #ffffff;
+}
+
+calcite-panel calcite-action-bar {
+  min-width: 290px;
+  padding-bottom: 0.5rem;
+}
+
+calcite-shell-panel {
+  --calcite-action-background-color: transparent;
+}
+
+
+.shellActionBar calcite-action[active] {
+  background-color: #e4ca85;
+  --calcite-action-text-color-press: #11233f;
+}
+.shellActionBar calcite-action[active]:hover {
+  background-color: #11233f;
+  --calcite-action-text-color-press: #fff;
+}
+
+.shellActionBar {
+  --calcite-color-brand-hover: #11233f;
+  --calcite-color-foreground-2: var(--calcite-color-brand-hover);
+  --calcite-color-text-1: #ffffff;
+  --calcite-internal-action-text-color: #ffffff;
+  --calcite-action-text-color: #ffffff;
+  --calcite-action-bar-background-color: #0e426b;
+}
+
+.shellActionBar calcite-action {
+  --calcite-action-background-color-hover: var(--calcite-color-brand-hover);
+  --calcite-action-background-color-press: var(--calcite-color-brand-press);
+  --calcite-action-background-color-focus: var(--calcite-color-brand-focus);
+  --calcite-action-text-color: #ffffff;
+  --calcite-action-text-color-hover: #fff;
+  --calcite-action-text-color-press: #fff;
+  --calcite-action-text-color-focus: #ffffff;
+  --calcite-action-background-color-press: #007ab8;
+  --calcite-color-text-2: #ffffff;
+  --calcite-color-foreground-2: var(--calcite-color-brand-hover);
+}
+
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Base style for all panels */
+.mapPanel,
+.tablePanel,
+.chartsPanel {
+  transition: all 0.3s ease;
+  overflow: hidden;
+  opacity: 0;
+  height: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+/* Show chart only — hide map and table */
+.mainContainer.showCharts .chartsPanel {
+  height: 100%;
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+.mainContainer.showCharts .mapPanel,
+.mainContainer.showCharts .tablePanel {
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+/* Show map and/or table if chart not active */
+.mainContainer:not(.showCharts) .mapPanel,
+.mainContainer:not(.showCharts) .tablePanel {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+/* When both map and table visible — split 50/50 */
+.mainContainer.showMap.showTable:not(.showCharts) .mapPanel,
+.mainContainer.showMap.showTable:not(.showCharts) .tablePanel {
+  height: 50%;
+}
+
+/* Only map visible */
+.mainContainer.showMap:not(.showTable):not(.showCharts) .mapPanel {
+  height: 100%;
+}
+
+/* Only table visible */
+.mainContainer.showTable:not(.showMap):not(.showCharts) .tablePanel {
+  height: 100%;
+}
+
+/* Neither map nor table visible, and no chart — hide all panels (or fallback logic in JS) */
+.mainContainer:not(.showMap):not(.showTable):not(.showCharts) .mapPanel,
+.mainContainer:not(.showMap):not(.showTable):not(.showCharts) .tablePanel,
+.mainContainer:not(.showMap):not(.showTable):not(.showCharts) .chartsPanel {
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+
+@media (max-width: 900px) {
+  calcite-tile-group {
+    height: calc(100vh - 210px);
+  }
+  calcite-flow-item calcite-list {
+    height: calc(100vh - 210px);
+  }
+  arcgis-map {
+    height: 100%;
+  }
+  arcgis-map.show-table.showMap {
+    height: 50%;
+  }
+  arcgis-feature-table.showMap {
+    height: 50%;
+  }
+
+  arcgis-map.showMap {
+    height: 100%;
+  }
+  calcite-shell.showFilter > arcgis-map {
+    display: none;
+  }
+  calcite-shell.showFilter arcgis-feature-table {
+    display: none;
+  }
+  calcite-shell.showFilter calcite-shell-panel {
+    min-width: 100%;
+  }
+  calcite-shell.showFilter calcite-panel {
+    min-width: 100%;
+  }
+  calcite-shell.showFilter calcite-segmented-control {
+    min-width: 100%;
+  }
+  calcite-shell.showFilter calcite-tile-group {
+    min-width: 100%;
+  }
+
+  calcite-shell.showFilter {
+    --calcite-shell-panel-width: 100%;
+    --calcite-shell-panel-min-width: 100%;
+    --calcite-shell-panel-max-width: calc(100vw - 300%);
+  }
+}
+

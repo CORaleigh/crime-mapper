@@ -1,0 +1,12 @@
+.col2 {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .col2 {
+      flex-direction: column;
+
+  }
+}
