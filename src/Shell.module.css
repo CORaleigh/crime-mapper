@@ -131,7 +131,7 @@ calcite-shell-panel {
 }
 
 .tablePanel arcgis-feature-table {
-  height: 100vh;
+  height: 100%;
 }
 
 
