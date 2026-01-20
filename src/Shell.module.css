@@ -29,6 +29,7 @@ calcite-shell-panel {
 }
 
 
+
 .shellActionBar calcite-action[active] {
   background-color: #e4ca85;
   --calcite-action-text-color-press: #11233f;
@@ -127,6 +128,10 @@ calcite-shell-panel {
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
+}
+
+.tablePanel arcgis-feature-table {
+  height: 100vh;
 }
 
 

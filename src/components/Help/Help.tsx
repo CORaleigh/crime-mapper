@@ -245,20 +245,20 @@ export default function Help({ open, onClose }: HelpProps) {
             }}
           >
             <h1 id="about">About</h1>
-            <p>
+            <div>
               The Raleigh Police Department’s Crime Mapper provides the public
               with information about recent reported crime activity in Raleigh.
               Our goal is to support safer neighborhoods through a
               better-informed community and to strengthen community-oriented
               policing efforts.
-            </p>
-            <p>
+            </div>
+            <div>
               Crime Mapper uses an advanced mapping engine to provide
               interactive tools for viewing crime activity. Crime data is
               extracted on a regular basis from the Raleigh Police Department’s
               records system so the information available through your web
               browser is as current as possible.
-            </p>
+            </div>
             <h2 id="data-notes">Data Notes and Disclaimer</h2>
             <ul>
               <li>
@@ -334,42 +334,42 @@ export default function Help({ open, onClose }: HelpProps) {
             The filter panel allows you to filter by crime category (What),
             location (Where) and date (When).
             <h2 id="what">What</h2>
-            <p>
+            <div>
               Use the What tab to filter incidents by crime group and crime
               description. Optional filters are available to show only Violent
               Crime categories or Top Requested Crime categories.
-            </p>
-            <p>
+            </div>
+            <div>
               To filter results, click one or more crime groups you are
               interested in. The map will update to show only incidents in the
               selected categories.
-            </p>
+            </div>
             <img style={{ width: "500px", maxWidth: "100%" }} src="help/image004.png" />
-            <p>To clear all selections, click Remove All in the header.</p>
-            <p>
+            <div>To clear all selections, click Remove All in the header.</div>
+            <div>
               <img style={{ width: "500px", maxWidth: "100%" }} src="help/image005.png" />
-            </p>
+            </div>
             <h3 id="filtering-desc">Filtering by Description</h3>
             When one or more groups are selected, the Filter by Description
             button becomes available. Clicking this button displays a list of
             descriptions for the selected groups, allowing you to further refine
             your selection.
-            <p>
+            <div>
               <img style={{ width: "500px", maxWidth: "100%" }} src="help/image006.png" />
-            </p>
+            </div>
             In the list of descriptions, uncheck any you are not interested in
             and check the ones you want to include.
-            <p>
+            <div>
               <img style={{ width: "500px", maxWidth: "100%" }} src="help/image007.png" />
-            </p>
-            <p>
+            </div>
+            <div>
               Use the Select All or Select None options to quickly select or
               clear all descriptions for a group.
-            </p>
-            <p>
+            </div>
+            <div>
               To go back to the main list of crime groups, click the Back button
               located to the left of Filter By Description.
-            </p>
+            </div>
             <h2 id="where">Where</h2>
             The Where tab allows you to filter crimes based on an area of
             interest. There are five options:
@@ -423,12 +423,12 @@ export default function Help({ open, onClose }: HelpProps) {
                   by entering a new value in the text box (decimals are
                   allowed). The units can also be changed between miles and
                   feet.
-                  <p>
+                  <div>
                     <img
                       style={{ width: "600px", maxWidth: "100%" }}
                       src="help/image009.png"
                     ></img>
-                  </p>
+                  </div>
                 </li>
                 <li>
                   The map will zoom to that area and filter the crimes on the
@@ -613,7 +613,7 @@ export default function Help({ open, onClose }: HelpProps) {
               </li>
             </ul>
             <img style={{ width: "300px", maxWidth: "100%" }} src="help/image014.png" />
-            <p>
+            <div>
               Selecting an offense from the list will display additional
               information about that specific crime, allowing you to view
               details for individual incidents within the cluster. When viewing
@@ -629,7 +629,7 @@ export default function Help({ open, onClose }: HelpProps) {
                 </li>
               </ul>
               <img style={{ width: "300px", maxWidth: "100%" }} src="help/image015.png" />
-            </p>
+            </div>
             This makes it easy to browse through multiple offenses without
             returning to the main map each time.
             <h2 id="map-tools">Using Map Tools</h2>
@@ -659,35 +659,35 @@ export default function Help({ open, onClose }: HelpProps) {
                 the list of suggestions. The map will zoom to that location.
                 Note: This tool does not filter the crimes; it only navigates
                 the map.
-                <p>
+                <div>
                   <img style={{ width: "300px", maxWidth: "100%" }} src="help/image017.png" />
-                </p>
+                </div>
               </li>
               <li>
                 <strong>Layers</strong> – Display additional layers on the map.
                 Check or uncheck the layers you want to show or hide.
-                <p>
+                <div>
                   <img style={{ width: "300px", maxWidth: "100%" }} src="help/image018.png" />
-                </p>
+                </div>
               </li>
               <li>
                 <strong>Legend</strong> – Display a legend that explains the
                 meaning of the symbols and icons shown on the map.
-                <p>
+                <div>
                   <img style={{ width: "300px", maxWidth: "100%" }} src="help/image019.png" />
-                </p>
+                </div>
               </li>
             </ol>
             <h3>Basemap Toggle</h3>
             In the lower-left corner of the map, you can switch between the
             Street base map and Satellite imagery. Simply click the box to
             toggle between the two views.
-            <p>
+            <div>
               <img style={{ width: "300px", maxWidth: "100%" }} src="help/image020.png" />
-            </p>
-            <p>
+            </div>
+            <div>
               <img style={{ width: "300px", maxWidth: "100%" }} src="help/image021.png" />
-            </p>
+            </div>
             <h1 id="table">Table</h1>
             The table provides a detailed view of all crime incidents displayed
             on the map. It allows you to sort and explore individual offenses in
@@ -722,9 +722,9 @@ export default function Help({ open, onClose }: HelpProps) {
                 want to hide.
               </li>
             </ol>
-            <p>
+            <div>
               <img style={{ width: "300px", maxWidth: "100%" }} src="help/image023.png" />
-            </p>
+            </div>
             <h2 id="export">Exporting the Table to CSV</h2>
             To export the table of offenses:
             <ol>
@@ -739,9 +739,9 @@ export default function Help({ open, onClose }: HelpProps) {
             </ol>
             This allows you to save and work with the data outside of the
             application.
-            <p>
+            <div>
               <img style={{ width: "500px", maxWidth: "100%" }} src="help/image024.png" />
-            </p>
+            </div>
             <h2 id="zoom-offense">Zooming to a Specific Offense</h2>
             To locate a specific offense on the map:
             <ol>
@@ -751,14 +751,14 @@ export default function Help({ open, onClose }: HelpProps) {
                 The map will zoom to the location of the selected offense.
               </li>
             </ol>
-            <p>
+            <div>
               <img style={{ width: "300px", maxWidth: "100%" }} src="help/image025.png" />
-            </p>
+            </div>
             <h1 id="menu">Menu</h1>
             Use the hamburger menu (☰) in the top-right corner of the header to
             access additional information and options related to the
             application.
-            <p>
+            <div>
               The menu includes the following items:
               <ul>
                 <li>
@@ -789,10 +789,10 @@ export default function Help({ open, onClose }: HelpProps) {
                   dataset used in the application on the Open Data portal.
                 </li>
               </ul>
-              <p>
+              <div>
                 <img style={{ width: "300px", maxWidth: "100%" }} src="help/image026.png" />
-              </p>
-            </p>
+              </div>
+            </div>
             <h1 id="faq">Frequently Asked Questions</h1>
             {faqSections.map((section) => (
               <div key={section.id} style={{ marginBottom: "1.5rem" }}>
@@ -804,9 +804,9 @@ export default function Help({ open, onClose }: HelpProps) {
                   <div key={item.id} style={{ marginBottom: "1rem" }}>
                     <h3 style={{ marginBottom: "0.25rem" }}>{item.question}</h3>
 
-                    {item.answer && <p>{item.answer}</p>}
+                    {item.answer && <div>{item.answer}</div>}
                     {item.link && (
-                      <p>
+                      <div>
                         <calcite-link
                           href={item.link.url}
                           target="_blank"
@@ -814,7 +814,7 @@ export default function Help({ open, onClose }: HelpProps) {
                         >
                           {item.link.label}
                         </calcite-link>
-                      </p>
+                      </div>
                     )}
                     {item.list && (
                       <ul>

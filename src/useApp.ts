@@ -17,6 +17,9 @@ export const useApp = () => {
     __esri.Polygon | __esri.Extent | null
   >(null);
   const [showMap, setShowMap] = useState(true);
+  const [mapReady, setMapReady] = useState(false);
+  const [tableReady, setTableReady] = useState(false);
+
   const [showTable, setShowTable] = useState(false);
   const [showFilter, setShowFilter] = useState(true);
   const [showCharts, setShowCharts] = useState(false);
@@ -38,7 +41,7 @@ export const useApp = () => {
     typeof window !== "undefined" ? window.innerWidth >= 900 : false
   );
 
-  const arcgisMap = useRef<HTMLArcgisMapElement>(null);
+  const arcgisMap = useRef<HTMLArcgisMapElement>(undefined);
   const arcgisFeatureTable = useRef<HTMLArcgisFeatureTableElement>(null);
   const incidentsLayer = useRef<__esri.FeatureLayer | null>(null);
   const incidentsLayerView = useRef<__esri.FeatureLayerView | null>(null);
@@ -60,6 +63,9 @@ export const useApp = () => {
   const handleTableReady = (
     event: TargetedEvent<HTMLArcgisFeatureTableElement>
   ) => {
+    
+    arcgisFeatureTable.current = event.target;
+    arcgisFeatureTable.current.referenceElement = arcgisMap.current;
     event.target.tableTemplate = {
       columnTemplates: [
         { type: "field", fieldName: "case_number" },
@@ -74,17 +80,20 @@ export const useApp = () => {
         { type: "field", fieldName: "reported_dayofwk" },
       ],
     } as __esri.TableTemplate;
+    setTableReady(true);
   };
 
   const handleViewReady = async (
     event: TargetedEvent<HTMLArcgisMapElement, void>
   ) => {
+    
     const view = await event.target.view.when();
     const layer = view.map.allLayers.find(
       (layer: __esri.Layer) => layer.title === "Offenses"
     ) as __esri.FeatureLayer;
 
     incidentsLayer.current = layer as __esri.FeatureLayer;
+    arcgisMap.current = event.target;
 
     if (layer && layer.charts && layer.charts.length > 0) {
       incidentsLayerView.current = (await event.target.whenLayerView(
@@ -95,6 +104,8 @@ export const useApp = () => {
     }
 
     updateCategories("1=1");
+        setMapReady(true);
+
   };
 
   const updateCategories = async (where: string) => {
@@ -257,7 +268,8 @@ export const useApp = () => {
       where: combinedWhere,
       geometry: geometryFilter,
     };
-    if (arcgisFeatureTable.current) {
+    
+    if (tableReady && arcgisFeatureTable.current) {
       const layer = arcgisFeatureTable.current.layer as __esri.FeatureLayer;
       layer.definitionExpression = combinedWhere;
       arcgisFeatureTable.current.filterGeometry = geometryFilter;
@@ -308,6 +320,7 @@ export const useApp = () => {
     setShowFilter,
     showMap,
     setShowMap,
+    mapReady,
     showTable,
     setShowTable,
     showCharts,

@@ -14,7 +14,7 @@ interface UseWhatParams {
   incidentsLayer: __esri.FeatureLayer | null;
   onViolentCrimeFilterChange?: (enabled: boolean) => void;
   onTopCrimeFilterChange?: (enabled: boolean) => void;
-  arcgisMap: HTMLArcgisMapElement | null;
+  arcgisMap: HTMLArcgisMapElement | undefined;
 }
 
 export function useWhat({

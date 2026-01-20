@@ -16,7 +16,7 @@ interface WhatProps {
   onTopCrimeFilterChange: (enabled: boolean) => void;
   categoryTable: __esri.FeatureLayer;
   incidentsLayer: __esri.FeatureLayer | null;
-  arcgisMap: HTMLArcgisMapElement | null;
+  arcgisMap: HTMLArcgisMapElement | undefined;
 }
 
 export default function What(props: WhatProps) {

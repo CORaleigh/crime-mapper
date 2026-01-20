@@ -24,7 +24,7 @@ export type FilterLayer = {
 };
 
 interface UseWhereProps {
-  arcgisMap: HTMLArcgisMapElement | null;
+  arcgisMap: HTMLArcgisMapElement | undefined;
   onGeometryChange: (geometry: __esri.Polygon | __esri.Extent | null) => void;
   incidentsLayer?: __esri.FeatureLayer | null;
 }

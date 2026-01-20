@@ -1,20 +1,7 @@
 import "./App.css";
 import "@esri/calcite-components";
 
-// Import the map components
-import "@arcgis/map-components/dist/components/arcgis-map";
 
-import "@arcgis/map-components/dist/components/arcgis-layer-list";
-import "@arcgis/map-components/dist/components/arcgis-search";
-import "@arcgis/map-components/dist/components/arcgis-zoom";
-import "@arcgis/map-components/dist/components/arcgis-legend";
-import "@arcgis/map-components/dist/components/arcgis-expand";
-import "@arcgis/map-components/dist/components/arcgis-locate";
-import "@arcgis/map-components/dist/components/arcgis-feature-table";
-import "@arcgis/map-components/components/arcgis-basemap-toggle";
-
-// Import the chart component
-import "@arcgis/charts-components/dist/components/arcgis-chart";
 
 // Import calcite components
 import "@esri/calcite-components/components/calcite-shell";
@@ -46,18 +33,7 @@ import "@esri/calcite-components/components/calcite-alert";
 import "@esri/calcite-components/components/calcite-sheet";
 import "@esri/calcite-components/components/calcite-notice";
 
-// Import custom components
-import What from "./components/What/What";
-import When from "./components/When/When";
-import Where from "./components/Where/Where";
-import DataDictionary from "./components/DataDictionary/DataDictionary";
-import Disclaimer from "./components/Disclaimer/Disclaimer";
-import FilterSegmentedControl from "./components/FilterSegmentedControl/FilterSegmentedControl";
-import Definitions from "./components/Definitions/Definitions";
-
 // ArcGIS SDK imports
-import Collection from "@arcgis/core/core/Collection";
-import LocatorSearchSource from "@arcgis/core/widgets/Search/LocatorSearchSource";
 
 import styles from "./Shell.module.css";
 // Import the custom hook
@@ -65,13 +41,31 @@ import { useApp } from "./useApp";
 import About from "./components/About/About";
 import Faq from "./components/Faq/Faq";
 import Help from "./components/Help/Help";
+import { lazy, Suspense } from "react";
+import FallbackLoader from "./components/FallbackLoader/FallbackLoader";
+// Import custom components
+const MapPanel = lazy(() => import("./components/MapPanel/MapPanel"));
+const TablePanel = lazy(() => import("./components/TablePanel/TablePanel"));
+const ChartPanel = lazy(() => import("./components/ChartPanel/ChartPanel"));
 
+const What = lazy(() => import("./components/What/What"));
+const When = lazy(() => import("./components/When/When"));
+const Where = lazy(() => import("./components/Where/Where"));
+const DataDictionary = lazy(
+  () => import("./components/DataDictionary/DataDictionary"),
+);
+const Disclaimer = lazy(() => import("./components/Disclaimer/Disclaimer"));
+const Definitions = lazy(() => import("./components/Definitions/Definitions"));
+const FilterSegmentedControl = lazy(
+  () => import("./components/FilterSegmentedControl/FilterSegmentedControl"),
+);
 function App() {
   const {
     showFilter,
     setShowFilter,
     showMap,
     setShowMap,
+    mapReady,
     showTable,
     setShowTable,
     showCharts,
@@ -114,78 +108,97 @@ function App() {
   } = useApp();
 
   const arcgisMapEl = (
-    <arcgis-map
-      itemId="8a9abcc6b1bd4b6492923810c88cc879"
-      onarcgisViewReadyChange={handleViewReady}
-      className={styles.mapPanel}
-      ref={arcgisMap}
-    >
-      <arcgis-expand slot="top-right" group="top-right" label="Search">
-        <arcgis-search
-          includeDefaultSourcesDisabled
-          sources={
-            new Collection([
-              new LocatorSearchSource({
-                url: "https://maps.raleighnc.gov/arcgis/rest/services/Locators/Locator/GeocodeServer",
-                placeholder: "Search by address",
-                maxResults: 6,
-                singleLineFieldName: "SingleLine",
-              }),
-            ])
-          }
-        />
-      </arcgis-expand>
-      <arcgis-zoom slot="top-left" />
-      <arcgis-locate slot="top-left" />
-      <arcgis-expand slot="top-right" group="top-right" label="Layers">
-        <arcgis-layer-list visibilityAppearance="checkbox" />
-      </arcgis-expand>
-      <arcgis-expand slot="top-right" group="top-right" label="Legend">
-        <arcgis-legend />
-      </arcgis-expand>
-
-      <arcgis-basemap-toggle slot="bottom-right" />
-    </arcgis-map>
+    <div className={styles.mapPanel}>
+      <MapPanel
+        handleViewReady={handleViewReady}
+        arcgisMapRef={arcgisMap}
+      ></MapPanel>
+    </div>
   );
 
   const arcgisTableEl = (
     <>
-      {incidentsLayer.current && (
-        <arcgis-feature-table
-          ref={arcgisFeatureTable}
-          className={styles.tablePanel}
-          onarcgisReady={handleTableReady}
-          referenceElement={arcgisMap.current ?? undefined}
-          layer={incidentsLayer.current}
-          actionColumnConfig={{
-            label: "Go to feature",
-            icon: "zoom-to-object",
-            callback: (event) =>
-              arcgisMap.current?.goTo({ target: event.feature, zoom: 15 }),
-          }}
-          hideSelectionColumn
-          hideMenuItemsExportSelectionToCsv
-          menuConfig={{
-            items: [
-              {
-                label: "Export to CSV",
-                icon: "file-csv",
-                clickFunction: async () => {
-                  if (!arcgisFeatureTable.current) return;
-                  const oids =
-                    await arcgisFeatureTable.current?.layer?.queryObjectIds();
-                  arcgisFeatureTable.current.highlightIds = new Collection(
-                    oids,
-                  );
-                  arcgisFeatureTable.current.exportSelectionToCSV();
-                  arcgisFeatureTable.current.highlightIds.removeAll();
-                },
-              },
-            ],
-          }}
-        />
+      {incidentsLayer.current && mapReady && arcgisMap.current && (
+          <div className={styles.tablePanel}>
+          <TablePanel
+            layer={incidentsLayer.current}
+            arcgisMap={arcgisMap.current}
+            arcgisFeatureTable={arcgisFeatureTable}
+            handleTableReady={handleTableReady}
+          ></TablePanel>
+          </div>
+        // <arcgis-feature-table
+        //   ref={arcgisFeatureTable}
+        //   className={styles.tablePanel}
+        //   onarcgisReady={handleTableReady}
+        //   referenceElement={arcgisMap.current ?? undefined}
+        //   layer={incidentsLayer.current}
+        //   actionColumnConfig={{
+        //     label: "Go to feature",
+        //     icon: "zoom-to-object",
+        //     callback: (event) =>
+        //       arcgisMap.current?.goTo({ target: event.feature, zoom: 15 }),
+        //   }}
+        //   hideSelectionColumn
+        //   hideMenuItemsExportSelectionToCsv
+        //   menuConfig={{
+        //     items: [
+        //       {
+        //         label: "Export to CSV",
+        //         icon: "file-csv",
+        //         clickFunction: async () => {
+        //           if (!arcgisFeatureTable.current) return;
+        //           const oids =
+        //             await arcgisFeatureTable.current?.layer?.queryObjectIds();
+        //           arcgisFeatureTable.current.highlightIds = new Collection(
+        //             oids,
+        //           );
+        //           arcgisFeatureTable.current.exportSelectionToCSV();
+        //           arcgisFeatureTable.current.highlightIds.removeAll();
+        //         },
+        //       },
+        //     ],
+        //   }}
+        // />
       )}
     </>
+  );
+
+  const arcgisChartEl = (
+    <calcite-panel className={styles.chartsPanel} heading="Charts">
+      {mapReady &&
+        arcgisMap.current &&
+        incidentsLayer.current &&
+        incidentsLayer.current.charts &&
+        incidentsLayerView.current && (
+          <>
+            <calcite-select
+              label={"Select chart"}
+              oncalciteSelectChange={chartSelected}
+            >
+              {incidentsLayer.current.charts.map((chart, i) => {
+                return (
+                  <calcite-option
+                    key={`chart-${i}`}
+                    label={chart.title.content.text}
+                    value={chart}
+                  ></calcite-option>
+                );
+              })}
+            </calcite-select>
+            {mapReady && arcgisFeatureTable.current && (
+              <Suspense fallback={<FallbackLoader></FallbackLoader>}>
+                <ChartPanel
+                  view={arcgisMap.current.view}
+                  layer={incidentsLayer.current}
+                  selectedChart={selectedChart}
+                  geometryFilter={geometryFilter}
+                ></ChartPanel>
+              </Suspense>
+            )}
+          </>
+        )}
+    </calcite-panel>
   );
 
   return (
@@ -322,46 +335,59 @@ function App() {
             setSelectedSegment={setSelectedSegment}
           />
           <calcite-panel className="filter-panel">
-            <div hidden={selectedSegment !== "what"}>
-              <What
-                categories={categories}
-                allDescriptions={allDescriptions}
-                onWhereChange={setWhereClause}
-                onDescriptionShow={handleDescriptionShow}
-                onCrimeTypeChange={handleCrimeTypeChange}
-                isMobile={isMobile}
-                onFilterPanelClose={() => setShowFilter(false)}
-                open={showFilter}
-                onViolentCrimeFilterChange={handleViolentCrimeFilterChange}
-                onTopCrimeFilterChange={handleTopCrimeFilterChange}
-                categoryTable={
-                  arcgisMap.current?.view?.map?.allTables?.getItemAt(
-                    0,
-                  ) as __esri.FeatureLayer
-                }
-                incidentsLayer={incidentsLayer.current}
-                arcgisMap={arcgisMap.current}
-              />
-            </div>
+            {mapReady && arcgisMap.current && (
+              <Suspense fallback={<FallbackLoader />}>
+                <div hidden={selectedSegment !== "what"}>
+                  <What
+                    categories={categories}
+                    allDescriptions={allDescriptions}
+                    onWhereChange={setWhereClause}
+                    onDescriptionShow={handleDescriptionShow}
+                    onCrimeTypeChange={handleCrimeTypeChange}
+                    isMobile={isMobile}
+                    onFilterPanelClose={() => setShowFilter(false)}
+                    open={showFilter}
+                    onViolentCrimeFilterChange={handleViolentCrimeFilterChange}
+                    onTopCrimeFilterChange={handleTopCrimeFilterChange}
+                    categoryTable={
+                      arcgisMap.current?.view?.map?.allTables?.getItemAt(
+                        0,
+                      ) as __esri.FeatureLayer
+                    }
+                    incidentsLayer={incidentsLayer.current}
+                    arcgisMap={arcgisMap.current}
+                  />
+                </div>
+              </Suspense>
+            )}
 
-            <div hidden={selectedSegment !== "where"}>
-              <Where
-                arcgisMap={arcgisMap.current}
-                onGeometryChange={setFilterGeometry}
-                isMobile={isMobile}
-                onFilterPanelClose={() => setShowFilter(false)}
-                open={showFilter}
-                incidentsLayer={incidentsLayer.current}
-              />
-            </div>
-            <div hidden={selectedSegment !== "when"}>
-              <When
-                onWhereChange={setWhenClause}
-                isMobile={isMobile}
-                onFilterPanelClose={() => setShowFilter(false)}
-                open={showFilter}
-              />
-            </div>
+            {mapReady && (
+              <Suspense fallback={<FallbackLoader />}>
+                <div hidden={selectedSegment !== "where"}>
+                  <Where
+                    arcgisMap={arcgisMap.current}
+                    onGeometryChange={setFilterGeometry}
+                    isMobile={isMobile}
+                    onFilterPanelClose={() => setShowFilter(false)}
+                    open={showFilter}
+                    incidentsLayer={incidentsLayer.current}
+                  />
+                </div>
+              </Suspense>
+            )}
+
+            {mapReady && (
+              <Suspense fallback={<FallbackLoader />}>
+                <div hidden={selectedSegment !== "when"}>
+                  <When
+                    onWhereChange={setWhenClause}
+                    isMobile={isMobile}
+                    onFilterPanelClose={() => setShowFilter(false)}
+                    open={showFilter}
+                  />
+                </div>
+              </Suspense>
+            )}
           </calcite-panel>
         </calcite-shell-panel>
         <div
@@ -376,42 +402,7 @@ function App() {
         >
           {arcgisMapEl}
           {arcgisTableEl}
-          <calcite-panel className={styles.chartsPanel} heading="Charts">
-            {arcgisMap.current &&
-              incidentsLayer.current &&
-              incidentsLayer.current.charts &&
-              incidentsLayerView.current && (
-                <>
-                  <calcite-select
-                    label={"Select chart"}
-                    oncalciteSelectChange={chartSelected}
-                  >
-                    {incidentsLayer.current.charts.map((chart, i) => {
-                      return (
-                        <calcite-option
-                          key={`chart-${i}`}
-                          label={chart.title.content.text}
-                          value={chart}
-                        ></calcite-option>
-                      );
-                    })}
-                  </calcite-select>
-                  {arcgisFeatureTable.current && (
-                    <arcgis-chart
-                      view={arcgisMap.current.view}
-                      layer={
-                        arcgisFeatureTable.current?.layer as __esri.FeatureLayer
-                      }
-                      model={selectedChart}
-                      legendPosition="right"
-                      runtimeDataFilters={{
-                        geometry: geometryFilter?.toJSON(),
-                      }}
-                    ></arcgis-chart>
-                  )}
-                </>
-              )}
-          </calcite-panel>
+          {arcgisChartEl}
         </div>
       </calcite-shell>
       <DataDictionary

@@ -18,7 +18,7 @@ import { useWhere, type FilterLayer } from "./useWhere";
 interface WhereProps {
   onGeometryChange: (geometry: __esri.Polygon | __esri.Extent | null) => void;
   onFilterPanelClose: () => void;
-  arcgisMap: HTMLArcgisMapElement | null;
+  arcgisMap: HTMLArcgisMapElement | undefined;
   open: boolean;
   isMobile: boolean;
   incidentsLayer?: __esri.FeatureLayer | null;
