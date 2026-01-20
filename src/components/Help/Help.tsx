@@ -10,6 +10,9 @@ import "@esri/calcite-components/components/calcite-shell-panel";
 import "@esri/calcite-components/components/calcite-fab";
 
 import type { TargetedEvent } from "@arcgis/map-components";
+
+import styles from "./Help.module.css";
+
 import { useEffect, useState } from "react";
 
 interface HelpSection {
@@ -283,7 +286,7 @@ export default function Help({ open, onClose }: HelpProps) {
             <h1 id="action-bar">Action Bar Controls</h1>
             The action bar on the left side of the app controls which panels are
             visible on the right side of the screen.
-            <div className="col-2">
+            <div className={styles.col2}>
               <div>
                 <h2>Top Action Bar Buttons</h2>
                 <h3>Filter</h3>

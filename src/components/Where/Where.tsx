@@ -10,6 +10,9 @@ import "@esri/calcite-components/components/calcite-combobox";
 import "@esri/calcite-components/components/calcite-combobox-item";
 
 import "@arcgis/map-components/dist/components/arcgis-search";
+
+import styles from "./Where.module.css";
+
 import { useWhere, type FilterLayer } from "./useWhere";
 
 interface WhereProps {
@@ -175,7 +178,7 @@ export default function Where({
         {(mode === "draw" || mode === "address" || mode === "district") && (
           <calcite-label scale="l">
             Search Distance
-            <div className="buffer-distance">
+            <div className={styles.bufferDistance}>
               <calcite-input-number
                 ref={distanceInput}
                 step={bufferUnits === "miles" ? 0.1 : 50}

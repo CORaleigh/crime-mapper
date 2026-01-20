@@ -2,7 +2,7 @@
 import type { TargetedEvent } from "@esri/calcite-components";
 import { useWhat } from "./useWhat";
 import { type Description } from "../../types";
-
+import styles from "./What.module.css";
 interface WhatProps {
   categories: __esri.Graphic[];
   allDescriptions: Description[];
@@ -153,13 +153,13 @@ export default function What(props: WhatProps) {
                   category.attributes.crime_group
                 )}
               >
-                <div slot="content-top" className="tile-icon">
+                <div slot="content-top" className={styles.tileIcon}>
                   <img
                     src={`./icons/${category.attributes.icon_svg}`}
                     alt={category.attributes.crime_group}
                   />
                 </div>
-                <div slot="content-bottom" className="tile-text">
+                <div slot="content-bottom" className={styles.tileText}>
                   <h3>{category.attributes.crime_group}</h3>
                 </div>
               </calcite-tile>

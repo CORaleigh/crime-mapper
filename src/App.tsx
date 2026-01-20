@@ -59,6 +59,7 @@ import Definitions from "./components/Definitions/Definitions";
 import Collection from "@arcgis/core/core/Collection";
 import LocatorSearchSource from "@arcgis/core/widgets/Search/LocatorSearchSource";
 
+import styles from "./Shell.module.css";
 // Import the custom hook
 import { useApp } from "./useApp";
 import About from "./components/About/About";
@@ -116,7 +117,7 @@ function App() {
     <arcgis-map
       itemId="8a9abcc6b1bd4b6492923810c88cc879"
       onarcgisViewReadyChange={handleViewReady}
-      className="map-panel"
+      className={styles.mapPanel}
       ref={arcgisMap}
     >
       <arcgis-expand slot="top-right" group="top-right" label="Search">
@@ -152,7 +153,7 @@ function App() {
       {incidentsLayer.current && (
         <arcgis-feature-table
           ref={arcgisFeatureTable}
-          className="table-panel"
+          className={styles.tablePanel}
           onarcgisReady={handleTableReady}
           referenceElement={arcgisMap.current ?? undefined}
           layer={incidentsLayer.current}
@@ -174,7 +175,7 @@ function App() {
                   const oids =
                     await arcgisFeatureTable.current?.layer?.queryObjectIds();
                   arcgisFeatureTable.current.highlightIds = new Collection(
-                    oids
+                    oids,
                   );
                   arcgisFeatureTable.current.exportSelectionToCSV();
                   arcgisFeatureTable.current.highlightIds.removeAll();
@@ -262,7 +263,7 @@ function App() {
           collapsed={!showFilter}
         >
           <calcite-action-bar
-            className="shellActionBar"
+            className={styles.shellActionBar}
             slot="action-bar"
             expanded={!isMobile}
             expandDisabled={isMobile}
@@ -335,7 +336,7 @@ function App() {
                 onTopCrimeFilterChange={handleTopCrimeFilterChange}
                 categoryTable={
                   arcgisMap.current?.view?.map?.allTables?.getItemAt(
-                    0
+                    0,
                   ) as __esri.FeatureLayer
                 }
                 incidentsLayer={incidentsLayer.current}
@@ -364,13 +365,18 @@ function App() {
           </calcite-panel>
         </calcite-shell-panel>
         <div
-          className={`main-container ${showTable ? "show-table" : ""} ${
-            showMap ? "show-map" : ""
-          } ${showCharts ? "show-charts" : ""}`}
+          className={[
+            styles.mainContainer,
+            showTable && styles.showTable,
+            showMap && styles.showMap,
+            showCharts && styles.showCharts,
+          ]
+            .filter(Boolean)
+            .join(" ")}
         >
           {arcgisMapEl}
           {arcgisTableEl}
-          <calcite-panel className="charts-panel">
+          <calcite-panel className={styles.chartsPanel} heading="Charts">
             {arcgisMap.current &&
               incidentsLayer.current &&
               incidentsLayer.current.charts &&
