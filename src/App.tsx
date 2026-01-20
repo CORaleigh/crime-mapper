@@ -190,7 +190,7 @@ function App() {
 
   return (
     <>
-      <calcite-shell id="shell" className={showFilter ? "show-filter" : ""}>
+      <calcite-shell id="shell" className={showFilter ? styles.showFilter : ""}>
         <calcite-navigation slot="header">
           <calcite-navigation-logo
             slot="logo"
