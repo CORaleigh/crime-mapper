@@ -49,16 +49,7 @@ calcite-shell-panel {
 }
 
 .shellActionBar calcite-action {
-  --calcite-action-background-color-hover: var(--calcite-color-brand-hover);
-  --calcite-action-background-color-press: var(--calcite-color-brand-press);
-  --calcite-action-background-color-focus: var(--calcite-color-brand-focus);
-  --calcite-action-text-color: #ffffff;
-  --calcite-action-text-color-hover: #fff;
-  --calcite-action-text-color-press: #fff;
-  --calcite-action-text-color-focus: #ffffff;
-  --calcite-action-background-color-press: #007ab8;
-  --calcite-color-text-2: #ffffff;
-  --calcite-color-foreground-2: var(--calcite-color-brand-hover);
+
 }
 
 .mainContainer {

@@ -1,15 +1,27 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef, useCallback } from "react";
+
+import type { TargetedEvent } from "@esri/calcite-components";
+import { useSearchParamHelpers } from "../../useSearchParamHelpers";
+
 import * as bufferOperator from "@arcgis/core/geometry/operators/bufferOperator.js";
 import * as unionOperator from "@arcgis/core/geometry/operators/unionOperator.js";
 import * as generalizeOperator from "@arcgis/core/geometry/operators/generalizeOperator.js";
 import SketchViewModel from "@arcgis/core/widgets/Sketch/SketchViewModel.js";
 import LocatorSearchSource from "@arcgis/core/widgets/Search/LocatorSearchSource.js";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
+import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import Polygon from "@arcgis/core/geometry/Polygon";
+import Extent from "@arcgis/core/geometry/Extent";
 import Graphic from "@arcgis/core/Graphic";
-import type { TargetedEvent } from "@esri/calcite-components";
-import { useSearchParamHelpers } from "../../useSearchParamHelpers";
+import Layer from "@arcgis/core/layers/Layer";
+import Field from "@arcgis/core/layers/support/Field";
+import CodedValueDomain from "@arcgis/core/layers/support/CodedValueDomain";
+import type { GeometryUnion } from "@arcgis/core/geometry/types.js";
+import type { ArcgisSearch } from "@arcgis/map-components/components/arcgis-search";
+import type { SearchResponse } from "@arcgis/core/widgets/Search/types";
+import type { CreateEvent } from "@arcgis/core/widgets/Sketch/types";
+import Handles from "@arcgis/core/core/Handles.js";
 
 type Mode = "city" | "extent" | "draw" | "address" | "district";
 
@@ -25,8 +37,8 @@ export type FilterLayer = {
 
 interface UseWhereProps {
   arcgisMap: HTMLArcgisMapElement | undefined;
-  onGeometryChange: (geometry: __esri.Polygon | __esri.Extent | null) => void;
-  incidentsLayer?: __esri.FeatureLayer | null;
+  onGeometryChange: (geometry: Polygon | Extent | null) => void;
+  incidentsLayer?: FeatureLayer | null;
 }
 
 export function useWhere({
@@ -90,9 +102,9 @@ export function useWhere({
 
   const arcgisSearch = useRef<HTMLArcgisSearchElement>(null);
   const sketchVm = useRef<SketchViewModel | null>(null);
-  const graphic = useRef<__esri.Graphic | null>(null);
+  const graphic = useRef<Graphic | null | undefined>(null);
   const distanceInput = useRef<HTMLCalciteInputNumberElement>(null);
-  const extentWatcher = useRef<IHandle | null>(null);
+  const extentWatcher = useRef<Handles | null>(null);
 
   /** Helper: get or create sketch layer */
   const getSketchLayer = useCallback((mapEl: HTMLArcgisMapElement) => {
@@ -100,20 +112,16 @@ export function useWhere({
     let sketchLayer = mapEl.view.map.findLayerById("sketch-layer");
     if (!sketchLayer) {
       sketchLayer = new GraphicsLayer({ id: "sketch-layer", listMode: "hide" });
-      (sketchLayer as __esri.GraphicsLayer).effect =
+      (sketchLayer as GraphicsLayer).effect =
         "drop-shadow(4px 0px 8px rgba(0, 0, 0, 0.8))";
       mapEl.view.map.add(sketchLayer, 1);
     }
-    return sketchLayer as __esri.GraphicsLayer;
+    return sketchLayer as GraphicsLayer;
   }, []);
 
   /** Update geometry with explicit buffer */
   const updateGeometry = useCallback(
-    async (
-      sketchLayer: __esri.GraphicsLayer,
-      distance: number,
-      units: string
-    ) => {
+    async (sketchLayer: GraphicsLayer, distance: number, units: string) => {
       if (!graphic.current || !arcgisMap?.view) return;
 
       const newGraphic = graphic.current.clone();
@@ -137,7 +145,7 @@ export function useWhere({
 
       // Generalize AFTER goTo
       const generalized = generalizeOperator
-        .execute(newGraphic.geometry as __esri.GeometryUnion, 5)
+        .execute(newGraphic.geometry as GeometryUnion, 5)
         ?.toJSON();
 
       if (mode === "draw") {
@@ -146,28 +154,28 @@ export function useWhere({
 
       onGeometryChange(new Polygon(generalized));
       requestAnimationFrame(() => {
-        arcgisMap.view.goTo(newGraphic.geometry?.extent?.clone().expand(1.5));
+        arcgisMap.view.goTo(newGraphic.geometry?.extent?.clone().expand(1.5) as GeometryUnion);
       });
     },
-    [arcgisMap?.view, mode, onGeometryChange, updateSearchParam]
+    [arcgisMap?.view, mode, onGeometryChange, updateSearchParam],
   );
 
   /** Handle sketch draw completion */
   const handleSketchCreated = useCallback(
-    (event: __esri.SketchCreateEvent) => {
+    (event: CustomEvent<CreateEvent>) => {
       if (!arcgisMap) return;
       const sketchLayer = getSketchLayer(arcgisMap);
       if (!sketchLayer) return;
 
-      graphic.current = event.graphic;
+      graphic.current = event.detail.graphic;
 
-      if (event.state === "complete") {
+      if (event.detail.state === "complete") {
         setSelectedTool("");
         sketchLayer.removeAll();
         updateGeometry(sketchLayer, bufferDistance, bufferUnits);
       }
     },
-    [arcgisMap, bufferDistance, bufferUnits, getSketchLayer, updateGeometry]
+    [arcgisMap, bufferDistance, bufferUnits, getSketchLayer, updateGeometry],
   );
 
   /** Initialize SketchViewModel */
@@ -184,7 +192,6 @@ export function useWhere({
     });
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
     sketchVm.current.on("create", handleSketchCreated);
   }, [arcgisMap?.ready, getSketchLayer, handleSketchCreated]);
 
@@ -246,7 +253,7 @@ export function useWhere({
         setBufferUnits("miles");
       }
     },
-    [arcgisMap, clear, filterLayers, getSketchLayer, onGeometryChange]
+    [arcgisMap, clear, filterLayers, getSketchLayer, onGeometryChange],
   );
 
   /** Get distinct values for a layer field */
@@ -254,15 +261,15 @@ export function useWhere({
     async (layerName: string, fieldName: string) => {
       if (!arcgisMap?.view?.map) return [];
       const layer = arcgisMap.view.map.allLayers.find(
-        (layer: __esri.Layer) => layer.title === layerName
+        (layer: Layer) => layer.title === layerName,
       );
       if (!layer) return [];
-      const field = (layer as __esri.FeatureLayer).fields.find(
-        (f) => f.name === fieldName
+      const field = (layer as FeatureLayer).fields.find(
+        (f) => f.name === fieldName,
       );
       if (!field) return [];
 
-      const results = await (layer as __esri.FeatureLayer).queryFeatures({
+      const results = await (layer as FeatureLayer).queryFeatures({
         where: `${fieldName} IS NOT NULL`,
         returnDistinctValues: true,
         outFields: [fieldName],
@@ -270,19 +277,19 @@ export function useWhere({
         orderByFields: [fieldName],
       });
 
-      return results.features.map((feature: __esri.Graphic) => {
+      return results.features.map((feature: Graphic) => {
         if (field.domain && field.domain.type === "coded-value") {
           const codedValue = (
-            field.domain as __esri.CodedValueDomain
+            field.domain as CodedValueDomain
           ).codedValues.find(
-            (cv) => cv.code === feature.getAttribute(fieldName)
+            (cv) => cv.code === feature.getAttribute(fieldName),
           );
           return codedValue?.name;
         }
         return feature.getAttribute(fieldName);
       });
     },
-    [arcgisMap]
+    [arcgisMap],
   );
 
   /** Handle distance input change */
@@ -298,7 +305,7 @@ export function useWhere({
       }
       setBufferDistance(newDistance);
     },
-    [arcgisMap, bufferUnits, getSketchLayer, updateGeometry]
+    [arcgisMap, bufferUnits, getSketchLayer, updateGeometry],
   );
 
   /** Handle buffer units change */
@@ -321,7 +328,7 @@ export function useWhere({
       setBufferUnits(newUnits);
       setBufferDistance(convertedDistance);
     },
-    [arcgisMap, bufferDistance, getSketchLayer, updateGeometry]
+    [arcgisMap, bufferDistance, getSketchLayer, updateGeometry],
   );
 
   /** Update filter layer selection */
@@ -335,10 +342,10 @@ export function useWhere({
 
       if (!filterLayer.field) {
         const layer = arcgisMap?.view.map?.allLayers.find(
-          (l: __esri.Layer) => l.title === layerName
+          (l: Layer) => l.title === layerName,
         );
         if (!layer) return;
-        const results = await (layer as __esri.FeatureLayer).queryFeatures({
+        const results = await (layer as FeatureLayer).queryFeatures({
           outFields: [],
           returnGeometry: true,
           where: `1=1`,
@@ -355,12 +362,12 @@ export function useWhere({
       if (!filterLayer.values || filterLayer.values.length === 0) {
         const distinctValues = await getDistinctValues(
           filterLayer.name,
-          filterLayer.field
+          filterLayer.field,
         );
         setFilterLayers((prev) =>
           prev.map((l) =>
-            l.name === layerName ? { ...l, values: distinctValues } : l
-          )
+            l.name === layerName ? { ...l, values: distinctValues } : l,
+          ),
         );
       }
     },
@@ -373,7 +380,7 @@ export function useWhere({
       updateGeometry,
       updateSearchParam,
       getSketchLayer,
-    ]
+    ],
   );
 
   /** Feature selected */
@@ -382,35 +389,33 @@ export function useWhere({
       filterLayer: FilterLayer,
       value: string,
       distance?: number,
-      units?: string
+      units?: string,
     ) => {
       const layer = arcgisMap?.view.map?.allLayers.find(
-        (l: __esri.Layer) => l.title === filterLayer.name
+        (l: Layer) => l.title === filterLayer.name,
       );
       if (!layer) return;
 
-      const field = (layer as __esri.FeatureLayer).fields.find(
-        (f: __esri.Field) => f.name === filterLayer.field
+      const field = (layer as FeatureLayer).fields.find(
+        (f: Field) => f.name === filterLayer.field,
       );
       if (!field) return;
 
       if (field.domain && field.domain.type === "coded-value") {
-        const codedValue = (
-          field.domain as __esri.CodedValueDomain
-        ).codedValues.find(
-          (cv) => cv.name.toLowerCase() === value.toLowerCase()
+        const codedValue = (field.domain as CodedValueDomain).codedValues.find(
+          (cv) => cv.name.toLowerCase() === value.toLowerCase(),
         );
         if (codedValue) value = codedValue.code as string;
       }
 
-      const results = await (layer as __esri.FeatureLayer).queryFeatures({
+      const results = await (layer as FeatureLayer).queryFeatures({
         outFields: [field.name],
         returnGeometry: true,
         where: `${filterLayer.field} = '${value}'`,
       });
 
       const geoms = results.features.map((f) => f.geometry);
-      const union = unionOperator.executeMany(geoms as __esri.GeometryUnion[]);
+      const union = unionOperator.executeMany(geoms as GeometryUnion[]);
 
       const sketchLayer = getSketchLayer(arcgisMap!);
       if (!sketchLayer) return;
@@ -419,10 +424,10 @@ export function useWhere({
       updateGeometry(
         sketchLayer,
         distance ?? bufferDistance,
-        units ?? bufferUnits
+        units ?? bufferUnits,
       );
     },
-    [arcgisMap, bufferDistance, bufferUnits]
+    [arcgisMap, bufferDistance, bufferUnits],
   );
 
   /** Handle filter selection change */
@@ -436,14 +441,14 @@ export function useWhere({
       setBufferDistance(filterLayer.distance || 0);
       setBufferUnits(filterLayer.units || "miles");
     },
-    [updateFilterLayer]
+    [updateFilterLayer],
   );
 
   /** Handle combobox selection */
   const handleComboboxChange = useCallback(
     (e: TargetedEvent<HTMLCalciteComboboxElement, void>) => {
       const filterLayer = filterLayers.find(
-        (l) => l.name === selectedFilterLayerName
+        (l) => l.name === selectedFilterLayerName,
       );
       if (!filterLayer || !filterLayer.field) return;
       const value = e.target.value as string;
@@ -461,7 +466,7 @@ export function useWhere({
       featureSelected,
       clear,
       updateSearchParam,
-    ]
+    ],
   );
 
   /** Handle draw tool clicks */
@@ -474,7 +479,7 @@ export function useWhere({
         setSelectedTool(tool);
       }
     },
-    []
+    [],
   );
 
   const handleClearClick = useCallback(() => {
@@ -485,10 +490,7 @@ export function useWhere({
   /** Handle search complete */
   const handleSearchComplete = useCallback(
     (
-      event: TargetedEvent<
-        HTMLArcgisSearchElement,
-        __esri.SearchViewModelSearchCompleteEvent
-      >
+      event: TargetedEvent<ArcgisSearch, SearchResponse>,
     ) => {
       console.log("search complete", event);
       if (!arcgisMap || event.detail.numResults === 0) return;
@@ -513,7 +515,7 @@ export function useWhere({
       sketchLayer.removeAll();
       updateGeometry(sketchLayer, distance, bufferUnits);
     },
-    [arcgisMap, bufferDistance, bufferUnits, getSketchLayer, updateGeometry]
+    [arcgisMap, bufferDistance, bufferUnits, getSketchLayer, updateGeometry],
   );
 
   /** When <arcgis-search> is ready */

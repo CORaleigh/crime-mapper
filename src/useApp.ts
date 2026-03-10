@@ -1,6 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { TargetedEvent } from "@esri/calcite-components";
+import type Polygon from "@arcgis/core/geometry/Polygon";
+import type Extent from "@arcgis/core/geometry/Extent";
+import type Graphic from "@arcgis/core/Graphic";
+import type FeatureLayer from "@arcgis/core/layers/FeatureLayer";
+import type Layer from "@arcgis/core/layers/Layer";
+import type FeatureLayerView from "@arcgis/core/views/layers/FeatureLayerView";
+import type TableTemplate from "@arcgis/core/widgets/FeatureTable/support/TableTemplate";
 
 type Description = {
   group: string;
@@ -11,11 +18,11 @@ export const useApp = () => {
   const [whereClause, setWhereClause] = useState<string | undefined>(undefined);
   const [whenClause, setWhenClause] = useState<string | undefined>(undefined);
   const [combinedWhere, setCombinedWhere] = useState<string | undefined>(
-    undefined
+    undefined,
   );
-  const [geometryFilter, setFilterGeometry] = useState<
-    __esri.Polygon | __esri.Extent | null
-  >(null);
+  const [geometryFilter, setFilterGeometry] = useState<Polygon | Extent | null>(
+    null,
+  );
   const [showMap, setShowMap] = useState(true);
   const [mapReady, setMapReady] = useState(false);
   const [tableReady, setTableReady] = useState(false);
@@ -24,7 +31,7 @@ export const useApp = () => {
   const [showFilter, setShowFilter] = useState(true);
   const [showCharts, setShowCharts] = useState(false);
   const [selectedChart, setSelectedChart] = useState(undefined);
-  const [categories, setCategories] = useState<__esri.Graphic[]>([]);
+  const [categories, setCategories] = useState<Graphic[]>([]);
   const [allDescriptions, setAllDescriptions] = useState<Description[]>([]);
   const [selectedSegment, setSelectedSegment] = useState("what");
   const [showDataDictionary, setShowDataDictionary] = useState(false);
@@ -38,13 +45,13 @@ export const useApp = () => {
 
   const [showViolentCrimeOnly, setShowViolentCrimeOnly] = useState(false);
   const [isMobile, setIsMobile] = useState(
-    typeof window !== "undefined" ? window.innerWidth >= 900 : false
+    typeof window !== "undefined" ? window.innerWidth >= 900 : false,
   );
 
   const arcgisMap = useRef<HTMLArcgisMapElement>(undefined);
   const arcgisFeatureTable = useRef<HTMLArcgisFeatureTableElement>(null);
-  const incidentsLayer = useRef<__esri.FeatureLayer | null>(null);
-  const incidentsLayerView = useRef<__esri.FeatureLayerView | null>(null);
+  const incidentsLayer = useRef<FeatureLayer | null>(null);
+  const incidentsLayerView = useRef<FeatureLayerView | null>(null);
 
   const crimeTypes = useRef<string[]>([]);
 
@@ -61,9 +68,8 @@ export const useApp = () => {
   }, []);
 
   const handleTableReady = (
-    event: TargetedEvent<HTMLArcgisFeatureTableElement>
+    event: TargetedEvent<HTMLArcgisFeatureTableElement>,
   ) => {
-    
     arcgisFeatureTable.current = event.target;
     arcgisFeatureTable.current.referenceElement = arcgisMap.current;
     event.target.tableTemplate = {
@@ -79,39 +85,38 @@ export const useApp = () => {
         { type: "field", fieldName: "reported_date" },
         { type: "field", fieldName: "reported_dayofwk" },
       ],
-    } as __esri.TableTemplate;
+    } as TableTemplate;
     setTableReady(true);
   };
 
   const handleViewReady = async (
-    event: TargetedEvent<HTMLArcgisMapElement, void>
+    event: TargetedEvent<HTMLArcgisMapElement, void>,
   ) => {
-    
     const view = await event.target.view.when();
-    const layer = view.map.allLayers.find(
-      (layer: __esri.Layer) => layer.title === "Offenses"
-    ) as __esri.FeatureLayer;
+    const layer = view?.map?.allLayers.find(
+      (layer:Layer) => layer.title === "Offenses",
+    ) as FeatureLayer;
 
-    incidentsLayer.current = layer as __esri.FeatureLayer;
+    incidentsLayer.current = layer as FeatureLayer;
     arcgisMap.current = event.target;
 
     if (layer && layer.charts && layer.charts.length > 0) {
       incidentsLayerView.current = (await event.target.whenLayerView(
-        layer
-      )) as __esri.FeatureLayerView;
+        layer,
+      )) as FeatureLayerView;
 
-      setSelectedChart(layer.charts[0]);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setSelectedChart(layer.charts[0] as any);
     }
 
     updateCategories("1=1");
-        setMapReady(true);
-
+    setMapReady(true);
   };
 
   const updateCategories = async (where: string) => {
     const table = arcgisMap.current?.view.map?.allTables.getItemAt(0);
     if (table?.type === "feature") {
-      const results = await (table as __esri.FeatureLayer).queryFeatures({
+      const results = await (table as FeatureLayer).queryFeatures({
         where: where,
         returnGeometry: false,
         outFields: ["*"],
@@ -138,19 +143,19 @@ export const useApp = () => {
     if (!arcgisMap.current) return;
     if (!arcgisMap.current.ready) return;
     const layer = arcgisMap.current.view.map?.allLayers.find(
-      (layer) => layer.title === "Offenses"
-    ) as __esri.FeatureLayer | undefined;
+      (layer) => layer.title === "Offenses",
+    ) as FeatureLayer | undefined;
     if (!layer) return;
 
     const where = showViolentCrimeOnly
       ? `crime_code in ('11','12','13','17A','20A','20B','25G')`
       : Array.isArray(crimeTypes.current) && crimeTypes.current.length > 0
-      ? `crime_category IN ('${crimeTypes.current.join(
-          "', '"
-        )}') and ${whenClause}`
-      : "1=1";
+        ? `crime_category IN ('${crimeTypes.current.join(
+            "', '",
+          )}') and ${whenClause}`
+        : "1=1";
 
-    const results = await (layer as __esri.FeatureLayer).queryFeatures({
+    const results = await (layer as FeatureLayer).queryFeatures({
       returnDistinctValues: true,
       outFields: ["crime_category", "crime_description"],
       where: where,
@@ -158,7 +163,7 @@ export const useApp = () => {
       orderByFields: ["crime_category", "crime_description"],
     });
 
-    const countResults = await (layer as __esri.FeatureLayer).queryFeatures({
+    const countResults = await (layer as FeatureLayer).queryFeatures({
       where: where,
       returnGeometry: false,
       outStatistics: [
@@ -209,7 +214,7 @@ export const useApp = () => {
     }[] = Object.entries(groupDescriptions).map(([group, descArr]) => ({
       group,
       descriptions: descArr.sort((a, b) =>
-        a.description.localeCompare(b.description)
+        a.description.localeCompare(b.description),
       ),
     }));
     setAllDescriptions(result.filter((item) => item.descriptions.length > 0));
@@ -221,7 +226,7 @@ export const useApp = () => {
         fetchAllDescriptions();
       }
     },
-    [fetchAllDescriptions]
+    [fetchAllDescriptions],
   );
 
   const handleThemeChange = useCallback(() => {
@@ -230,10 +235,10 @@ export const useApp = () => {
       const body = document.querySelector("body");
       if (body) {
         body.classList.remove(
-          newTheme === "light" ? "calcite-mode-dark" : "calcite-mode-light"
+          newTheme === "light" ? "calcite-mode-dark" : "calcite-mode-light",
         );
         body.classList.add(
-          newTheme === "light" ? "calcite-mode-light" : "calcite-mode-dark"
+          newTheme === "light" ? "calcite-mode-light" : "calcite-mode-dark",
         );
       }
       return newTheme;
@@ -268,9 +273,9 @@ export const useApp = () => {
       where: combinedWhere,
       geometry: geometryFilter,
     };
-    
+
     if (tableReady && arcgisFeatureTable.current) {
-      const layer = arcgisFeatureTable.current.layer as __esri.FeatureLayer;
+      const layer = arcgisFeatureTable.current.layer as FeatureLayer;
       layer.definitionExpression = combinedWhere;
       arcgisFeatureTable.current.filterGeometry = geometryFilter;
       arcgisFeatureTable.current.refresh();
@@ -300,7 +305,7 @@ export const useApp = () => {
   }, [showMap, showTable, showCharts]);
 
   const chartSelected = (
-    event: TargetedEvent<HTMLCalciteSelectElement, void>
+    event: TargetedEvent<HTMLCalciteSelectElement, void>,
   ) => {
     setSelectedChart(event.target.selectedOption.value);
   };

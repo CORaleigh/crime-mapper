@@ -3,8 +3,9 @@ import type { TargetedEvent } from "@arcgis/map-components";
 import Collection from "@arcgis/core/core/Collection";
 import { useEffect } from "react";
 import "@arcgis/map-components/dist/components/arcgis-feature-table";
+import type FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 interface TablePanelProps {
-  layer: __esri.FeatureLayer | null;
+  layer: FeatureLayer | null;
   arcgisMap: HTMLArcgisMapElement | undefined;
   arcgisFeatureTable: React.RefObject<HTMLArcgisFeatureTableElement | null>;
   handleTableReady: (

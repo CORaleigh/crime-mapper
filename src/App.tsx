@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import "./App.css";
 import "@esri/calcite-components";
 
@@ -32,6 +33,9 @@ import "@esri/calcite-components/components/calcite-switch";
 import "@esri/calcite-components/components/calcite-alert";
 import "@esri/calcite-components/components/calcite-sheet";
 import "@esri/calcite-components/components/calcite-notice";
+
+
+import type FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 
 // ArcGIS SDK imports
 
@@ -176,7 +180,7 @@ function App() {
               label={"Select chart"}
               oncalciteSelectChange={chartSelected}
             >
-              {incidentsLayer.current.charts.map((chart, i) => {
+              {incidentsLayer.current.charts.map((chart: any, i: number) => {
                 return (
                   <calcite-option
                     key={`chart-${i}`}
@@ -352,7 +356,7 @@ function App() {
                     categoryTable={
                       arcgisMap.current?.view?.map?.allTables?.getItemAt(
                         0,
-                      ) as __esri.FeatureLayer
+                      ) as FeatureLayer
                     }
                     incidentsLayer={incidentsLayer.current}
                     arcgisMap={arcgisMap.current}

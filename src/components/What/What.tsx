@@ -3,8 +3,12 @@ import type { TargetedEvent } from "@esri/calcite-components";
 import { useWhat } from "./useWhat";
 import { type Description } from "../../types";
 import styles from "./What.module.css";
+
+import type Graphic from "@arcgis/core/Graphic";
+import type FeatureLayer from "@arcgis/core/layers/FeatureLayer";
+
 interface WhatProps {
-  categories: __esri.Graphic[];
+  categories: Graphic[];
   allDescriptions: Description[];
   onWhereChange: (where: string | undefined) => void;
   onDescriptionShow: (show: boolean) => void;
@@ -14,8 +18,8 @@ interface WhatProps {
   isMobile: boolean;
   onViolentCrimeFilterChange: (enabled: boolean) => void;
   onTopCrimeFilterChange: (enabled: boolean) => void;
-  categoryTable: __esri.FeatureLayer;
-  incidentsLayer: __esri.FeatureLayer | null;
+  categoryTable: FeatureLayer;
+  incidentsLayer: FeatureLayer | null;
   arcgisMap: HTMLArcgisMapElement | undefined;
 }
 
@@ -95,7 +99,6 @@ export default function What(props: WhatProps) {
               zIndex: 2,
               paddingTop: "1rem",
               paddingBottom: "1rem",
-
               display: "flex",
               justifyContent: "space-evenly",
               alignItems: "center",
@@ -138,6 +141,7 @@ export default function What(props: WhatProps) {
             oncalciteTileGroupSelect={tileSelected}
             checked={filterTopCrimes}
           >
+            
             {Array.from(
               new Map(
                 categories.map((category) => [

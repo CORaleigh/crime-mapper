@@ -15,13 +15,17 @@ import styles from "./Where.module.css";
 
 import { useWhere, type FilterLayer } from "./useWhere";
 
+import Polygon from "@arcgis/core/geometry/Polygon";
+import Extent from "@arcgis/core/geometry/Extent";
+import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
+
 interface WhereProps {
-  onGeometryChange: (geometry: __esri.Polygon | __esri.Extent | null) => void;
+  onGeometryChange: (geometry: Polygon | Extent | null) => void;
   onFilterPanelClose: () => void;
   arcgisMap: HTMLArcgisMapElement | undefined;
   open: boolean;
   isMobile: boolean;
-  incidentsLayer?: __esri.FeatureLayer | null;
+  incidentsLayer?: FeatureLayer | null;
 }
 
 export default function Where({
@@ -96,7 +100,8 @@ export default function Where({
               {["point", "line", "polygon", "rectangle", "circle"].map((t) => (
                 <calcite-action
                   key={t}
-                  icon={t === "line" ? "line" : t}
+                  icon={t === "line" ? "line" : t === "point" ? "point" : t === "polygon" ? "polygon" : t === "rectangle" ? "rectangle" : "circle"}
+                  
                   value={t}
                   text={t}
                   textEnabled={false}
@@ -163,6 +168,7 @@ export default function Where({
                     .find((l) => l.name === selectedFilterLayerName)
                     ?.values?.map((v) => (
                       <calcite-combobox-item
+                        heading={v}
                         key={v}
                         text-label={v}
                         value={v}

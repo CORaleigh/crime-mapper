@@ -49,3 +49,12 @@ calcite-switch {
   background-color: #e4ca85;
   color: #11233f;
 }
+
+@media (max-width: 600px) {
+  calcite-label {
+    max-width: 150px;
+  }
+  calcite-panel {
+    max-width: 100vw;
+  }
+}
