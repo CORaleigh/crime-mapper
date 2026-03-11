@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef, useCallback } from "react";
 
-import type { TargetedEvent } from "@esri/calcite-components";
 import { useSearchParamHelpers } from "../../useSearchParamHelpers";
 
 import * as bufferOperator from "@arcgis/core/geometry/operators/bufferOperator.js";
@@ -18,8 +17,6 @@ import Layer from "@arcgis/core/layers/Layer";
 import Field from "@arcgis/core/layers/support/Field";
 import CodedValueDomain from "@arcgis/core/layers/support/CodedValueDomain";
 import type { GeometryUnion } from "@arcgis/core/geometry/types.js";
-import type { ArcgisSearch } from "@arcgis/map-components/components/arcgis-search";
-import type { SearchResponse } from "@arcgis/core/widgets/Search/types";
 import type { CreateEvent } from "@arcgis/core/widgets/Sketch/types";
 import Handles from "@arcgis/core/core/Handles.js";
 
@@ -294,7 +291,7 @@ export function useWhere({
 
   /** Handle distance input change */
   const handleDistanceChange = useCallback(
-    (e: TargetedEvent<HTMLCalciteInputNumberElement, void>) => {
+    (e: HTMLCalciteInputNumberElement["calciteInputNumberChange"]) => {
       const newDistance = parseFloat(e.target.value);
       if (!arcgisMap) return;
       const sketchLayer = getSketchLayer(arcgisMap);
@@ -310,7 +307,7 @@ export function useWhere({
 
   /** Handle buffer units change */
   const handleUnitsChanged = useCallback(
-    (e: TargetedEvent<HTMLCalciteSelectElement, void>) => {
+    (e: HTMLCalciteSelectElement["calciteSelectChange"]) => {
       const newUnits = e.target.value;
       if (!arcgisMap) return;
       const sketchLayer = getSketchLayer(arcgisMap);
@@ -432,7 +429,7 @@ export function useWhere({
 
   /** Handle filter selection change */
   const handleFilterLayerChange = useCallback(
-    (e: TargetedEvent<HTMLCalciteSelectElement, void>) => {
+    (e: HTMLCalciteSelectElement["calciteSelectChange"]) => {
       const layerName = e.target.value;
       updateFilterLayer(layerName);
       const filterLayer = filterLayers.find((l) => l.name === layerName);
@@ -446,7 +443,7 @@ export function useWhere({
 
   /** Handle combobox selection */
   const handleComboboxChange = useCallback(
-    (e: TargetedEvent<HTMLCalciteComboboxElement, void>) => {
+    (e: HTMLCalciteComboboxElement["calciteComboboxChange"]) => {
       const filterLayer = filterLayers.find(
         (l) => l.name === selectedFilterLayerName,
       );
@@ -490,8 +487,7 @@ export function useWhere({
   /** Handle search complete */
   const handleSearchComplete = useCallback(
     (
-      event: TargetedEvent<ArcgisSearch, SearchResponse>,
-    ) => {
+      event: HTMLArcgisSearchElement["arcgisSearchComplete"]) => {
       console.log("search complete", event);
       if (!arcgisMap || event.detail.numResults === 0) return;
       updateSearchParam("address", event.detail.searchTerm || "");

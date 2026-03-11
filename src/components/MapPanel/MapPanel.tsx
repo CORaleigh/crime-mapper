@@ -11,10 +11,9 @@ import "@arcgis/map-components/components/arcgis-basemap-toggle";
 import Collection from "@arcgis/core/core/Collection";
 import LocatorSearchSource from "@arcgis/core/widgets/Search/LocatorSearchSource";
 import styles from "./MapPanel.module.css";
-import type { TargetedEvent } from "@arcgis/map-components";
 
 interface MapPanelProps {
-  handleViewReady: (event: TargetedEvent<HTMLArcgisMapElement, void>) => void;
+  handleViewReady: (event: HTMLArcgisMapElement["arcgisViewReadyChange"]) => void;
   arcgisMapRef: React.RefObject<HTMLArcgisMapElement | undefined>;
 }
 

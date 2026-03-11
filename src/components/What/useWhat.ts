@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useCallback } from "react";
-import type { TargetedEvent } from "@esri/calcite-components";
 import { type Description } from "../../types";
 import { useSearchParamHelpers } from "../../useSearchParamHelpers";
 
@@ -73,7 +72,7 @@ export function useWhat({
 
   // Tile selection handler
   const tileSelected = useCallback(
-    (event: TargetedEvent<HTMLCalciteTileGroupElement, void>) => {
+    (event: HTMLCalciteTileGroupElement["calciteTileGroupSelect"]) => {
       const selectedTiles = event.target.selectedItems;
       event.target
         .querySelectorAll("calcite-tile")
@@ -108,7 +107,7 @@ export function useWhat({
   const listItemSelect = useCallback(
     (
       item: Description,
-      event: TargetedEvent<HTMLCalciteListItemElement, void>,
+      event: HTMLCalciteListItemElement["calciteListItemSelect"],
     ) => {
       const prev =
         groupSelections[item.group] ??
@@ -201,7 +200,7 @@ export function useWhat({
   );
   // Switch handlers (moved from What.tsx)
   const handleViolentCrimeSwitchChange = useCallback(
-    async (event: TargetedEvent<HTMLCalciteSwitchElement, void>) => {
+    async (event: HTMLCalciteSwitchElement["calciteSwitchChange"]) => {
       violentCrimeSelected(event.target.checked);
       deleteSearchParam("groupSelections");
       deleteSearchParam("selectedCrimeGroups");
@@ -252,7 +251,7 @@ export function useWhat({
   );
 
   const handleTopCrimeSwitchChange = useCallback(
-    async (event: TargetedEvent<HTMLCalciteSwitchElement, void>) => {
+    async (event: HTMLCalciteSwitchElement["calciteSwitchChange"]) => {
       topCrimeSelected(event.target.checked);
       deleteSearchParam("groupSelections");
       deleteSearchParam("selectedCrimeGroups");

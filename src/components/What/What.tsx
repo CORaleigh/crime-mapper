@@ -1,5 +1,3 @@
-// (no direct React imports needed)
-import type { TargetedEvent } from "@esri/calcite-components";
 import { useWhat } from "./useWhat";
 import { type Description } from "../../types";
 import styles from "./What.module.css";
@@ -224,7 +222,7 @@ export default function What(props: WhatProps) {
                           description.description
                         )}
                         oncalciteListItemSelect={(
-                          e: TargetedEvent<HTMLCalciteListItemElement, void>
+                          e: HTMLCalciteListItemElement["calciteListItemSelect"]
                         ) => listItemSelect(item, e)}
                       ></calcite-list-item>
                     )

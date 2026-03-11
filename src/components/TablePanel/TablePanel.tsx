@@ -1,5 +1,4 @@
 // TablePanel.tsx
-import type { TargetedEvent } from "@arcgis/map-components";
 import Collection from "@arcgis/core/core/Collection";
 import { useEffect } from "react";
 import "@arcgis/map-components/dist/components/arcgis-feature-table";
@@ -9,7 +8,7 @@ interface TablePanelProps {
   arcgisMap: HTMLArcgisMapElement | undefined;
   arcgisFeatureTable: React.RefObject<HTMLArcgisFeatureTableElement | null>;
   handleTableReady: (
-    event: TargetedEvent<HTMLArcgisFeatureTableElement>,
+    event: HTMLArcgisFeatureTableElement["arcgisReady"],
   ) => void;
 }
 

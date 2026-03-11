@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState, useCallback } from "react";
-import type { TargetedEvent } from "@esri/calcite-components";
 import type Polygon from "@arcgis/core/geometry/Polygon";
 import type Extent from "@arcgis/core/geometry/Extent";
 import type Graphic from "@arcgis/core/Graphic";
@@ -68,7 +67,7 @@ export const useApp = () => {
   }, []);
 
   const handleTableReady = (
-    event: TargetedEvent<HTMLArcgisFeatureTableElement>,
+    event: HTMLArcgisFeatureTableElement["arcgisReady"],
   ) => {
     arcgisFeatureTable.current = event.target;
     arcgisFeatureTable.current.referenceElement = arcgisMap.current;
@@ -90,7 +89,7 @@ export const useApp = () => {
   };
 
   const handleViewReady = async (
-    event: TargetedEvent<HTMLArcgisMapElement, void>,
+    event: HTMLArcgisMapElement["arcgisViewReadyChange"],
   ) => {
     const view = await event.target.view.when();
     const layer = view?.map?.allLayers.find(
@@ -305,7 +304,7 @@ export const useApp = () => {
   }, [showMap, showTable, showCharts]);
 
   const chartSelected = (
-    event: TargetedEvent<HTMLCalciteSelectElement, void>,
+    event: HTMLCalciteSelectElement["calciteSelectChange"]
   ) => {
     setSelectedChart(event.target.selectedOption.value);
   };

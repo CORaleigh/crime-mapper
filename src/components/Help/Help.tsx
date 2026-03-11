@@ -9,7 +9,6 @@ import "@esri/calcite-components/components/calcite-shell";
 import "@esri/calcite-components/components/calcite-shell-panel";
 import "@esri/calcite-components/components/calcite-fab";
 
-import type { TargetedEvent } from "@arcgis/map-components";
 
 import styles from "./Help.module.css";
 
@@ -180,7 +179,7 @@ export default function Help({ open, onClose }: HelpProps) {
           <calcite-panel>
             <calcite-tree
               oncalciteTreeSelect={(
-                event: TargetedEvent<HTMLCalciteTreeElement, void>
+                event: HTMLCalciteTreeElement["calciteTreeSelect"]
               ) => {
                 const item = event.target
                   .selectedItems[0] as HTMLCalciteTreeItemElement;
