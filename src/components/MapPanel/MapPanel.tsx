@@ -1,5 +1,6 @@
-import React, { forwardRef } from "react";
+import React from "react";
 import "@arcgis/map-components/dist/components/arcgis-map";
+import "@arcgis/map-components/dist/components/arcgis-popup";
 import "@arcgis/map-components/dist/components/arcgis-layer-list";
 import "@arcgis/map-components/dist/components/arcgis-search";
 import "@arcgis/map-components/dist/components/arcgis-zoom";
@@ -11,52 +12,111 @@ import "@arcgis/map-components/components/arcgis-basemap-toggle";
 import Collection from "@arcgis/core/core/Collection";
 import LocatorSearchSource from "@arcgis/core/widgets/Search/LocatorSearchSource";
 import styles from "./MapPanel.module.css";
+import type FeatureLayer from "@arcgis/core/layers/FeatureLayer";
+import type Graphic from "@arcgis/core/Graphic";
+import type { ObjectId } from "@arcgis/core/views/types";
+import type FeatureLayerView from "@arcgis/core/views/layers/FeatureLayerView";
 
 interface MapPanelProps {
-  handleViewReady: (event: HTMLArcgisMapElement["arcgisViewReadyChange"]) => void;
-  arcgisMapRef: React.RefObject<HTMLArcgisMapElement | undefined>;
+  handleViewReady: (
+    event: HTMLArcgisMapElement["arcgisViewReadyChange"],
+  ) => void;
+
+  arcgisMapRef: React.RefObject<HTMLArcgisMapElement | null>;
+  arcgisFeatureTableRef?: React.RefObject<HTMLArcgisFeatureTableElement | null>;
 }
 
-export const MapPanel = forwardRef<HTMLArcgisMapElement, MapPanelProps>(
-  ({ handleViewReady }, ref) => {
-    return (
-      <arcgis-map
-        itemId="8a9abcc6b1bd4b6492923810c88cc879"
-        onarcgisViewReadyChange={handleViewReady}
-        className={styles.mapPanel}
-        ref={ref}
-      >
-        <arcgis-expand slot="top-right" group="top-right" label="Search">
-          <arcgis-search
-            includeDefaultSourcesDisabled
-            sources={
-              new Collection([
-                new LocatorSearchSource({
-                  url: "https://maps.raleighnc.gov/arcgis/rest/services/Locators/Locator/GeocodeServer",
-                  placeholder: "Search by address",
-                  maxResults: 6,
-                  singleLineFieldName: "SingleLine",
-                }),
-              ])
-            }
-          />
-        </arcgis-expand>
+export const MapPanel = ({
+  handleViewReady,
+  arcgisMapRef,
+  arcgisFeatureTableRef,
+}: MapPanelProps) => {
+  return (
+    <arcgis-map
+      itemId="8a9abcc6b1bd4b6492923810c88cc879"
+      onarcgisViewReadyChange={handleViewReady}
+      className={styles.mapPanel}
+      ref={arcgisMapRef}
+    >
+      <arcgis-popup
+        slot="popup"
+        onarcgisPropertyChange={async (
+          e: HTMLArcgisPopupElement["arcgisPropertyChange"],
+        ) => {
+          const selectionManager = arcgisMapRef.current?.selectionManager;
+          if (!selectionManager) return;
+          if (e.target.open === false) selectionManager.clear();
 
-        <arcgis-zoom slot="top-left" />
-        <arcgis-locate slot="top-left" />
+          if (e.detail.name !== "selectedFeature") return;
 
-        <arcgis-expand slot="top-right" group="top-right" label="Layers">
-          <arcgis-layer-list visibilityAppearance="checkbox" />
-        </arcgis-expand>
+          const view = arcgisMapRef.current?.view;
 
-        <arcgis-expand slot="top-right" group="top-right" label="Legend">
-          <arcgis-legend />
-        </arcgis-expand>
+          if (!view) return;
 
-        <arcgis-basemap-toggle slot="bottom-right" />
-      </arcgis-map>
-    );
-  },
-);
+          const layer = arcgisMapRef.current?.map?.layers.find(
+            (l) => l.title === "Offenses",
+          ) as FeatureLayer;
+          const layerView = arcgisMapRef.current?.layerViews.find(
+            (l) => l.layer.title === "Offenses",
+          ) as FeatureLayerView;
+          if (!layer) return;
+          if (!e.target.selectedFeature) return;
+          if (e.target.selectedFeature.layer?.title !== "Offenses") {
+            selectionManager.clear();
+            return;
+          }
+
+          selectionManager.clear();
+          if (!arcgisFeatureTableRef?.current) return;
+          if (!arcgisFeatureTableRef.current.selectionManager) {
+            arcgisFeatureTableRef.current.selectionManager = selectionManager;
+          }
+          if (e.target.selectedFeature.isAggregate) {
+            const aggregateIds =
+              e.target.selectedFeature.getObjectId() as ObjectId;
+            const oids = await layerView.queryObjectIds({
+              aggregateIds: [aggregateIds],
+            });
+
+            selectionManager.replace(layer, oids);
+            return;
+          }
+
+          const features: Graphic[] = [e.target.selectedFeature];
+          selectionManager.replace(layer, features);
+        }}
+      />
+
+      <arcgis-expand slot="top-right" group="top-right" label="Search">
+        <arcgis-search
+          includeDefaultSourcesDisabled
+          sources={
+            new Collection([
+              new LocatorSearchSource({
+                url: "https://maps.raleighnc.gov/arcgis/rest/services/Locators/Locator/GeocodeServer",
+                placeholder: "Search by address",
+                maxResults: 6,
+                singleLineFieldName: "SingleLine",
+              }),
+            ])
+          }
+        />
+      </arcgis-expand>
+
+      <arcgis-zoom slot="top-left" />
+      <arcgis-locate slot="top-left" />
+
+      <arcgis-expand slot="top-right" group="top-right" label="Layers">
+        <arcgis-layer-list visibilityAppearance="checkbox" />
+      </arcgis-expand>
+
+      <arcgis-expand slot="top-right" group="top-right" label="Legend">
+        <arcgis-legend />
+      </arcgis-expand>
+
+      <arcgis-basemap-toggle slot="bottom-right" />
+    </arcgis-map>
+  );
+};
 
 export default MapPanel;

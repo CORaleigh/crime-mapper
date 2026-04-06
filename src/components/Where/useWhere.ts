@@ -33,7 +33,7 @@ export type FilterLayer = {
 };
 
 interface UseWhereProps {
-  arcgisMap: HTMLArcgisMapElement | undefined;
+  arcgisMap: HTMLArcgisMapElement | null;
   onGeometryChange: (geometry: Polygon | Extent | null) => void;
   incidentsLayer?: FeatureLayer | null;
 }
@@ -159,14 +159,14 @@ export function useWhere({
 
   /** Handle sketch draw completion */
   const handleSketchCreated = useCallback(
-    (event: CustomEvent<CreateEvent>) => {
+    (event: CreateEvent) => {
       if (!arcgisMap) return;
       const sketchLayer = getSketchLayer(arcgisMap);
       if (!sketchLayer) return;
 
-      graphic.current = event.detail.graphic;
+      graphic.current = event.graphic;
 
-      if (event.detail.state === "complete") {
+      if (event.state === "complete") {
         setSelectedTool("");
         sketchLayer.removeAll();
         updateGeometry(sketchLayer, bufferDistance, bufferUnits);

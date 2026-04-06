@@ -47,7 +47,7 @@ export const useApp = () => {
     typeof window !== "undefined" ? window.innerWidth >= 900 : false,
   );
 
-  const arcgisMap = useRef<HTMLArcgisMapElement>(undefined);
+  const arcgisMap = useRef<HTMLArcgisMapElement | null>(null);
   const arcgisFeatureTable = useRef<HTMLArcgisFeatureTableElement>(null);
   const incidentsLayer = useRef<FeatureLayer | null>(null);
   const incidentsLayerView = useRef<FeatureLayerView | null>(null);
@@ -69,6 +69,7 @@ export const useApp = () => {
   const handleTableReady = (
     event: HTMLArcgisFeatureTableElement["arcgisReady"],
   ) => {
+    if (!arcgisMap.current) return;
     arcgisFeatureTable.current = event.target;
     arcgisFeatureTable.current.referenceElement = arcgisMap.current;
     event.target.tableTemplate = {
@@ -92,6 +93,7 @@ export const useApp = () => {
     event: HTMLArcgisMapElement["arcgisViewReadyChange"],
   ) => {
     const view = await event.target.view.when();
+
     const layer = view?.map?.allLayers.find(
       (layer:Layer) => layer.title === "Offenses",
     ) as FeatureLayer;

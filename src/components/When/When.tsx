@@ -43,9 +43,9 @@ export default function When({
             }
             style={{ marginLeft: "0.5rem", width: "160px" }}
           >
-            <calcite-option value="90days">past 90 days</calcite-option>
-            <calcite-option value="month">past month</calcite-option>
             <calcite-option value="week">past week</calcite-option>
+            <calcite-option value="month">past month</calcite-option>
+            <calcite-option value="90days">past 90 days</calcite-option>
             {/* <calcite-option value="">Custom Range</calcite-option> */}
           </calcite-select>
         </calcite-label>

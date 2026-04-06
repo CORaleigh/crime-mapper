@@ -18,7 +18,7 @@ interface WhatProps {
   onTopCrimeFilterChange: (enabled: boolean) => void;
   categoryTable: FeatureLayer;
   incidentsLayer: FeatureLayer | null;
-  arcgisMap: HTMLArcgisMapElement | undefined;
+  arcgisMap: HTMLArcgisMapElement | null;
 }
 
 export default function What(props: WhatProps) {
@@ -112,11 +112,11 @@ export default function What(props: WhatProps) {
             </calcite-label>
             <calcite-label layout="inline">
               <calcite-switch
-                label="Top Requested Crimes"
+                label="Top Community Concerns"
                 checked={filterTopCrimes}
                 oncalciteSwitchChange={handleTopCrimeSwitchChange}
               />
-              Top Requested Crimes
+              Top Community Concerns
             </calcite-label>
           </div>
           <calcite-alert

@@ -22,7 +22,7 @@ import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 interface WhereProps {
   onGeometryChange: (geometry: Polygon | Extent | null) => void;
   onFilterPanelClose: () => void;
-  arcgisMap: HTMLArcgisMapElement | undefined;
+  arcgisMap: HTMLArcgisMapElement | null;
   open: boolean;
   isMobile: boolean;
   incidentsLayer?: FeatureLayer | null;

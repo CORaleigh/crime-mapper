@@ -16,7 +16,7 @@ interface UseWhatParams {
   incidentsLayer: FeatureLayer | null;
   onViolentCrimeFilterChange?: (enabled: boolean) => void;
   onTopCrimeFilterChange?: (enabled: boolean) => void;
-  arcgisMap: HTMLArcgisMapElement | undefined;
+  arcgisMap: HTMLArcgisMapElement | null;
 }
 
 export function useWhat({

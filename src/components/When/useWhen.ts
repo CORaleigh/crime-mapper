@@ -43,7 +43,7 @@ export function useWhen({ onWhereChange }: UseWhenProps) {
   const { updateSearchParam, getSearchParam } = useSearchParamHelpers();
 
   const [preset, setPreset] = useState<Preset>(() => {
-    return getSearchParam("when") as Preset;
+    return getSearchParam("when") as Preset ?? "week";
   });
 
   // Validate range and update where clause

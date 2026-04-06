@@ -1,8 +1,14 @@
 // TablePanel.tsx
 import Collection from "@arcgis/core/core/Collection";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "@arcgis/map-components/dist/components/arcgis-feature-table";
 import type FeatureLayer from "@arcgis/core/layers/FeatureLayer";
+import type Graphic from "@arcgis/core/Graphic";
+// import type Point from "@arcgis/core/geometry/Point";
+// import type { ScreenPoint } from "@arcgis/core/core/types";
+// import type { GraphicHit } from "@arcgis/core/views/types";
+// import type { ResourceHandle } from "@arcgis/core/core/Handles";
+
 interface TablePanelProps {
   layer: FeatureLayer | null;
   arcgisMap: HTMLArcgisMapElement | undefined;
@@ -19,48 +25,178 @@ export default function TablePanel({
   handleTableReady,
 }: TablePanelProps) {
   // Only render if both map and layer exist
- // if (!layer || !arcgisMap || !mapReady) return null;
+  // if (!layer || !arcgisMap || !mapReady) return null;
+  //let highlights: ResourceHandle | null = null;
+
+  const [showAlert, setShowAlert] = useState(false);
   const handleExportCSV = async () => {
     if (!arcgisFeatureTable?.current) return;
 
-    const oids = await layer?.queryObjectIds();
+    const oids = await layer?.queryObjectIds(
+      arcgisFeatureTable.current.filterGeometry
+        ? { geometry: arcgisFeatureTable.current.filterGeometry }
+        : undefined,
+    );
     arcgisFeatureTable.current.highlightIds = new Collection(oids);
     arcgisFeatureTable.current.exportSelectionToCSV();
     arcgisFeatureTable.current.highlightIds.removeAll();
   };
 
-  
-   useEffect(() => {
+  useEffect(() => {
     if (arcgisMap && arcgisFeatureTable.current) {
-        arcgisFeatureTable.current.referenceElement = arcgisMap;
-        arcgisFeatureTable.current.layer = layer;
-    
+      arcgisFeatureTable.current.referenceElement = arcgisMap;
+      arcgisFeatureTable.current.layer = layer;
     }
   }, [arcgisMap, arcgisFeatureTable, layer]);
 
   return (
-    <arcgis-feature-table
-      ref={arcgisFeatureTable}
-      referenceElement={arcgisMap} // must be the DOM element
-      layer={layer}
-      hideSelectionColumn
-      hideMenuItemsExportSelectionToCsv
-      actionColumnConfig={{
-        label: "Go to feature",
-        icon: "zoom-to-object",
-        callback: (event) =>
-          arcgisMap?.goTo({ target: event.feature, zoom: 15 }),
-      }}
-      menuConfig={{
-        items: [
-          {
-            label: "Export to CSV",
-            icon: "file-csv",
-            clickFunction: handleExportCSV,
-          },
-        ],
-      }}
-      onarcgisReady={handleTableReady} // fires when table is ready
-    />
+    <>
+      <arcgis-feature-table
+        ref={arcgisFeatureTable}
+        referenceElement={arcgisMap} // must be the DOM element
+        layer={layer}
+        hideMenuItemsExportSelectionToCsv
+        hideSelectionColumn
+        hideMenuItemsSelectedRecordsShowAllToggle
+        hideMenuItemsSelectedRecordsShowSelectedToggle
+        syncViewSelection
+        selectionManager={arcgisMap?.selectionManager}
+        pageSize={10000}
+        onarcgisSelectionChange={async (
+          event: HTMLArcgisFeatureTableElement["arcgisSelectionChange"],
+        ) => {
+          // if (highlights) {
+          //   highlights.remove();
+          // }
+          if (
+            !arcgisMap ||
+            !event.target.selectionManager ||
+            !event.target.selectionManager.selections[0] ||
+            !event.target.selectionManager.selections[0].selection ||
+            event.target.layer?.type !== "feature"
+          )
+            return;
+
+          event.target.selectionManager.remove(
+            event.target.layer,
+            event.detail.removed,
+          );
+
+          event.target.highlightIds = new Collection(
+            event.target.selectionManager.selections[0].selection.map(
+              (feature) => feature as number,
+            ),
+          );
+
+          event.target.scrollToRow(
+            event.target.selectionManager.selections[0].selection[0] as number,
+          );
+
+          // const layerView = await arcgisMap.view.whenLayerView(
+          //   event.target.layer,
+          // );
+
+          // const result = await event.target.layer.queryFeatures({
+          //   objectIds: event.target.selectionManager.selections[0]
+          //     .selection as number[],
+          // });
+          // if (result.features.length === 0) return;
+          // const feature = result.features[0];
+
+          // const screenPoint = await arcgisMap.toScreen(feature.geometry as Point);
+
+          // const hitTestResult = await arcgisMap.hitTest(
+          //   screenPoint as ScreenPoint,
+          //   { include: [event.target.layer] },
+          // );
+
+          // if (hitTestResult.results.length === 0 || !hitTestResult.results[0])
+          //   return;
+          // const graphic = (hitTestResult.results[0] as GraphicHit).graphic;
+
+          // highlights = layerView.highlight(graphic);
+        }}
+        onarcgisCellClick={async (
+          event: HTMLArcgisFeatureTableElement["arcgisCellClick"],
+        ) => {
+          // if (highlights) {
+          //   highlights.remove();
+          // }
+          setShowAlert(false);
+          if (
+            arcgisFeatureTable.current?.highlightIds.includes(
+              event.detail.feature?.getObjectId() as number,
+            )
+          ) {
+            arcgisFeatureTable.current.highlightIds.remove(
+              event.detail.feature?.getObjectId() as number,
+            );
+            arcgisFeatureTable.current?.highlightIds.removeAll();
+
+            return;
+          }
+          arcgisMap?.selectionManager.clear();
+          if (!arcgisMap) return;
+          arcgisMap.goTo({ target: event.detail.feature, zoom: 15 });
+          const result = await (event.target.layer as FeatureLayer).queryFeatures({objectIds: [event.detail.feature?.getObjectId() as number]});
+          if (result.features.length > 0) {
+            const feature = result.features[0];
+            if (!feature.geometry) {
+              setShowAlert(true);
+            }
+          }
+   
+
+          const layer = arcgisMap.map?.layers.find(
+            (l) => l.title === "Offenses",
+          ) as FeatureLayer;
+          if (!layer || !event.detail.feature) return;
+
+          if (
+            arcgisMap.selectionManager.selections[0]?.selection.includes(
+              event.detail.feature.getObjectId() as number,
+            )
+          ) {
+            arcgisMap.selectionManager.remove(layer, [
+              event.detail.feature.getObjectId() as number,
+            ]);
+            return;
+          }
+          const features: Graphic[] = [event.detail.feature];
+          arcgisMap.selectionManager.replace(layer, features);
+        }}
+        // actionColumnConfig={{
+        //   label: "Go to feature",
+        //   icon: "zoom-to-object",
+        //   callback: (event) =>
+        //     arcgisMap?.goTo({ target: event.feature, zoom: 15 }),
+        // }}
+        menuConfig={{
+          items: [
+            {
+              label: "Export to CSV",
+              icon: "file-csv",
+              clickFunction: handleExportCSV,
+            },
+          ],
+        }}
+        onarcgisReady={handleTableReady} // fires when table is ready
+      />
+      <calcite-alert
+        open={showAlert}
+        label={"Location not available for selected offense"}
+        kind="warning"
+        icon="exclamation-mark-triangle-f"
+        autoClose
+        autoCloseDuration="fast"
+        oncalciteAlertClose={() => setShowAlert(false)}
+      >
+        <div slot="title">Location not available for selected offense</div>
+        <div slot="message">
+          For certain offenses, such as sex offenses, the location is not
+          displayed on the map due to privacy concerns.
+        </div>
+      </calcite-alert>
+    </>
   );
 }
