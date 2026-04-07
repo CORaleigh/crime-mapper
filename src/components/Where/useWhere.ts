@@ -188,7 +188,7 @@ export function useWhere({
       updateOnGraphicClick: false,
     });
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+     
     sketchVm.current.on("create", handleSketchCreated);
   }, [arcgisMap?.ready, getSketchLayer, handleSketchCreated]);
 

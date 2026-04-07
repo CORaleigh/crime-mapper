@@ -48,9 +48,6 @@ calcite-shell-panel {
   --calcite-action-bar-background-color: #0e426b;
 }
 
-.shellActionBar calcite-action {
-
-}
 
 .mainContainer {
   display: flex;
