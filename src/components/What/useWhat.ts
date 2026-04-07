@@ -364,7 +364,6 @@ export function useWhat({
       const group = document.querySelector("calcite-tile-group");
       if (group && group.shadowRoot) {
         const container = group.shadowRoot.querySelector(".container");
-        console.log("Container element:", container);
         if (container) {
           container.setAttribute("style", "grid-auto-flow: row");
         }

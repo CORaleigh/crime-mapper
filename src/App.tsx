@@ -86,7 +86,6 @@ function App() {
     setShowHelp,
     selectedSegment,
     setSelectedSegment,
-    selectedChart,
     categories,
     allDescriptions,
     isMobile,
@@ -103,7 +102,6 @@ function App() {
     setWhenClause,
     geometryFilter,
     setFilterGeometry,
-    chartSelected,
     handleViolentCrimeFilterChange,
     handleTopCrimeFilterChange,
     handleThemeChange,
@@ -168,40 +166,26 @@ function App() {
   );
 
   const arcgisChartEl = (
-    <calcite-panel className={styles.chartsPanel} heading="Charts">
+    <div className={styles.chartsPanel}>
       {mapReady &&
         arcgisMap.current &&
         incidentsLayer.current &&
         incidentsLayer.current.charts &&
         incidentsLayerView.current && (
           <>
-            <calcite-select
-              label={"Select chart"}
-              oncalciteSelectChange={chartSelected}
-            >
-              {incidentsLayer.current.charts.map((chart: any, i: number) => {
-                return (
-                  <calcite-option
-                    key={`chart-${i}`}
-                    label={chart.title.content.text}
-                    value={chart}
-                  ></calcite-option>
-                );
-              })}
-            </calcite-select>
             {mapReady && arcgisFeatureTable.current && (
               <Suspense fallback={<FallbackLoader></FallbackLoader>}>
                 <ChartPanel
                   view={arcgisMap.current.view}
                   layer={incidentsLayer.current}
-                  selectedChart={selectedChart}
                   geometryFilter={geometryFilter}
+                  theme={theme}
                 ></ChartPanel>
               </Suspense>
             )}
           </>
         )}
-    </calcite-panel>
+        </div>
   );
 
   return (
@@ -292,7 +276,7 @@ function App() {
                 active={showFilter}
                 onClick={() => setShowFilter((prev) => !prev)}
               ></calcite-action>
-              <calcite-tooltip reference-element="filter-action">
+              <calcite-tooltip reference-element="filter-action" closeOnClick>
                 <span>{showFilter ? "Hide filter" : "Show filter"}</span>
               </calcite-tooltip>
             </calcite-action-group>
@@ -305,7 +289,7 @@ function App() {
                 active={showMap}
                 onClick={() => setShowMap((prev) => !prev)}
               ></calcite-action>
-              <calcite-tooltip reference-element="map-action">
+              <calcite-tooltip reference-element="map-action" closeOnClick>
                 <span>{showMap ? "Hide map" : "Show map"}</span>
               </calcite-tooltip>
               <calcite-action
@@ -316,7 +300,7 @@ function App() {
                 active={showTable}
                 onClick={() => setShowTable((prev) => !prev)}
               ></calcite-action>
-              <calcite-tooltip reference-element="table-action">
+              <calcite-tooltip reference-element="table-action" closeOnClick>
                 <span>{showTable ? "Hide table" : "Show table"}</span>
               </calcite-tooltip>
               <calcite-action
@@ -327,7 +311,7 @@ function App() {
                 active={showCharts}
                 onClick={() => setShowCharts((prev) => !prev)}
               ></calcite-action>
-              <calcite-tooltip reference-element="chart-action">
+              <calcite-tooltip reference-element="chart-action" closeOnClick>
                 <span>{showTable ? "Hide chart" : "Show chart"}</span>
               </calcite-tooltip>
             </calcite-action-group>
@@ -341,14 +325,18 @@ function App() {
                 }
               ></calcite-action>
               <calcite-action
-               id="theme-action"
+                id="theme-action"
                 text={theme === "light" ? "Light" : "Dark"}
                 icon={theme === "light" ? "brightness" : "moon"}
                 textEnabled
                 onClick={handleThemeChange}
               ></calcite-action>
-              <calcite-tooltip reference-element="theme-action">
-                <span>{theme === "light" ? "Switch to dark mode" : "Switch to light mode"}</span>
+              <calcite-tooltip reference-element="theme-action" closeOnClick>
+                <span>
+                  {theme === "light"
+                    ? "Switch to dark mode"
+                    : "Switch to light mode"}
+                </span>
               </calcite-tooltip>
             </calcite-action-group>
           </calcite-action-bar>

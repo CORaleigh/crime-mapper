@@ -55,7 +55,6 @@ export function useWhen({ onWhereChange }: UseWhenProps) {
     const { start, end } = getPresetDates(preset);
     if (start && end) {
       where = `(reported_date >= DATE '${start}' AND reported_date <= DATE '${end}')`;
-      console.log("Generated where clause:", where);
     }
 
     onWhereChange(where);

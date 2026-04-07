@@ -29,7 +29,6 @@ export const useApp = () => {
   const [showTable, setShowTable] = useState(false);
   const [showFilter, setShowFilter] = useState(true);
   const [showCharts, setShowCharts] = useState(false);
-  const [selectedChart, setSelectedChart] = useState(undefined);
   const [categories, setCategories] = useState<Graphic[]>([]);
   const [allDescriptions, setAllDescriptions] = useState<Description[]>([]);
   const [selectedSegment, setSelectedSegment] = useState("what");
@@ -106,8 +105,6 @@ export const useApp = () => {
         layer,
       )) as FeatureLayerView;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setSelectedChart(layer.charts[0] as any);
     }
 
     updateCategories("1=1");
@@ -269,7 +266,6 @@ export const useApp = () => {
   // 1️⃣ ArcGIS update
   useEffect(() => {
     if (!incidentsLayerView.current) return;
-    console.log(geometryFilter);
     incidentsLayerView.current.filter = {
       where: combinedWhere,
       geometry: geometryFilter,
@@ -305,12 +301,7 @@ export const useApp = () => {
     }
   }, [showMap, showTable, showCharts]);
 
-  const chartSelected = (
-    event: HTMLCalciteSelectElement["calciteSelectChange"]
-  ) => {
-    console.log("Selected chart:", event.target.selectedOption.value);
-    setSelectedChart(event.target.selectedOption.value);
-  };
+
 
   const handleViolentCrimeFilterChange = (show: boolean) => {
     updateCategories(show ? "violent_crime = 'Yes'" : "1=1");
@@ -346,7 +337,6 @@ export const useApp = () => {
     setShowHelp,
     selectedSegment,
     setSelectedSegment,
-    selectedChart,
     categories,
     allDescriptions,
     isMobile,
@@ -367,7 +357,6 @@ export const useApp = () => {
     setWhenClause,
     geometryFilter,
     setFilterGeometry,
-    chartSelected,
     handleViolentCrimeFilterChange,
     handleTopCrimeFilterChange,
     handleThemeChange,

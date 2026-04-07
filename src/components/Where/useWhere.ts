@@ -488,7 +488,6 @@ export function useWhere({
   const handleSearchComplete = useCallback(
     (
       event: HTMLArcgisSearchElement["arcgisSearchComplete"]) => {
-      console.log("search complete", event);
       if (!arcgisMap || event.detail.numResults === 0) return;
       updateSearchParam("address", event.detail.searchTerm || "");
       updateSearchParam("distance", bufferDistance.toString());
@@ -526,7 +525,6 @@ export function useWhere({
     });
     arcgisSearch.current.sources.add(locatorSource);
     const addressParam = getSearchParam("address");
-    console.log("addressParam", addressParam);
     if (addressParam) {
       arcgisSearch.current.search(addressParam);
     }
