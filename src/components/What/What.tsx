@@ -13,7 +13,6 @@ interface WhatProps {
   onCrimeTypeChange: (types: string[]) => void;
   onFilterPanelClose: () => void;
   open: boolean;
-  isMobile: boolean;
   onViolentCrimeFilterChange: (enabled: boolean) => void;
   onTopCrimeFilterChange: (enabled: boolean) => void;
   categoryTable: FeatureLayer;
@@ -30,7 +29,6 @@ export default function What(props: WhatProps) {
     onCrimeTypeChange,
     onFilterPanelClose,
     open,
-    isMobile,
     onViolentCrimeFilterChange,
     onTopCrimeFilterChange,
     categoryTable,
@@ -75,8 +73,8 @@ export default function What(props: WhatProps) {
           id="crime-group-flow"
           heading="Filter by Crime Group"
           selected={!showDescriptionFilter}
-          closable={isMobile}
           oncalciteFlowItemClose={onFilterPanelClose}
+          closable
           closed={!open}
         >
           {selectedCrimeGroups.length > 0 && (
@@ -173,7 +171,6 @@ export default function What(props: WhatProps) {
             heading="Filter by Description"
             selected={!showDescriptionFilter}
             oncalciteFlowItemBack={() => setShowDescriptionFilter(false)}
-            closable={isMobile}
             closed={!open}
             oncalciteFlowItemClose={onFilterPanelClose}
           >

@@ -1,4 +1,3 @@
- 
 import "./App.css";
 import "@esri/calcite-components";
 
@@ -187,7 +186,7 @@ function App() {
             )}
           </>
         )}
-        </div>
+    </div>
   );
 
   return (
@@ -346,7 +345,10 @@ function App() {
             selectedSegment={selectedSegment}
             setSelectedSegment={setSelectedSegment}
           />
-          <calcite-panel className="filter-panel">
+          <calcite-panel
+            className="filter-panel"
+        
+          >
             {mapReady && arcgisMap.current && (
               <Suspense fallback={<FallbackLoader />}>
                 <div hidden={selectedSegment !== "what"}>
@@ -356,7 +358,6 @@ function App() {
                     onWhereChange={setWhereClause}
                     onDescriptionShow={handleDescriptionShow}
                     onCrimeTypeChange={handleCrimeTypeChange}
-                    isMobile={isMobile}
                     onFilterPanelClose={() => setShowFilter(false)}
                     open={showFilter}
                     onViolentCrimeFilterChange={handleViolentCrimeFilterChange}
@@ -393,7 +394,6 @@ function App() {
                 <div hidden={selectedSegment !== "when"}>
                   <When
                     onWhereChange={setWhenClause}
-                    isMobile={isMobile}
                     onFilterPanelClose={() => setShowFilter(false)}
                     open={showFilter}
                   />

@@ -63,7 +63,7 @@ export default function Where({
     <calcite-panel
       heading="Where"
       closed={!open}
-      closable={isMobile}
+      closable={!isMobile}
       oncalcitePanelClose={onFilterPanelClose}
       style={{ height: "100vh" }}
     >

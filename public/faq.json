@@ -80,6 +80,11 @@
           "id": "chart-types",
           "question": "Why don’t the charts show every crime type?",
           "answer": "Charts and reports reflect the incidents currently included in your map view and filters. To see different results, adjust the date range (within 90 days), zoom, or change crime type selections, then refresh the report or charts."
+        },
+        {
+          "id": "hide-filters",
+          "question": "How do I hide the filters and view only the map?",
+          "answer": "If you would like to just see the map, you can collapse the filter panel by clicking the 'Filters' button in left toolbar on the left side of the page."
         }
       ]
     },

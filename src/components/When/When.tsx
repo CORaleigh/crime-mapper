@@ -9,14 +9,12 @@ interface WhenProps {
   onWhereChange: (where: string | undefined) => void;
   onFilterPanelClose: () => void;
   open: boolean;
-  isMobile: boolean;
 }
 
 export default function When({
   onWhereChange,
   onFilterPanelClose,
   open,
-  isMobile,
 }: WhenProps) {
   const {
     preset,
@@ -27,7 +25,7 @@ export default function When({
     <calcite-panel
       heading="Filter by Date"
       closed={!open}
-      closable={isMobile}
+      closable
       oncalcitePanelClose={onFilterPanelClose}
     >
       <div style={{ padding: "1rem" }}>
