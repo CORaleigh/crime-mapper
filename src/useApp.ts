@@ -308,6 +308,7 @@ export const useApp = () => {
   const chartSelected = (
     event: HTMLCalciteSelectElement["calciteSelectChange"]
   ) => {
+    console.log("Selected chart:", event.target.selectedOption.value);
     setSelectedChart(event.target.selectedOption.value);
   };
 

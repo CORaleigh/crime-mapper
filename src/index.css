@@ -45,6 +45,7 @@ body.calcite-mode-light {
   --calcite-internal-action-text-color: #ffffff;
   --calcite-internal-button-text-color: #11233f;
   --calcite-button-text-color: #ffffff;
+  --calcite-tooltip-text-color: #11233f;
 }
 
 body.calcite-mode-light calcite-fab {

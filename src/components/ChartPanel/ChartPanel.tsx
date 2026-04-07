@@ -27,7 +27,6 @@ const ChartPanel: FC<ChartPanelProps> = ({
       view={view}
       layer={layer}
       model={selectedChart}
-      legendPosition="right"
       runtimeDataFilters={{
         geometry: geometryFilter?.toJSON(),
       }}
