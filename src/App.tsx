@@ -180,6 +180,8 @@ function App() {
                   layer={incidentsLayer.current}
                   geometryFilter={geometryFilter}
                   theme={theme}
+                  onClose={() => setShowCharts(false)}
+                  open={showCharts}
                 ></ChartPanel>
               </Suspense>
             )}

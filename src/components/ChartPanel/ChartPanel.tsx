@@ -13,6 +13,9 @@ interface ChartPanelProps {
   layer: FeatureLayer | null;
   geometryFilter?: Polygon | Extent | null;
   theme?: "light" | "dark";
+  onClose: () => void;
+  open: boolean;
+
 }
 
 const ChartPanel: FC<ChartPanelProps> = ({
@@ -20,6 +23,8 @@ const ChartPanel: FC<ChartPanelProps> = ({
   layer,
   geometryFilter,
   theme,
+  onClose,
+  open
 }) => {
   const [chart, setChart] = useState<ChartModel | WebChart | undefined>();
   const panelRef = useRef<HTMLCalcitePanelElement>(null);
@@ -106,7 +111,7 @@ const ChartPanel: FC<ChartPanelProps> = ({
   if (!layer) return null;
 
   return (
-    <calcite-panel heading="Charts" ref={panelRef}>
+    <calcite-panel heading="Charts" ref={panelRef} closable oncalcitePanelClose={() => onClose()} closed={!open}>
       <calcite-select
         label={"Select chart"}
         oncalciteSelectChange={chartSelected}
