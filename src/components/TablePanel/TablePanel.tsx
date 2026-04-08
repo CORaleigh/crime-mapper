@@ -62,12 +62,10 @@ export default function TablePanel({
         syncViewSelection
         selectionManager={arcgisMap?.selectionManager}
         pageSize={10000}
+        hideProgress
         onarcgisSelectionChange={async (
           event: HTMLArcgisFeatureTableElement["arcgisSelectionChange"],
         ) => {
-          // if (highlights) {
-          //   highlights.remove();
-          // }
           if (
             !arcgisMap ||
             !event.target.selectionManager ||
@@ -91,37 +89,10 @@ export default function TablePanel({
           event.target.scrollToRow(
             event.target.selectionManager.selections[0].selection[0] as number,
           );
-
-          // const layerView = await arcgisMap.view.whenLayerView(
-          //   event.target.layer,
-          // );
-
-          // const result = await event.target.layer.queryFeatures({
-          //   objectIds: event.target.selectionManager.selections[0]
-          //     .selection as number[],
-          // });
-          // if (result.features.length === 0) return;
-          // const feature = result.features[0];
-
-          // const screenPoint = await arcgisMap.toScreen(feature.geometry as Point);
-
-          // const hitTestResult = await arcgisMap.hitTest(
-          //   screenPoint as ScreenPoint,
-          //   { include: [event.target.layer] },
-          // );
-
-          // if (hitTestResult.results.length === 0 || !hitTestResult.results[0])
-          //   return;
-          // const graphic = (hitTestResult.results[0] as GraphicHit).graphic;
-
-          // highlights = layerView.highlight(graphic);
         }}
         onarcgisCellClick={async (
           event: HTMLArcgisFeatureTableElement["arcgisCellClick"],
         ) => {
-          // if (highlights) {
-          //   highlights.remove();
-          // }
           setShowAlert(false);
           if (
             arcgisFeatureTable.current?.highlightIds.includes(
@@ -145,8 +116,7 @@ export default function TablePanel({
               setShowAlert(true);
             }
           }
-   
-
+  
           const layer = arcgisMap.map?.layers.find(
             (l) => l.title === "Offenses",
           ) as FeatureLayer;
@@ -165,12 +135,6 @@ export default function TablePanel({
           const features: Graphic[] = [event.detail.feature];
           arcgisMap.selectionManager.replace(layer, features);
         }}
-        // actionColumnConfig={{
-        //   label: "Go to feature",
-        //   icon: "zoom-to-object",
-        //   callback: (event) =>
-        //     arcgisMap?.goTo({ target: event.feature, zoom: 15 }),
-        // }}
         menuConfig={{
           items: [
             {
