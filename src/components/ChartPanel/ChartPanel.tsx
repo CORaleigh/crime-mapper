@@ -15,7 +15,6 @@ interface ChartPanelProps {
   theme?: "light" | "dark";
   onClose: () => void;
   open: boolean;
-
 }
 
 const ChartPanel: FC<ChartPanelProps> = ({
@@ -24,7 +23,7 @@ const ChartPanel: FC<ChartPanelProps> = ({
   geometryFilter,
   theme,
   onClose,
-  open
+  open,
 }) => {
   const [chart, setChart] = useState<ChartModel | WebChart | undefined>();
   const panelRef = useRef<HTMLCalcitePanelElement>(null);
@@ -37,7 +36,7 @@ const ChartPanel: FC<ChartPanelProps> = ({
     };
   }, [geometryFilter]);
   useEffect(() => {
-    console.log("Layer changed:", layer);
+
     if (layer && layer.charts && layer.charts.length > 0) {
       setSelectedChart(layer.charts[0] as any);
     }
@@ -73,7 +72,7 @@ const ChartPanel: FC<ChartPanelProps> = ({
           axis.title.color =
             theme === "light" ? [0, 0, 0, 255] : [255, 255, 255, 255];
           axis.title.content.color =
-            theme === "light" ? [0, 0, 0, 255] : [255, 255, 255, 255];            
+            theme === "light" ? [0, 0, 0, 255] : [255, 255, 255, 255];
         }
         if ("grid" in axis) {
           axis.grid.color =
@@ -88,7 +87,7 @@ const ChartPanel: FC<ChartPanelProps> = ({
   useEffect(() => {
     if (!panelRef.current || !selectedChart) return;
     const chartModel = selectedChart as any;
-    if ("axes" in chartModel) return;
+
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         // Access the new dimensions
@@ -97,6 +96,7 @@ const ChartPanel: FC<ChartPanelProps> = ({
         if ("legend" in chartModel) {
           chartModel.legend.position = width > 500 ? "right" : "bottom";
         }
+        console.log("axes" in chartModel);
         setChart({ ...chartModel } as ChartModel | WebChart);
       }
     });
@@ -111,7 +111,13 @@ const ChartPanel: FC<ChartPanelProps> = ({
   if (!layer) return null;
 
   return (
-    <calcite-panel heading="Charts" ref={panelRef} closable oncalcitePanelClose={() => onClose()} closed={!open}>
+    <calcite-panel
+      heading="Charts"
+      ref={panelRef}
+      closable
+      oncalcitePanelClose={() => onClose()}
+      closed={!open}
+    >
       <calcite-select
         label={"Select chart"}
         oncalciteSelectChange={chartSelected}
