@@ -4,10 +4,7 @@ import { useEffect, useState } from "react";
 import "@arcgis/map-components/dist/components/arcgis-feature-table";
 import type FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import type Graphic from "@arcgis/core/Graphic";
-// import type Point from "@arcgis/core/geometry/Point";
-// import type { ScreenPoint } from "@arcgis/core/core/types";
-// import type { GraphicHit } from "@arcgis/core/views/types";
-// import type { ResourceHandle } from "@arcgis/core/core/Handles";
+
 
 interface TablePanelProps {
   layer: FeatureLayer | null;

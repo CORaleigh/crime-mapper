@@ -100,7 +100,7 @@ export default function What(props: WhatProps) {
               alignItems: "center",
             }}
           >
-            <calcite-label layout="inline">
+            <calcite-label layout="inline" className={styles.filterLabel}>
               <calcite-switch
                 label="Violent Crimes"
                 checked={filterViolentCrimes}
@@ -108,7 +108,7 @@ export default function What(props: WhatProps) {
               />
               Violent Crimes
             </calcite-label>
-            <calcite-label layout="inline">
+            <calcite-label layout="inline"  className={styles.filterLabel}>
               <calcite-switch
                 label="Top Community Concerns"
                 checked={filterTopCrimes}

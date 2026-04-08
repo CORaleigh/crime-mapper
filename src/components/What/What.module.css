@@ -51,7 +51,7 @@ calcite-switch {
 }
 
 @media (max-width: 600px) {
-  calcite-label {
+  .filterLabel {
     max-width: 150px;
   }
   calcite-panel {
