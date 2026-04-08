@@ -61,7 +61,7 @@ export default function Where({
 
   return (
     <calcite-panel
-      heading="Where"
+      heading="Filter by Location"
       closed={!open}
       closable={!isMobile}
       oncalcitePanelClose={onFilterPanelClose}
