@@ -181,6 +181,7 @@ function App() {
                   theme={theme}
                   onClose={() => setShowCharts(false)}
                   open={showCharts}
+                  toggleMap={() => setShowMap(prev => !prev)}
                 ></ChartPanel>
               </Suspense>
             )}

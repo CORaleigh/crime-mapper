@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState, memo, type FC, useMemo } from "react";
 import "@arcgis/charts-components/dist/components/arcgis-chart";
+import "@arcgis/charts-components/dist/components/arcgis-charts-action-bar";
 
 import type MapView from "@arcgis/core/views/MapView";
 import type FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import type Polygon from "@arcgis/core/geometry/Polygon";
 import type Extent from "@arcgis/core/geometry/Extent";
 import type { ChartModel, WebChart } from "@arcgis/charts-components";
+import type FeatureReductionCluster from "@arcgis/core/layers/support/FeatureReductionCluster";
 
 interface ChartPanelProps {
   view: MapView;
@@ -14,6 +16,7 @@ interface ChartPanelProps {
   geometryFilter?: Polygon | Extent | null;
   theme?: "light" | "dark";
   onClose: () => void;
+  toggleMap: () => void;
   open: boolean;
 }
 
@@ -23,9 +26,12 @@ const ChartPanel: FC<ChartPanelProps> = ({
   geometryFilter,
   theme,
   onClose,
+  toggleMap,
   open,
 }) => {
   const [chart, setChart] = useState<ChartModel | WebChart | undefined>();
+  const chartRef = useRef<HTMLArcgisChartElement>(null);
+  const [expanded, setExpanded] = useState(false);
   const panelRef = useRef<HTMLCalcitePanelElement>(null);
   const [selectedChart, setSelectedChart] = useState(undefined);
   const runtimeDataFilters = useMemo(() => {
@@ -36,7 +42,6 @@ const ChartPanel: FC<ChartPanelProps> = ({
     };
   }, [geometryFilter]);
   useEffect(() => {
-
     if (layer && layer.charts && layer.charts.length > 0) {
       setSelectedChart(layer.charts[0] as any);
     }
@@ -115,9 +120,33 @@ const ChartPanel: FC<ChartPanelProps> = ({
       heading="Charts"
       ref={panelRef}
       closable
-      oncalcitePanelClose={() => onClose()}
+      oncalcitePanelClose={() => {
+        onClose();
+        chartRef.current?.clearSelection();
+        (layer.featureReduction as FeatureReductionCluster).maxScale = 0;
+      }}
       closed={!open}
     >
+      <calcite-action
+        slot="header-actions-end"
+        text="Export"
+        title="Export"
+        icon="export"
+        onClick={() => {
+          if (!chartRef.current) return;
+          chartRef.current.exportAsImage();
+        }}
+      ></calcite-action>
+      <calcite-action
+        slot="header-actions-end"
+        text={expanded ? "Collapse" : "Expand"}
+        title={expanded ? "Collapse" : "Expand"}
+        icon={expanded ? "chevrons-down" : "chevrons-up"}
+        onClick={() => {
+          setExpanded(!expanded);
+          toggleMap();
+        }}
+      ></calcite-action>
       <calcite-select
         label={"Select chart"}
         oncalciteSelectChange={chartSelected}
@@ -133,11 +162,22 @@ const ChartPanel: FC<ChartPanelProps> = ({
         })}
       </calcite-select>
       <arcgis-chart
+        ref={chartRef}
         view={view}
         layer={layer}
         model={chart}
         runtimeDataFilters={runtimeDataFilters}
-      />
+        syncSelectionsBetweenChartAndLayerViewPolicy="enabled"
+        onarcgisSelectionComplete={(
+          event: HTMLArcgisChartElement["arcgisSelectionComplete"],
+        ) => {
+          if (!event.detail.selectionData.selectionOIDs) return;
+          (layer.featureReduction as FeatureReductionCluster).maxScale =
+            event.detail.selectionData.selectionOIDs.length === 0 ? 0 : 1000000;
+        }}
+      >
+        {/* <arcgis-charts-action-bar slot="action-bar" legendToggle="active"> </arcgis-charts-action-bar> */}
+      </arcgis-chart>
     </calcite-panel>
   );
 };

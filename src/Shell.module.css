@@ -71,19 +71,48 @@ calcite-shell-panel {
 
 /* Show chart only — hide map and table */
 .mainContainer.showCharts .chartsPanel {
-  height: 100%;
+  height: 50%;
   opacity: 1;
   pointer-events: auto;
   visibility: visible;
 }
-.mainContainer.showCharts .mapPanel,
+
+/* When any TWO panels are visible → split 50/50 */
+.mainContainer.showMap.showTable:not(.showCharts) .mapPanel,
+.mainContainer.showMap.showTable:not(.showCharts) .tablePanel,
+
+.mainContainer.showMap.showCharts:not(.showTable) .mapPanel,
+.mainContainer.showMap.showCharts:not(.showTable) .chartsPanel,
+
+.mainContainer.showTable.showCharts:not(.showMap) .tablePanel,
+.mainContainer.showTable.showCharts:not(.showMap) .chartsPanel {
+  height: 50%;
+}
+
+.mainContainer.showCharts .mapPanel {
+  height: 50%;
+    opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+
+}
+
+
+.mainContainer.showCharts:not(.showMap) .mapPanel {
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+
+}
+
 .mainContainer.showCharts .tablePanel {
   height: 0;
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
-}
 
+}
 /* Show map and/or table if chart not active */
 .mainContainer:not(.showCharts) .mapPanel,
 .mainContainer:not(.showCharts) .tablePanel {
@@ -92,11 +121,7 @@ calcite-shell-panel {
   visibility: visible;
 }
 
-/* When both map and table visible — split 50/50 */
-.mainContainer.showMap.showTable:not(.showCharts) .mapPanel,
-.mainContainer.showMap.showTable:not(.showCharts) .tablePanel {
-  height: 50%;
-}
+
 
 /* Only map visible */
 .mainContainer.showMap:not(.showTable):not(.showCharts) .mapPanel {
@@ -108,10 +133,16 @@ calcite-shell-panel {
   height: 100%;
 }
 
+
+/* Only chart visible */
+.mainContainer.showCharts:not(.showMap):not(.showTable) .chartsPanel {
+  height: 100%;
+}
+
 /* Neither map nor table visible, and no chart — hide all panels (or fallback logic in JS) */
 .mainContainer:not(.showMap):not(.showTable):not(.showCharts) .mapPanel,
 .mainContainer:not(.showMap):not(.showTable):not(.showCharts) .tablePanel,
-.mainContainer:not(.showMap):not(.showTable):not(.showCharts) .chartsPanel {
+.mainContainer:not(.showMap):not(.showCharts):not(.showTable) .chartsPanel {
   height: 0;
   opacity: 0;
   pointer-events: none;

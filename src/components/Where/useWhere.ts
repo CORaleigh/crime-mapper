@@ -18,7 +18,7 @@ import Field from "@arcgis/core/layers/support/Field";
 import CodedValueDomain from "@arcgis/core/layers/support/CodedValueDomain";
 import type { GeometryUnion } from "@arcgis/core/geometry/types.js";
 import type { CreateEvent } from "@arcgis/core/widgets/Sketch/types";
-import Handles from "@arcgis/core/core/Handles.js";
+import { type ResourceHandle } from "@arcgis/core/core/Handles.js";
 
 type Mode = "city" | "extent" | "draw" | "address" | "district";
 
@@ -101,7 +101,7 @@ export function useWhere({
   const sketchVm = useRef<SketchViewModel | null>(null);
   const graphic = useRef<Graphic | null | undefined>(null);
   const distanceInput = useRef<HTMLCalciteInputNumberElement>(null);
-  const extentWatcher = useRef<Handles | null>(null);
+  const extentWatcher = useRef<ResourceHandle | null>(null);
 
   /** Helper: get or create sketch layer */
   const getSketchLayer = useCallback((mapEl: HTMLArcgisMapElement) => {
@@ -151,7 +151,9 @@ export function useWhere({
 
       onGeometryChange(new Polygon(generalized));
       requestAnimationFrame(() => {
-        arcgisMap.view.goTo(newGraphic.geometry?.extent?.clone().expand(1.5) as GeometryUnion);
+        arcgisMap.view.goTo(
+          newGraphic.geometry?.extent?.clone().expand(1.5) as GeometryUnion,
+        );
       });
     },
     [arcgisMap?.view, mode, onGeometryChange, updateSearchParam],
@@ -188,7 +190,6 @@ export function useWhere({
       updateOnGraphicClick: false,
     });
 
-     
     sketchVm.current.on("create", handleSketchCreated);
   }, [arcgisMap?.ready, getSketchLayer, handleSketchCreated]);
 
@@ -233,12 +234,14 @@ export function useWhere({
 
       if (value === "extent" && arcgisMap?.view) {
         await arcgisMap.view.when();
-        const handle = arcgisMap.view.watch("stationary", (stationary) => {
-          if (stationary) {
-            onGeometryChange(arcgisMap.view.extent.clone());
-            handle.remove(); // remove watcher immediately
-          }
-        });
+        extentWatcher.current = arcgisMap.view.watch(
+          "stationary",
+          (stationary) => {
+            if (stationary) {
+              onGeometryChange(arcgisMap.view.extent.clone());
+            }
+          },
+        );
         onGeometryChange(arcgisMap.view.extent.clone());
       } else {
         extentWatcher.current?.remove?.();
@@ -486,8 +489,7 @@ export function useWhere({
 
   /** Handle search complete */
   const handleSearchComplete = useCallback(
-    (
-      event: HTMLArcgisSearchElement["arcgisSearchComplete"]) => {
+    (event: HTMLArcgisSearchElement["arcgisSearchComplete"]) => {
       if (!arcgisMap || event.detail.numResults === 0) return;
       updateSearchParam("address", event.detail.searchTerm || "");
       updateSearchParam("distance", bufferDistance.toString());

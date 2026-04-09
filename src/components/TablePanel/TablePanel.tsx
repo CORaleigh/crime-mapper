@@ -142,6 +142,7 @@ export default function TablePanel({
           ],
         }}
         onarcgisReady={handleTableReady} // fires when table is ready
+   
       />
       <calcite-alert
         open={showAlert}

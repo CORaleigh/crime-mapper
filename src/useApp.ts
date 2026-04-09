@@ -65,12 +65,13 @@ export const useApp = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const handleTableReady = (
+  const handleTableReady = async (
     event: HTMLArcgisFeatureTableElement["arcgisReady"],
   ) => {
     if (!arcgisMap.current) return;
     arcgisFeatureTable.current = event.target;
     arcgisFeatureTable.current.referenceElement = arcgisMap.current;
+
     event.target.tableTemplate = {
       columnTemplates: [
         { type: "field", fieldName: "case_number" },
@@ -86,6 +87,30 @@ export const useApp = () => {
       ],
     } as TableTemplate;
     setTableReady(true);
+    setTimeout(() => {
+      const panel =
+        arcgisFeatureTable.current?.shadowRoot?.querySelector("calcite-panel");
+      panel?.setAttribute("closable", "true");
+      panel?.addEventListener("calcitePanelClose", () => {
+        setShowTable(false);
+      });
+      const expandAction = document.createElement("calcite-action");
+      expandAction.setAttribute("slot", "header-actions-end");
+      expandAction.setAttribute("text", "Expand");
+      expandAction.setAttribute("icon", "chevrons-up");
+      expandAction.addEventListener("click", () => {
+        setShowMap((prev) => {
+          expandAction.setAttribute(
+            "icon",
+            prev ? "chevrons-down" : "chevrons-up",
+          );
+          expandAction.setAttribute("text", prev ? "Expand" : "Collapse");
+          expandAction.setAttribute("title", prev ? "Expand" : "Collapse");
+          return !prev;
+        });
+      });
+      panel?.appendChild(expandAction);
+    }, 1000);
   };
 
   const handleViewReady = async (
@@ -94,7 +119,7 @@ export const useApp = () => {
     const view = await event.target.view.when();
 
     const layer = view?.map?.allLayers.find(
-      (layer:Layer) => layer.title === "Offenses",
+      (layer: Layer) => layer.title === "Offenses",
     ) as FeatureLayer;
 
     incidentsLayer.current = layer as FeatureLayer;
@@ -104,7 +129,6 @@ export const useApp = () => {
       incidentsLayerView.current = (await event.target.whenLayerView(
         layer,
       )) as FeatureLayerView;
-
     }
 
     updateCategories("1=1");
@@ -283,25 +307,22 @@ export const useApp = () => {
   // 2️⃣ URL sync (debounced, optional)
 
   useEffect(() => {
-    if (showMap || showTable) {
+    if (showTable) {
       setShowCharts(false);
     }
   }, [showMap, showTable]);
 
   useEffect(() => {
     if (showCharts) {
-      setShowMap(false);
       setShowTable(false);
     }
-  }, [showCharts]);
+  }, [showMap, showCharts]);
 
   useEffect(() => {
     if (!showMap && !showTable && !showCharts) {
       setShowMap(true);
     }
   }, [showMap, showTable, showCharts]);
-
-
 
   const handleViolentCrimeFilterChange = (show: boolean) => {
     updateCategories(show ? "violent_crime = 'Yes'" : "1=1");

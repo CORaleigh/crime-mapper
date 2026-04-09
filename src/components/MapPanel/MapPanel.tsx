@@ -87,7 +87,7 @@ export const MapPanel = ({
         }}
       />
 
-      <arcgis-expand slot="top-right" group="top-right" label="Search">
+      <arcgis-expand slot="top-right" group="top-right" label="Search" title="Search">
         <arcgis-search
           includeDefaultSourcesDisabled
           sources={
@@ -106,14 +106,35 @@ export const MapPanel = ({
       <arcgis-zoom slot="top-left" />
       <arcgis-locate slot="top-left" />
 
-      <arcgis-expand slot="top-right" group="top-right" label="Layers">
+      <arcgis-expand slot="top-right" group="top-right" label="Layers" title="Layers">
         <arcgis-layer-list visibilityAppearance="checkbox" />
       </arcgis-expand>
 
-      <arcgis-expand slot="top-right" group="top-right" label="Legend">
+      <arcgis-expand slot="top-right" group="top-right" label="Legend" title="Legend">
         <arcgis-legend />
       </arcgis-expand>
-
+      <div slot="top-right" className={styles.mapAction}>
+        <calcite-action
+          text="Screenshot"
+          title="Screenshot"
+          icon="camera"
+       
+          className="button"
+          onClick={async () => {
+            const downloadDataUrl = (dataUrl: string, fileName: string) => {
+              const link = document.createElement("a");
+              link.href = dataUrl;
+              link.download = fileName; // Suggests a filename to the browser
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            };
+            const screenshot = await arcgisMapRef.current?.takeScreenshot();
+            if (!screenshot) return;
+            downloadDataUrl(screenshot.dataUrl, "crime-map-screenshot.png");
+          }}
+        ></calcite-action>
+      </div>
       <arcgis-basemap-toggle slot="bottom-right" />
     </arcgis-map>
   );
