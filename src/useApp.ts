@@ -84,7 +84,12 @@ export const useApp = () => {
         { type: "field", fieldName: "reported_block_address" },
         { type: "field", fieldName: "city" },
         { type: "field", fieldName: "district" },
-        { type: "field", fieldName: "reported_date" },
+        {
+          type: "field",
+          fieldName: "reported_date",
+          initialSortPriority: 1,
+          direction: "asc",
+        },
         { type: "field", fieldName: "reported_dayofwk" },
       ],
     } as TableTemplate;
@@ -133,8 +138,10 @@ export const useApp = () => {
     event: HTMLArcgisMapElement["arcgisViewReadyChange"],
   ) => {
     const view = await event.target.view.when();
-    event.target.highlights = new Collection([new HighlightOptions({name: "default", color: "yellow"})]);
-    console.log(event.target.highlights)
+    event.target.highlights = new Collection([
+      new HighlightOptions({ name: "default", color: "yellow" }),
+    ]);
+    console.log(event.target.highlights);
     const layer = view?.map?.allLayers.find(
       (layer: Layer) => layer.title === "Offenses",
     ) as FeatureLayer;
@@ -350,7 +357,7 @@ export const useApp = () => {
     updateCategories(show ? "top_crime = 'Yes'" : "1=1");
   };
 
-    useEffect(() => {
+  useEffect(() => {
     if (!showTable) {
       arcgisFeatureTable.current?.selectionManager?.clear();
     }
