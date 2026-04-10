@@ -127,7 +127,7 @@ const ChartPanel: FC<ChartPanelProps> = ({
       }}
       closed={!open}
     >
-      <calcite-action
+      {/* <calcite-action
         slot="header-actions-end"
         text="Export"
         title="Export"
@@ -136,7 +136,7 @@ const ChartPanel: FC<ChartPanelProps> = ({
           if (!chartRef.current) return;
           chartRef.current.exportAsImage();
         }}
-      ></calcite-action>
+      ></calcite-action> */}
       <calcite-action
         slot="header-actions-end"
         text={expanded ? "Collapse" : "Expand"}
