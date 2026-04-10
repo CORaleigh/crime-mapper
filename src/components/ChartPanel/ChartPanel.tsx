@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState, memo, type FC, useMemo } from "react";
+
+import("@arcgis/charts-components/dist/components/arcgis-chart");
+
 import type MapView from "@arcgis/core/views/MapView";
 import type FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import type Polygon from "@arcgis/core/geometry/Polygon";
@@ -27,12 +30,6 @@ const ChartPanel: FC<ChartPanelProps> = ({
   open,
 }) => {
 
-  useEffect(() => {
-import("@arcgis/charts-components/dist/components/arcgis-chart");
-import("@arcgis/charts-components/dist/components/arcgis-charts-action-bar");
-
-
-  }, []);
   const [chart, setChart] = useState<ChartModel | WebChart | undefined>();
   const chartRef = useRef<HTMLArcgisChartElement>(null);
   const [expanded, setExpanded] = useState(false);
