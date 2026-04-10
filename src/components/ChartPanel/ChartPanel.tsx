@@ -166,6 +166,7 @@ const ChartPanel: FC<ChartPanelProps> = ({
         view={view}
         layer={layer}
         model={chart}
+        selectionTheme={{selectedElementsTheme: {elementOutlineColor: [255, 255, 0, 255], elementOutlineWidth: 4}}}
         runtimeDataFilters={runtimeDataFilters}
         syncSelectionsBetweenChartAndLayerViewPolicy="enabled"
         onarcgisSelectionComplete={(

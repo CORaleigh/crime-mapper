@@ -7,6 +7,8 @@ import type FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import type Layer from "@arcgis/core/layers/Layer";
 import type FeatureLayerView from "@arcgis/core/views/layers/FeatureLayerView";
 import type TableTemplate from "@arcgis/core/widgets/FeatureTable/support/TableTemplate";
+import Collection from "@arcgis/core/core/Collection";
+import HighlightOptions from "@arcgis/core/views/support/HighlightOptions";
 
 type Description = {
   group: string;
@@ -131,7 +133,8 @@ export const useApp = () => {
     event: HTMLArcgisMapElement["arcgisViewReadyChange"],
   ) => {
     const view = await event.target.view.when();
-
+    event.target.highlights = new Collection([new HighlightOptions({name: "default", color: "yellow"})]);
+    console.log(event.target.highlights)
     const layer = view?.map?.allLayers.find(
       (layer: Layer) => layer.title === "Offenses",
     ) as FeatureLayer;
@@ -346,6 +349,12 @@ export const useApp = () => {
   const handleTopCrimeFilterChange = (show: boolean) => {
     updateCategories(show ? "top_crime = 'Yes'" : "1=1");
   };
+
+    useEffect(() => {
+    if (!showTable) {
+      arcgisFeatureTable.current?.selectionManager?.clear();
+    }
+  }, [showTable]);
 
   return {
     // State
