@@ -129,7 +129,9 @@ export const useApp = () => {
         const actionMenu = panel?.shadowRoot?.querySelector("#close");
         console.log("headerActionsEnd", headerActionsEnd, actionMenu);
         panel?.append(expandAction);
-        headerActionsEnd?.moveBefore(expandAction, actionMenu as Node);
+        
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (headerActionsEnd as any)?.moveBefore(expandAction, actionMenu as Node);
       }, 500);
     }, 1000);
   };
