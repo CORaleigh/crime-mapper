@@ -5,7 +5,6 @@ import "@arcgis/map-components/dist/components/arcgis-feature-table";
 import type FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import type Graphic from "@arcgis/core/Graphic";
 
-
 interface TablePanelProps {
   layer: FeatureLayer | null;
   arcgisMap: HTMLArcgisMapElement | undefined;
@@ -106,14 +105,18 @@ export default function TablePanel({
           arcgisMap?.selectionManager.clear();
           if (!arcgisMap) return;
           arcgisMap.goTo({ target: event.detail.feature, zoom: 15 });
-          const result = await (event.target.layer as FeatureLayer).queryFeatures({objectIds: [event.detail.feature?.getObjectId() as number]});
+          const result = await (
+            event.target.layer as FeatureLayer
+          ).queryFeatures({
+            objectIds: [event.detail.feature?.getObjectId() as number],
+          });
           if (result.features.length > 0) {
             const feature = result.features[0];
             if (!feature.geometry) {
               setShowAlert(true);
             }
           }
-  
+
           const layer = arcgisMap.map?.layers.find(
             (l) => l.title === "Offenses",
           ) as FeatureLayer;
@@ -142,7 +145,6 @@ export default function TablePanel({
           ],
         }}
         onarcgisReady={handleTableReady} // fires when table is ready
-   
       />
       <calcite-alert
         open={showAlert}

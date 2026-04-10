@@ -94,22 +94,36 @@ export const useApp = () => {
       panel?.addEventListener("calcitePanelClose", () => {
         setShowTable(false);
       });
-      const expandAction = document.createElement("calcite-action");
-      expandAction.setAttribute("slot", "header-actions-end");
-      expandAction.setAttribute("text", "Expand");
-      expandAction.setAttribute("icon", "chevrons-up");
-      expandAction.addEventListener("click", () => {
-        setShowMap((prev) => {
-          expandAction.setAttribute(
-            "icon",
-            prev ? "chevrons-down" : "chevrons-up",
-          );
-          expandAction.setAttribute("text", prev ? "Expand" : "Collapse");
-          expandAction.setAttribute("title", prev ? "Expand" : "Collapse");
-          return !prev;
+
+      setTimeout(() => {
+        const expandAction = document.createElement("calcite-action");
+        expandAction.setAttribute("slot", "header-actions-end");
+        expandAction.setAttribute("text", "Expand");
+        expandAction.setAttribute("icon", "chevrons-up");
+
+        expandAction.addEventListener("click", () => {
+          setShowMap((prev) => {
+            expandAction.setAttribute(
+              "icon",
+              prev ? "chevrons-down" : "chevrons-up",
+            );
+            expandAction.setAttribute("text", prev ? "Expand" : "Collapse");
+            expandAction.setAttribute("title", prev ? "Expand" : "Collapse");
+            return !prev;
+          });
         });
-      });
-      panel?.appendChild(expandAction);
+
+        const headerActionsEnd = panel?.shadowRoot?.querySelector(
+          ".header-actions--end",
+        );
+
+        console.log(headerActionsEnd?.querySelector("#close"));
+
+        const actionMenu = panel?.shadowRoot?.querySelector("#close");
+        console.log("headerActionsEnd", headerActionsEnd, actionMenu);
+        panel?.append(expandAction);
+        headerActionsEnd?.moveBefore(expandAction, actionMenu as Node);
+      }, 500);
     }, 1000);
   };
 
