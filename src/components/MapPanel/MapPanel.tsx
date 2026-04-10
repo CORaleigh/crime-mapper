@@ -14,8 +14,6 @@ import LocatorSearchSource from "@arcgis/core/widgets/Search/LocatorSearchSource
 import styles from "./MapPanel.module.css";
 import type FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import type Graphic from "@arcgis/core/Graphic";
-import type { ObjectId } from "@arcgis/core/views/types";
-import type FeatureLayerView from "@arcgis/core/views/layers/FeatureLayerView";
 
 interface MapPanelProps {
   handleViewReady: (
@@ -56,9 +54,9 @@ export const MapPanel = ({
           const layer = arcgisMapRef.current?.map?.layers.find(
             (l) => l.title === "Offenses",
           ) as FeatureLayer;
-          const layerView = arcgisMapRef.current?.layerViews.find(
-            (l) => l.layer.title === "Offenses",
-          ) as FeatureLayerView;
+          // const layerView = arcgisMapRef.current?.layerViews.find(
+          //   (l) => l.layer.title === "Offenses",
+          // ) as FeatureLayerView;
           if (!layer) return;
           if (!e.target.selectedFeature) return;
           if (e.target.selectedFeature.layer?.title !== "Offenses") {
@@ -72,13 +70,13 @@ export const MapPanel = ({
             arcgisFeatureTableRef.current.selectionManager = selectionManager;
           }
           if (e.target.selectedFeature.isAggregate) {
-            const aggregateIds =
-              e.target.selectedFeature.getObjectId() as ObjectId;
-            const oids = await layerView.queryObjectIds({
-              aggregateIds: [aggregateIds],
-            });
+            // const aggregateIds =
+            //   e.target.selectedFeature.getObjectId() as ObjectId;
+            // const oids = await layerView.queryObjectIds({
+            //   aggregateIds: [aggregateIds],
+            // });
 
-            selectionManager.replace(layer, oids);
+            //selectionManager.replace(layer, oids);
             return;
           }
 
