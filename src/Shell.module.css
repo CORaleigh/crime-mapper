@@ -35,8 +35,8 @@ calcite-shell-panel {
   --calcite-action-text-color-press: #11233f;
 }
 .shellActionBar calcite-action[active]:hover {
-  background-color: #11233f;
-  --calcite-action-text-color-press: #fff;
+  background-color: #e4ca85;
+  --calcite-action-text-color-press: #11233f;
 }
 
 .shellActionBar {
