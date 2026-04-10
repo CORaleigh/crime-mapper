@@ -359,9 +359,17 @@ export const useApp = () => {
 
   useEffect(() => {
     if (!showTable) {
-      arcgisFeatureTable.current?.selectionManager?.clear();
+      //arcgisFeatureTable.current?.selectionManager?.clear();
+    } else {
+      arcgisFeatureTable.current?.refresh();
     }
   }, [showTable]);
+
+  useEffect(() => {
+    if (!showCharts) {
+      //arcgisMap.current?.selectionManager?.clear();
+    } 
+  }, [showCharts]);  
 
   return {
     // State

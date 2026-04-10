@@ -51,10 +51,7 @@ export default function TablePanel({
         ref={arcgisFeatureTable}
         referenceElement={arcgisMap} // must be the DOM element
         layer={layer}
-        hideMenuItemsExportSelectionToCsv
         hideSelectionColumn
-        hideMenuItemsSelectedRecordsShowAllToggle
-        hideMenuItemsSelectedRecordsShowSelectedToggle
         syncViewSelection
         selectionManager={arcgisMap?.selectionManager}
         pageSize={10000}
@@ -70,6 +67,27 @@ export default function TablePanel({
             event.target.layer?.type !== "feature"
           )
             return;
+
+          const showAll = arcgisFeatureTable.current?.shadowRoot?.querySelector(
+            "calcite-action[title='Show all']",
+          );
+          let showSelection =
+            arcgisFeatureTable.current?.shadowRoot?.querySelector(
+              "calcite-action[title='Show selection']",
+            );
+
+          if (showAll) {
+            (showAll as HTMLElement).click();
+            setTimeout(() => {
+              showSelection =
+                arcgisFeatureTable.current?.shadowRoot?.querySelector(
+                  "calcite-action[title='Show selection']",
+                );
+              if (showSelection) {
+                (showSelection as HTMLElement).click();
+              }
+            }, 500);
+          }
 
           event.target.selectionManager.remove(
             event.target.layer,
@@ -138,7 +156,7 @@ export default function TablePanel({
         menuConfig={{
           items: [
             {
-              label: "Export to CSV",
+              label: "Export all to CSV",
               icon: "file-csv",
               clickFunction: handleExportCSV,
             },
