@@ -128,10 +128,8 @@ export const useApp = () => {
 
         const actionMenu = panel?.shadowRoot?.querySelector("#close");
         console.log("headerActionsEnd", headerActionsEnd, actionMenu);
-        panel?.append(expandAction);
-        
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (headerActionsEnd as any)?.moveBefore(expandAction, actionMenu as Node);
+
+        (headerActionsEnd as Node)?.insertBefore(expandAction, actionMenu as Node);
       }, 500);
     }, 1000);
   };
@@ -421,5 +419,6 @@ export const useApp = () => {
     handleViolentCrimeFilterChange,
     handleTopCrimeFilterChange,
     handleThemeChange,
+    combinedWhere
   };
 };

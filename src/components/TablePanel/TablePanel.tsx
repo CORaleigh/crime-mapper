@@ -11,7 +11,9 @@ interface TablePanelProps {
   arcgisFeatureTable: React.RefObject<HTMLArcgisFeatureTableElement | null>;
   handleTableReady: (
     event: HTMLArcgisFeatureTableElement["arcgisReady"],
-  ) => void;
+
+  ) => void,
+    where: string | undefined
 }
 
 export default function TablePanel({
@@ -19,6 +21,7 @@ export default function TablePanel({
   arcgisMap,
   arcgisFeatureTable,
   handleTableReady,
+  where
 }: TablePanelProps) {
   // Only render if both map and layer exist
   // if (!layer || !arcgisMap || !mapReady) return null;
@@ -30,9 +33,10 @@ export default function TablePanel({
 
     const oids = await layer?.queryObjectIds(
       arcgisFeatureTable.current.filterGeometry
-        ? { geometry: arcgisFeatureTable.current.filterGeometry }
-        : undefined,
+        ? { geometry: arcgisFeatureTable.current.filterGeometry, where: where }
+        : {where: where },
     );
+    
     arcgisFeatureTable.current.highlightIds = new Collection(oids);
     arcgisFeatureTable.current.exportSelectionToCSV();
     arcgisFeatureTable.current.highlightIds.removeAll();

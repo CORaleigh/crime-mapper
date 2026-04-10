@@ -104,6 +104,7 @@ function App() {
     handleViolentCrimeFilterChange,
     handleTopCrimeFilterChange,
     handleThemeChange,
+    combinedWhere
   } = useApp();
 
   const arcgisMapEl = (
@@ -125,6 +126,7 @@ function App() {
             arcgisMap={arcgisMap.current}
             arcgisFeatureTable={arcgisFeatureTable}
             handleTableReady={handleTableReady}
+            where={combinedWhere}
           ></TablePanel>
         </div>
         // <arcgis-feature-table
