@@ -113,7 +113,7 @@ export const MapPanel = ({
       <arcgis-expand slot="top-right" group="top-right" label="Legend" title="Legend">
         <arcgis-legend />
       </arcgis-expand>
-      <div slot="top-right" className={styles.mapAction}>
+      {/* <div slot="top-right" className={styles.mapAction}>
         <calcite-action
           text="Screenshot"
           title="Screenshot"
@@ -134,7 +134,7 @@ export const MapPanel = ({
             downloadDataUrl(screenshot.dataUrl, "crime-map-screenshot.png");
           }}
         ></calcite-action>
-      </div>
+      </div> */}
       <arcgis-basemap-toggle slot="bottom-right" />
     </arcgis-map>
   );
