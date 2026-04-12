@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useReducer } from "react";
 import type Polygon from "@arcgis/core/geometry/Polygon";
 import type Extent from "@arcgis/core/geometry/Extent";
 import type Graphic from "@arcgis/core/Graphic";
@@ -54,6 +54,10 @@ export const useApp = () => {
   const incidentsLayerView = useRef<FeatureLayerView | null>(null);
 
   const crimeTypes = useRef<string[]>([]);
+
+  const chartsLoaded = useRef(false);
+  const tableLoaded = useRef(false);
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
   useEffect(() => {
     const handleResize = () => {
@@ -129,7 +133,10 @@ export const useApp = () => {
         const actionMenu = panel?.shadowRoot?.querySelector("#close");
         console.log("headerActionsEnd", headerActionsEnd, actionMenu);
 
-        (headerActionsEnd as Node)?.insertBefore(expandAction, actionMenu as Node);
+        (headerActionsEnd as Node)?.insertBefore(
+          expandAction,
+          actionMenu as Node,
+        );
       }, 500);
     }, 1000);
   };
@@ -331,13 +338,13 @@ export const useApp = () => {
   // 2️⃣ URL sync (debounced, optional)
 
   useEffect(() => {
-    if (showTable) {
+    if (showTable && showCharts) {
       setShowCharts(false);
     }
   }, [showMap, showTable]);
 
   useEffect(() => {
-    if (showCharts) {
+    if (showCharts && showTable) {
       setShowTable(false);
     }
   }, [showMap, showCharts]);
@@ -358,18 +365,21 @@ export const useApp = () => {
   };
 
   useEffect(() => {
-    if (!showTable) {
-      //arcgisFeatureTable.current?.selectionManager?.clear();
-    } else {
-      arcgisFeatureTable.current?.refresh();
+    console.log("showTable changed", tableLoaded);
+    if (showTable && !tableLoaded.current) {
+      tableLoaded.current = true;
+      forceUpdate();
     }
+
+    if (showTable) arcgisFeatureTable.current?.refresh();
   }, [showTable]);
 
   useEffect(() => {
-    if (!showCharts) {
-      //arcgisMap.current?.selectionManager?.clear();
-    } 
-  }, [showCharts]);  
+    if (showCharts && !chartsLoaded.current) {
+      chartsLoaded.current = true;
+      forceUpdate();
+    }
+  }, [showCharts]);
 
   return {
     // State
@@ -419,6 +429,8 @@ export const useApp = () => {
     handleViolentCrimeFilterChange,
     handleTopCrimeFilterChange,
     handleThemeChange,
-    combinedWhere
+    combinedWhere,
+    chartsLoaded,
+    tableLoaded,
   };
 };

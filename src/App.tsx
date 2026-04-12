@@ -104,7 +104,9 @@ function App() {
     handleViolentCrimeFilterChange,
     handleTopCrimeFilterChange,
     handleThemeChange,
-    combinedWhere
+    combinedWhere,
+    chartsLoaded,
+    tableLoaded,
   } = useApp();
 
   const arcgisMapEl = (
@@ -119,74 +121,76 @@ function App() {
 
   const arcgisTableEl = (
     <>
-      {incidentsLayer.current && mapReady && arcgisMap.current && (
-        <div className={styles.tablePanel}>
-          <TablePanel
-            layer={incidentsLayer.current}
-            arcgisMap={arcgisMap.current}
-            arcgisFeatureTable={arcgisFeatureTable}
-            handleTableReady={handleTableReady}
-            where={combinedWhere}
-          ></TablePanel>
-        </div>
-        // <arcgis-feature-table
-        //   ref={arcgisFeatureTable}
-        //   className={styles.tablePanel}
-        //   onarcgisReady={handleTableReady}
-        //   referenceElement={arcgisMap.current ?? undefined}
-        //   layer={incidentsLayer.current}
-        //   actionColumnConfig={{
-        //     label: "Go to feature",
-        //     icon: "zoom-to-object",
-        //     callback: (event) =>
-        //       arcgisMap.current?.goTo({ target: event.feature, zoom: 15 }),
-        //   }}
-        //   hideSelectionColumn
-        //   hideMenuItemsExportSelectionToCsv
-        //   menuConfig={{
-        //     items: [
-        //       {
-        //         label: "Export to CSV",
-        //         icon: "file-csv",
-        //         clickFunction: async () => {
-        //           if (!arcgisFeatureTable.current) return;
-        //           const oids =
-        //             await arcgisFeatureTable.current?.layer?.queryObjectIds();
-        //           arcgisFeatureTable.current.highlightIds = new Collection(
-        //             oids,
-        //           );
-        //           arcgisFeatureTable.current.exportSelectionToCSV();
-        //           arcgisFeatureTable.current.highlightIds.removeAll();
-        //         },
-        //       },
-        //     ],
-        //   }}
-        // />
-      )}
+      {incidentsLayer.current &&
+        mapReady &&
+        arcgisMap.current &&
+        tableLoaded.current && (
+          <div className={styles.tablePanel}>
+            <TablePanel
+              layer={incidentsLayer.current}
+              arcgisMap={arcgisMap.current}
+              arcgisFeatureTable={arcgisFeatureTable}
+              handleTableReady={handleTableReady}
+              where={combinedWhere}
+            ></TablePanel>
+          </div>
+          // <arcgis-feature-table
+          //   ref={arcgisFeatureTable}
+          //   className={styles.tablePanel}
+          //   onarcgisReady={handleTableReady}
+          //   referenceElement={arcgisMap.current ?? undefined}
+          //   layer={incidentsLayer.current}
+          //   actionColumnConfig={{
+          //     label: "Go to feature",
+          //     icon: "zoom-to-object",
+          //     callback: (event) =>
+          //       arcgisMap.current?.goTo({ target: event.feature, zoom: 15 }),
+          //   }}
+          //   hideSelectionColumn
+          //   hideMenuItemsExportSelectionToCsv
+          //   menuConfig={{
+          //     items: [
+          //       {
+          //         label: "Export to CSV",
+          //         icon: "file-csv",
+          //         clickFunction: async () => {
+          //           if (!arcgisFeatureTable.current) return;
+          //           const oids =
+          //             await arcgisFeatureTable.current?.layer?.queryObjectIds();
+          //           arcgisFeatureTable.current.highlightIds = new Collection(
+          //             oids,
+          //           );
+          //           arcgisFeatureTable.current.exportSelectionToCSV();
+          //           arcgisFeatureTable.current.highlightIds.removeAll();
+          //         },
+          //       },
+          //     ],
+          //   }}
+          // />
+        )}
     </>
   );
 
   const arcgisChartEl = (
     <div className={styles.chartsPanel}>
       {mapReady &&
+        chartsLoaded.current &&
         arcgisMap.current &&
         incidentsLayer.current &&
         incidentsLayer.current.charts &&
         incidentsLayerView.current && (
           <>
-            {mapReady && arcgisFeatureTable.current && (
-              <Suspense fallback={<FallbackLoader></FallbackLoader>}>
-                <ChartPanel
-                  view={arcgisMap.current.view}
-                  layer={incidentsLayer.current}
-                  geometryFilter={geometryFilter}
-                  theme={theme}
-                  onClose={() => setShowCharts(false)}
-                  open={showCharts}
-                  toggleMap={() => setShowMap(prev => !prev)}
-                ></ChartPanel>
-              </Suspense>
-            )}
+            <Suspense fallback={<FallbackLoader></FallbackLoader>}>
+              <ChartPanel
+                view={arcgisMap.current.view}
+                layer={incidentsLayer.current}
+                geometryFilter={geometryFilter}
+                theme={theme}
+                onClose={() => setShowCharts(false)}
+                open={showCharts}
+                toggleMap={() => setShowMap((prev) => !prev)}
+              ></ChartPanel>
+            </Suspense>
           </>
         )}
     </div>
@@ -313,7 +317,9 @@ function App() {
                 textEnabled
                 text="Charts"
                 active={showCharts}
-                onClick={() => setShowCharts((prev) => !prev)}
+                onClick={() => {
+                  setShowCharts((prev) => !prev);
+                }}
               ></calcite-action>
               <calcite-tooltip reference-element="chart-action" closeOnClick>
                 <span>{showTable ? "Hide chart" : "Show chart"}</span>
@@ -348,13 +354,13 @@ function App() {
             selectedSegment={selectedSegment}
             setSelectedSegment={setSelectedSegment}
           />
-          <calcite-panel
-            className="filter-panel"
-        
-          >
+          <calcite-panel className="filter-panel">
             {mapReady && arcgisMap.current && (
               <Suspense fallback={<FallbackLoader />}>
-                <div hidden={selectedSegment !== "what"} style={{overflow: "hidden"}}>
+                <div
+                  hidden={selectedSegment !== "what"}
+                  style={{ overflow: "hidden" }}
+                >
                   <What
                     categories={categories}
                     allDescriptions={allDescriptions}

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState, memo, type FC, useMemo } from "react";
 
-import "@arcgis/charts-components/dist/components/arcgis-chart";
 
 import type MapView from "@arcgis/core/views/MapView";
 import type FeatureLayer from "@arcgis/core/layers/FeatureLayer";
