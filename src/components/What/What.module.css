@@ -30,9 +30,7 @@ calcite-flow-item calcite-list {
   height: calc(100vh - 160px);
 }
 
-calcite-panel {
-  max-height: calc(100vh - 110px);
-}
+
 calcite-segmented-control {
   --calcite-color-foreground-1: #0e426b;
   --calcite-color-text-3: #ffffff;

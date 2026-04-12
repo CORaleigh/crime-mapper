@@ -354,7 +354,7 @@ function App() {
           >
             {mapReady && arcgisMap.current && (
               <Suspense fallback={<FallbackLoader />}>
-                <div hidden={selectedSegment !== "what"}>
+                <div hidden={selectedSegment !== "what"} style={{overflow: "hidden"}}>
                   <What
                     categories={categories}
                     allDescriptions={allDescriptions}
