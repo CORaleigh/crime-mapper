@@ -50,6 +50,7 @@ const ChartPanel: FC<ChartPanelProps> = ({
 
   useEffect(() => {
     if (!selectedChart) return;
+    
     const chartModel = selectedChart as any;
     chartModel["background"] =
       theme === "light" ? [255, 255, 255, 255] : [34, 34, 34, 255];
@@ -162,6 +163,7 @@ const ChartPanel: FC<ChartPanelProps> = ({
           );
         })}
       </calcite-select>
+      <>
       <arcgis-chart
         ref={chartRef}
         view={view}
@@ -178,8 +180,8 @@ const ChartPanel: FC<ChartPanelProps> = ({
             event.detail.selectionData.selectionOIDs.length === 0 ? 0 : 1000000;
         }}
       >
-        {/* <arcgis-charts-action-bar slot="action-bar" legendToggle="active"> </arcgis-charts-action-bar> */}
       </arcgis-chart>
+      </>
     </calcite-panel>
   );
 };
