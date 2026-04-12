@@ -29,7 +29,6 @@ const ChartPanel: FC<ChartPanelProps> = ({
   toggleMap,
   open,
 }) => {
-
   const [chart, setChart] = useState<ChartModel | WebChart | undefined>();
   const chartRef = useRef<HTMLArcgisChartElement>(null);
   const [expanded, setExpanded] = useState(false);
@@ -50,7 +49,7 @@ const ChartPanel: FC<ChartPanelProps> = ({
 
   useEffect(() => {
     if (!selectedChart) return;
-    
+
     const chartModel = selectedChart as any;
     chartModel["background"] =
       theme === "light" ? [255, 255, 255, 255] : [34, 34, 34, 255];
@@ -163,25 +162,32 @@ const ChartPanel: FC<ChartPanelProps> = ({
           );
         })}
       </calcite-select>
-      <>
-      <arcgis-chart
-        ref={chartRef}
-        view={view}
-        layer={layer}
-        model={chart}
-        selectionTheme={{selectedElementsTheme: {elementOutlineColor: [255, 255, 0, 255], elementOutlineWidth: 4}}}
-        runtimeDataFilters={runtimeDataFilters}
-        syncSelectionsBetweenChartAndLayerViewPolicy="enabled"
-        onarcgisSelectionComplete={(
-          event: HTMLArcgisChartElement["arcgisSelectionComplete"],
-        ) => {
-          if (!event.detail.selectionData.selectionOIDs) return;
-          (layer.featureReduction as FeatureReductionCluster).maxScale =
-            event.detail.selectionData.selectionOIDs.length === 0 ? 0 : 1000000;
-        }}
-      >
-      </arcgis-chart>
-      </>
+      {""}
+
+        <arcgis-chart
+          ref={chartRef}
+          view={view}
+          layer={layer}
+          model={chart}
+          selectionTheme={{
+            selectedElementsTheme: {
+              elementOutlineColor: [255, 255, 0, 255],
+              elementOutlineWidth: 4,
+            },
+          }}
+          runtimeDataFilters={runtimeDataFilters}
+          syncSelectionsBetweenChartAndLayerViewPolicy="enabled"
+          onarcgisSelectionComplete={(
+            event: HTMLArcgisChartElement["arcgisSelectionComplete"],
+          ) => {
+            if (!event.detail.selectionData.selectionOIDs) return;
+            (layer.featureReduction as FeatureReductionCluster).maxScale =
+              event.detail.selectionData.selectionOIDs.length === 0
+                ? 0
+                : 1000000;
+          }}
+        ></arcgis-chart>
+
     </calcite-panel>
   );
 };

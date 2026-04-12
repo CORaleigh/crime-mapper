@@ -14,6 +14,8 @@ import LocatorSearchSource from "@arcgis/core/widgets/Search/LocatorSearchSource
 import styles from "./MapPanel.module.css";
 import type FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import type Graphic from "@arcgis/core/Graphic";
+import type { LayerSelectionChange } from "@arcgis/core/views/selection/types";
+import type View from "@arcgis/core/views/View";
 
 interface MapPanelProps {
   handleViewReady: (
@@ -29,6 +31,7 @@ export const MapPanel = ({
   arcgisMapRef,
   arcgisFeatureTableRef,
 }: MapPanelProps) => {
+  const [selectionCount, setSelectionCount] = React.useState(0);
   return (
     <arcgis-map
       itemId="8a9abcc6b1bd4b6492923810c88cc879"
@@ -43,6 +46,10 @@ export const MapPanel = ({
         ) => {
           const selectionManager = arcgisMapRef.current?.selectionManager;
           if (!selectionManager) return;
+
+          selectionManager.on("selection-change", (e: { view: View | null | undefined; changes: LayerSelectionChange[]; }) => {
+            setSelectionCount(e.view?.selectionManager.count ?? 0);
+          });
           if (e.target.open === false) selectionManager.clear();
 
           if (e.detail.name !== "selectedFeature") return;
@@ -133,6 +140,18 @@ export const MapPanel = ({
           }}
         ></calcite-action>
       </div> */}
+      {selectionCount > 0 && (
+      <div slot="bottom-left" className={styles.mapAction}>
+        <calcite-action
+          text="Clear Selection"
+          title="Clear Selection"
+          icon="erase"
+          onClick={() => {
+            arcgisMapRef.current?.selectionManager.clear();
+          }}
+          textEnabled
+        ></calcite-action>
+      </div>)}
       <arcgis-basemap-toggle slot="bottom-right" />
     </arcgis-map>
   );
