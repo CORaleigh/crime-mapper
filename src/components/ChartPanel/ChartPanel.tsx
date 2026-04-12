@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState, memo, type FC, useMemo } from "react";
 
-import("@arcgis/charts-components/dist/components/arcgis-chart");
+import "@arcgis/charts-components/dist/components/arcgis-chart";
 
 import type MapView from "@arcgis/core/views/MapView";
 import type FeatureLayer from "@arcgis/core/layers/FeatureLayer";
@@ -162,32 +162,28 @@ const ChartPanel: FC<ChartPanelProps> = ({
           );
         })}
       </calcite-select>
-      {""}
 
-        <arcgis-chart
-          ref={chartRef}
-          view={view}
-          layer={layer}
-          model={chart}
-          selectionTheme={{
-            selectedElementsTheme: {
-              elementOutlineColor: [255, 255, 0, 255],
-              elementOutlineWidth: 4,
-            },
-          }}
-          runtimeDataFilters={runtimeDataFilters}
-          syncSelectionsBetweenChartAndLayerViewPolicy="enabled"
-          onarcgisSelectionComplete={(
-            event: HTMLArcgisChartElement["arcgisSelectionComplete"],
-          ) => {
-            if (!event.detail.selectionData.selectionOIDs) return;
-            (layer.featureReduction as FeatureReductionCluster).maxScale =
-              event.detail.selectionData.selectionOIDs.length === 0
-                ? 0
-                : 1000000;
-          }}
-        ></arcgis-chart>
-
+      <arcgis-chart
+        ref={chartRef}
+        view={view}
+        layer={layer}
+        model={chart}
+        selectionTheme={{
+          selectedElementsTheme: {
+            elementOutlineColor: [255, 255, 0, 255],
+            elementOutlineWidth: 4,
+          },
+        }}
+        runtimeDataFilters={runtimeDataFilters}
+        syncSelectionsBetweenChartAndLayerViewPolicy="enabled"
+        onarcgisSelectionComplete={(
+          event: HTMLArcgisChartElement["arcgisSelectionComplete"],
+        ) => {
+          if (!event.detail.selectionData.selectionOIDs) return;
+          (layer.featureReduction as FeatureReductionCluster).maxScale =
+            event.detail.selectionData.selectionOIDs.length === 0 ? 0 : 1000000;
+        }}
+      ></arcgis-chart>
     </calcite-panel>
   );
 };
