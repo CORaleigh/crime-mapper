@@ -12,6 +12,7 @@ interface ChartPanelProps {
   view: MapView;
   layer: FeatureLayer | null;
   geometryFilter?: GeometryUnion | undefined;
+  where?: string | undefined;
   theme?: "light" | "dark";
   onClose: () => void;
   toggleMap: () => void;
@@ -22,6 +23,7 @@ const ChartPanel: FC<ChartPanelProps> = ({
   view,
   layer,
   geometryFilter,
+  where,
   theme,
   onClose,
   toggleMap,
@@ -34,7 +36,7 @@ const ChartPanel: FC<ChartPanelProps> = ({
   const [selectedChart, setSelectedChart] = useState(undefined);
   const runtimeDataFilters = useMemo(() => {
     if (!geometryFilter) return undefined;
-
+    console.log("geometry filter in runtimeDataFilters", geometryFilter);
     return {
       geometry: geometryFilter.toJSON(),
     };
@@ -44,6 +46,12 @@ const ChartPanel: FC<ChartPanelProps> = ({
       setSelectedChart(layer.charts[0] as any);
     }
   }, [layer]);
+
+  useEffect(() => {
+    if (!chartRef.current) return;
+    (chartRef.current.layer as FeatureLayer).definitionExpression = where;
+  },[where]);
+    
 
   useEffect(() => {
     if (!selectedChart) return;
@@ -112,7 +120,13 @@ const ChartPanel: FC<ChartPanelProps> = ({
   ) => {
     setSelectedChart(event.target.selectedOption.value);
   };
+
+  useEffect(() => {
+    console.log(where);
+    console.log(layer?.definitionExpression);
+  }, [where]);
   if (!layer) return null;
+  
 
   return (
     <calcite-panel

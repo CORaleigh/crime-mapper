@@ -185,6 +185,7 @@ function App() {
               <ChartPanel
                 view={arcgisMap.current.view}
                 layer={incidentsLayer.current}
+                where={combinedWhere}
                 geometryFilter={geometryFilter}
                 theme={theme}
                 onClose={() => setShowCharts(false)}

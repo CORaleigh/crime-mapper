@@ -52,7 +52,9 @@ export default function TablePanel({
     }
   }, [arcgisMap, arcgisFeatureTable, layer]);
 
- 
+
+
+
 
   return (
     <>
@@ -60,6 +62,7 @@ export default function TablePanel({
         ref={arcgisFeatureTable}
         referenceElement={arcgisMap} // must be the DOM element
         layer={layer}
+        definitionExpression={where}
         hideSelectionColumn
         syncViewSelection
         selectionManager={arcgisMap?.selectionManager}
