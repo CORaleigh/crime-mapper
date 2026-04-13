@@ -9,7 +9,6 @@ import "@esri/calcite-components/components/calcite-shell";
 import "@esri/calcite-components/components/calcite-shell-panel";
 import "@esri/calcite-components/components/calcite-fab";
 
-
 import styles from "./Help.module.css";
 
 import { useEffect, useState } from "react";
@@ -48,7 +47,7 @@ interface HelpProps {
 export default function Help({ open, onClose }: HelpProps) {
   function useMediaQuery(query: string) {
     const [matches, setMatches] = useState(
-      () => window.matchMedia(query).matches
+      () => window.matchMedia(query).matches,
     );
 
     useEffect(() => {
@@ -64,8 +63,6 @@ export default function Help({ open, onClose }: HelpProps) {
 
   const isSmall = useMediaQuery("(max-width: 768px)");
   const [showToc, setShowToc] = useState<boolean>(!isSmall);
-
-
 
   const sections: HelpSection[] = [
     {
@@ -132,6 +129,14 @@ export default function Help({ open, onClose }: HelpProps) {
         },
       ],
     },
+    {
+      id: "charts",
+      title: "Charts",
+      sections: [
+        { id: "chart-types", title: "Selecting charts" },
+        { id: "chart-interactions", title: "Chart interaction" },
+      ],
+    },
 
     { id: "menu", title: "Menu" },
     {
@@ -179,7 +184,7 @@ export default function Help({ open, onClose }: HelpProps) {
           <calcite-panel>
             <calcite-tree
               oncalciteTreeSelect={(
-                event: HTMLCalciteTreeElement["calciteTreeSelect"]
+                event: HTMLCalciteTreeElement["calciteTreeSelect"],
               ) => {
                 const item = event.target
                   .selectedItems[0] as HTMLCalciteTreeItemElement;
@@ -343,10 +348,16 @@ export default function Help({ open, onClose }: HelpProps) {
               interested in. The map will update to show only incidents in the
               selected categories.
             </div>
-            <img style={{ width: "500px", maxWidth: "100%" }} src="help/image004.png" />
+            <img
+              style={{ width: "500px", maxWidth: "100%" }}
+              src="help/image004.png"
+            />
             <div>To clear all selections, click Remove All in the header.</div>
             <div>
-              <img style={{ width: "500px", maxWidth: "100%" }} src="help/image005.png" />
+              <img
+                style={{ width: "500px", maxWidth: "100%" }}
+                src="help/image005.png"
+              />
             </div>
             <h3 id="filtering-desc">Filtering by Description</h3>
             When one or more groups are selected, the Filter by Description
@@ -354,12 +365,18 @@ export default function Help({ open, onClose }: HelpProps) {
             descriptions for the selected groups, allowing you to further refine
             your selection.
             <div>
-              <img style={{ width: "500px", maxWidth: "100%" }} src="help/image006.png" />
+              <img
+                style={{ width: "500px", maxWidth: "100%" }}
+                src="help/image006.png"
+              />
             </div>
             In the list of descriptions, uncheck any you are not interested in
             and check the ones you want to include.
             <div>
-              <img style={{ width: "500px", maxWidth: "100%" }} src="help/image007.png" />
+              <img
+                style={{ width: "500px", maxWidth: "100%" }}
+                src="help/image007.png"
+              />
             </div>
             <div>
               Use the Select All or Select None options to quickly select or
@@ -399,7 +416,10 @@ export default function Help({ open, onClose }: HelpProps) {
             These options allow you to focus your analysis on specific locations
             or regions of interest.
             <h3 id="address">Address</h3>
-            <img style={{ width: "600px", maxWidth: "100%" }} src="help/image008.png"></img>
+            <img
+              style={{ width: "600px", maxWidth: "100%" }}
+              src="help/image008.png"
+            ></img>
             <div>
               <ol>
                 <li>
@@ -436,7 +456,10 @@ export default function Help({ open, onClose }: HelpProps) {
               </ol>
             </div>
             <h3 id="district">District or Place</h3>
-            <img style={{ width: "600px", maxWidth: "100%" }} src="help/image010.png"></img>
+            <img
+              style={{ width: "600px", maxWidth: "100%" }}
+              src="help/image010.png"
+            ></img>
             Use the District or Place option to filter crimes by specific areas
             within the city. Follow these steps:
             <ol>
@@ -475,7 +498,10 @@ export default function Help({ open, onClose }: HelpProps) {
               </li>
             </ol>
             <h3 id="drawing">Drawing a Graphic</h3>
-            <img style={{ width: "600px", maxWidth: "100%" }} src="help/image011.png"></img>
+            <img
+              style={{ width: "600px", maxWidth: "100%" }}
+              src="help/image011.png"
+            ></img>
             The Draw Graphic option allows you to filter crimes by manually
             drawing an area on the map. Follow these steps:
             <ol>
@@ -513,7 +539,10 @@ export default function Help({ open, onClose }: HelpProps) {
               </li>
             </ol>
             <h2 id="when">When</h2>
-            <img style={{ width: "500px", maxWidth: "100%" }} src="help/image012.png" />
+            <img
+              style={{ width: "500px", maxWidth: "100%" }}
+              src="help/image012.png"
+            />
             The When tab allows you to filter crimes based on a three date
             ranges:
             <ol>
@@ -601,7 +630,10 @@ export default function Help({ open, onClose }: HelpProps) {
                 </li>
               </ul>
             </div>
-            <img style={{ width: "300px", maxWidth: "100%" }} src="help/image013.png" />
+            <img
+              style={{ width: "300px", maxWidth: "100%" }}
+              src="help/image013.png"
+            />
             The list of offenses in a cluster displays:
             <ul>
               <li>
@@ -611,7 +643,10 @@ export default function Help({ open, onClose }: HelpProps) {
                 <strong>Date of Crime</strong> – When the offense occurred.
               </li>
             </ul>
-            <img style={{ width: "300px", maxWidth: "100%" }} src="help/image014.png" />
+            <img
+              style={{ width: "300px", maxWidth: "100%" }}
+              src="help/image014.png"
+            />
             <div>
               Selecting an offense from the list will display additional
               information about that specific crime, allowing you to view
@@ -627,14 +662,20 @@ export default function Help({ open, onClose }: HelpProps) {
                   the bottom-right corner (e.g., "5 of 24" in the screenshot).
                 </li>
               </ul>
-              <img style={{ width: "300px", maxWidth: "100%" }} src="help/image015.png" />
+              <img
+                style={{ width: "300px", maxWidth: "100%" }}
+                src="help/image015.png"
+              />
             </div>
             This makes it easy to browse through multiple offenses without
             returning to the main map each time.
             <h2 id="map-tools">Using Map Tools</h2>
             The map includes several tools to help you navigate and explore data
             more effectively.
-            <img style={{ width: "600px", maxWidth: "100%" }} src="help/image016.png" />
+            <img
+              style={{ width: "600px", maxWidth: "100%" }}
+              src="help/image016.png"
+            />
             <h3>Top-Left Tools</h3>
             The following tools are available in the top-left corner of the map:
             <ol>
@@ -659,21 +700,30 @@ export default function Help({ open, onClose }: HelpProps) {
                 Note: This tool does not filter the crimes; it only navigates
                 the map.
                 <div>
-                  <img style={{ width: "300px", maxWidth: "100%" }} src="help/image017.png" />
+                  <img
+                    style={{ width: "300px", maxWidth: "100%" }}
+                    src="help/image017.png"
+                  />
                 </div>
               </li>
               <li>
                 <strong>Layers</strong> – Display additional layers on the map.
                 Check or uncheck the layers you want to show or hide.
                 <div>
-                  <img style={{ width: "300px", maxWidth: "100%" }} src="help/image018.png" />
+                  <img
+                    style={{ width: "300px", maxWidth: "100%" }}
+                    src="help/image018.png"
+                  />
                 </div>
               </li>
               <li>
                 <strong>Legend</strong> – Display a legend that explains the
                 meaning of the symbols and icons shown on the map.
                 <div>
-                  <img style={{ width: "300px", maxWidth: "100%" }} src="help/image019.png" />
+                  <img
+                    style={{ width: "300px", maxWidth: "100%" }}
+                    src="help/image019.png"
+                  />
                 </div>
               </li>
             </ol>
@@ -682,10 +732,16 @@ export default function Help({ open, onClose }: HelpProps) {
             Street base map and Satellite imagery. Simply click the box to
             toggle between the two views.
             <div>
-              <img style={{ width: "300px", maxWidth: "100%" }} src="help/image020.png" />
+              <img
+                style={{ width: "300px", maxWidth: "100%" }}
+                src="help/image020.png"
+              />
             </div>
             <div>
-              <img style={{ width: "300px", maxWidth: "100%" }} src="help/image021.png" />
+              <img
+                style={{ width: "300px", maxWidth: "100%" }}
+                src="help/image021.png"
+              />
             </div>
             <h1 id="table">Table</h1>
             The table provides a detailed view of all crime incidents displayed
@@ -693,7 +749,10 @@ export default function Help({ open, onClose }: HelpProps) {
             a tabular format. Using the table, you can quickly find specific
             crimes, view details such as offense type, date, and location, and
             navigate directly to the corresponding feature on the map.
-            <img style={{ width: "1000px", maxWidth: "100%" }} src="help/image022.png" />
+            <img
+              style={{ width: "1000px", maxWidth: "100%" }}
+              src="help/image022.png"
+            />
             <h2 id="sort">Sort by Column</h2>
             To sort the table by a specific column:
             <ol>
@@ -722,7 +781,10 @@ export default function Help({ open, onClose }: HelpProps) {
               </li>
             </ol>
             <div>
-              <img style={{ width: "300px", maxWidth: "100%" }} src="help/image023.png" />
+              <img
+                style={{ width: "300px", maxWidth: "100%" }}
+                src="help/image023.png"
+              />
             </div>
             <h2 id="export">Exporting the Table to CSV</h2>
             To export the table of offenses:
@@ -730,29 +792,78 @@ export default function Help({ open, onClose }: HelpProps) {
               <li>
                 Click the "…" button in the upper-right corner of the table.
               </li>
-              <li>Select "Export to CSV".</li>
+              <li>Select "Export all to CSV".</li>
               <li>
                 A CSV file will be created, which you can download and open in
                 spreadsheet software for further analysis.
+              </li>
+              <li>
+                If you only want to export the selected offense, select "Export
+                selected to CSV" instead.
               </li>
             </ol>
             This allows you to save and work with the data outside of the
             application.
             <div>
-              <img style={{ width: "500px", maxWidth: "100%" }} src="help/image024.png" />
+              <img
+                style={{ width: "500px", maxWidth: "100%" }}
+                src="help/image024.png"
+              />
             </div>
-            <h2 id="zoom-offense">Zooming to a Specific Offense</h2>
+            <h2 id="zoom-offense">
+              Selecting and zooming to a specific offense
+            </h2>
             To locate a specific offense on the map:
             <ol>
-              <li>Find the offense in the table.</li>
-              <li>Click the button on the far right of that row.</li>
+              <li>Click on the row in the table.</li>
               <li>
                 The map will zoom to the location of the selected offense.
               </li>
+              <li>
+                The offense will also be selected and highlighted on the map.
+              </li>
+              <li>
+                Note that when an offense is selected, clustered will be
+                disabled. To re-enable clustering, deselect the offense or click
+                the "Clear selection" button in the lower left corner of the
+                map.
+              </li>
             </ol>
             <div>
-              <img style={{ width: "300px", maxWidth: "100%" }} src="help/image025.png" />
+              <img
+                style={{ width: "300px", maxWidth: "100%" }}
+                src="help/image025.png"
+              />
             </div>
+            <h1 id="charts">Charts</h1>
+            The Charts panel provides visual representations of the crime data
+            displayed on the map. Charts are based on the current filters,
+            allowing you to analyze trends and patterns in the crime data. You
+            can interact with the charts to further explore specific categories
+            or time periods, making it easier to understand the distribution and
+            frequency of different types of crimes in Raleigh.
+            <h2 id="chart-types">Selecting Charts</h2>
+            The Charts panel includes a dropdown menu that allows you to select
+            from various chart types.
+            <h2 id="chart-interactions">Chart Interaction</h2>
+            When interacting with the charts:
+            <ul>
+              <li>
+                <strong>Hovering</strong> – Hovering over a chart segment will
+                display a tooltip with details about that segment.
+              </li>
+              <li>
+                <strong>Clicking</strong> – Clicking on a chart segment will
+                select and highlight the corresponding crimes on the map.
+              </li>
+              <li>
+                <strong>Clearing selection</strong>To clear the selected
+                segment, click the selected segment or click the "Clear
+                selection" button in the lower-left corner of the map. by
+                clicking a chart segment, click the "Clear selection" button in
+                the lower-left corner of the map.
+              </li>
+            </ul>
             <h1 id="menu">Menu</h1>
             Use the hamburger menu (☰) in the top-right corner of the header to
             access additional information and options related to the
@@ -789,7 +900,10 @@ export default function Help({ open, onClose }: HelpProps) {
                 </li>
               </ul>
               <div>
-                <img style={{ width: "300px", maxWidth: "100%" }} src="help/image026.png" />
+                <img
+                  style={{ width: "300px", maxWidth: "100%" }}
+                  src="help/image026.png"
+                />
               </div>
             </div>
             <h1 id="faq">Frequently Asked Questions</h1>
