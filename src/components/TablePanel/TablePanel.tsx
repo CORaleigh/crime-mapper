@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import "@arcgis/map-components/dist/components/arcgis-feature-table";
 import type FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import type Graphic from "@arcgis/core/Graphic";
+import type { GeometryUnion } from "@arcgis/core/geometry/types";
 
 interface TablePanelProps {
   layer: FeatureLayer | null;
@@ -13,7 +14,8 @@ interface TablePanelProps {
     event: HTMLArcgisFeatureTableElement["arcgisReady"],
 
   ) => void,
-    where: string | undefined
+    where: string | undefined;
+    filterGeometry: GeometryUnion | undefined;
 }
 
 export default function TablePanel({
@@ -21,7 +23,8 @@ export default function TablePanel({
   arcgisMap,
   arcgisFeatureTable,
   handleTableReady,
-  where
+  where,
+  filterGeometry
 }: TablePanelProps) {
   // Only render if both map and layer exist
   // if (!layer || !arcgisMap || !mapReady) return null;
@@ -32,8 +35,8 @@ export default function TablePanel({
     if (!arcgisFeatureTable?.current) return;
 
     const oids = await layer?.queryObjectIds(
-      arcgisFeatureTable.current.filterGeometry
-        ? { geometry: arcgisFeatureTable.current.filterGeometry, where: where }
+      filterGeometry
+        ? { geometry: filterGeometry, where: where }
         : {where: where },
     );
     
@@ -49,6 +52,8 @@ export default function TablePanel({
     }
   }, [arcgisMap, arcgisFeatureTable, layer]);
 
+ 
+
   return (
     <>
       <arcgis-feature-table
@@ -60,6 +65,7 @@ export default function TablePanel({
         selectionManager={arcgisMap?.selectionManager}
         pageSize={10000}
         hideProgress
+        filterGeometry={filterGeometry}
         onarcgisSelectionChange={async (
           event: HTMLArcgisFeatureTableElement["arcgisSelectionChange"],
         ) => {

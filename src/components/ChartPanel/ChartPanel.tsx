@@ -4,15 +4,14 @@ import { useEffect, useRef, useState, memo, type FC, useMemo } from "react";
 
 import type MapView from "@arcgis/core/views/MapView";
 import type FeatureLayer from "@arcgis/core/layers/FeatureLayer";
-import type Polygon from "@arcgis/core/geometry/Polygon";
-import type Extent from "@arcgis/core/geometry/Extent";
 import type { ChartModel, WebChart } from "@arcgis/charts-components";
 import type FeatureReductionCluster from "@arcgis/core/layers/support/FeatureReductionCluster";
+import type { GeometryUnion } from "@arcgis/core/geometry/types";
 
 interface ChartPanelProps {
   view: MapView;
   layer: FeatureLayer | null;
-  geometryFilter?: Polygon | Extent | null;
+  geometryFilter?: GeometryUnion | undefined;
   theme?: "light" | "dark";
   onClose: () => void;
   toggleMap: () => void;

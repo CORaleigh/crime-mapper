@@ -132,6 +132,7 @@ function App() {
               arcgisFeatureTable={arcgisFeatureTable}
               handleTableReady={handleTableReady}
               where={combinedWhere}
+              filterGeometry={geometryFilter}
             ></TablePanel>
           </div>
           // <arcgis-feature-table

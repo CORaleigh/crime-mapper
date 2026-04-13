@@ -15,12 +15,12 @@ import styles from "./Where.module.css";
 
 import { useWhere, type FilterLayer } from "./useWhere";
 
-import Polygon from "@arcgis/core/geometry/Polygon";
-import Extent from "@arcgis/core/geometry/Extent";
+
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
+import type { GeometryUnion } from "@arcgis/core/geometry/types";
 
 interface WhereProps {
-  onGeometryChange: (geometry: Polygon | Extent | null) => void;
+  onGeometryChange: (geometry: GeometryUnion | undefined) => void;
   onFilterPanelClose: () => void;
   arcgisMap: HTMLArcgisMapElement | null;
   open: boolean;

@@ -11,7 +11,6 @@ import LocatorSearchSource from "@arcgis/core/widgets/Search/LocatorSearchSource
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import Polygon from "@arcgis/core/geometry/Polygon";
-import Extent from "@arcgis/core/geometry/Extent";
 import Graphic from "@arcgis/core/Graphic";
 import Layer from "@arcgis/core/layers/Layer";
 import Field from "@arcgis/core/layers/support/Field";
@@ -34,7 +33,7 @@ export type FilterLayer = {
 
 interface UseWhereProps {
   arcgisMap: HTMLArcgisMapElement | null;
-  onGeometryChange: (geometry: Polygon | Extent | null) => void;
+  onGeometryChange: (geometry: GeometryUnion | undefined) => void;
   incidentsLayer?: FeatureLayer | null;
 }
 
@@ -195,7 +194,7 @@ export function useWhere({
 
   /** Clear all graphics and reset */
   const clear = useCallback(() => {
-    onGeometryChange(null);
+    onGeometryChange(undefined);
     deleteSearchParam("where");
     deleteSearchParam("layer");
     deleteSearchParam("feature");
@@ -245,7 +244,7 @@ export function useWhere({
         onGeometryChange(arcgisMap.view.extent.clone());
       } else {
         extentWatcher.current?.remove?.();
-        onGeometryChange(null);
+        onGeometryChange(undefined);
       }
 
       if (value === "address") {

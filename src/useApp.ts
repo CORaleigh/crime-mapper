@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState, useCallback, useReducer } from "react";
-import type Polygon from "@arcgis/core/geometry/Polygon";
-import type Extent from "@arcgis/core/geometry/Extent";
+
 import type Graphic from "@arcgis/core/Graphic";
 import type FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import type Layer from "@arcgis/core/layers/Layer";
@@ -9,6 +8,7 @@ import type FeatureLayerView from "@arcgis/core/views/layers/FeatureLayerView";
 import type TableTemplate from "@arcgis/core/widgets/FeatureTable/support/TableTemplate";
 import Collection from "@arcgis/core/core/Collection";
 import HighlightOptions from "@arcgis/core/views/support/HighlightOptions";
+import type { GeometryUnion } from "@arcgis/core/geometry/types";
 
 type Description = {
   group: string;
@@ -21,8 +21,8 @@ export const useApp = () => {
   const [combinedWhere, setCombinedWhere] = useState<string | undefined>(
     undefined,
   );
-  const [geometryFilter, setFilterGeometry] = useState<Polygon | Extent | null>(
-    null,
+  const [geometryFilter, setFilterGeometry] = useState<GeometryUnion | undefined>(
+    undefined,
   );
   const [showMap, setShowMap] = useState(true);
   const [mapReady, setMapReady] = useState(false);
@@ -329,9 +329,8 @@ export const useApp = () => {
     if (tableReady && arcgisFeatureTable.current) {
       const layer = arcgisFeatureTable.current.layer as FeatureLayer;
       layer.definitionExpression = combinedWhere;
-      arcgisFeatureTable.current.filterGeometry = geometryFilter;
-      arcgisFeatureTable.current.refresh();
-      layer.refresh();
+      //arcgisFeatureTable.current.refresh();
+      //layer.refresh();
     }
   }, [combinedWhere, geometryFilter, incidentsLayerView.current]);
 
@@ -371,7 +370,7 @@ export const useApp = () => {
       forceUpdate();
     }
 
-    if (showTable) arcgisFeatureTable.current?.refresh();
+    //if (showTable) arcgisFeatureTable.current?.refresh();
   }, [showTable]);
 
   useEffect(() => {
