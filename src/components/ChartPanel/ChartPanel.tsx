@@ -121,10 +121,6 @@ const ChartPanel: FC<ChartPanelProps> = ({
     setSelectedChart(event.target.selectedOption.value);
   };
 
-  useEffect(() => {
-    console.log(where);
-    console.log(layer?.definitionExpression);
-  }, [where]);
   if (!layer) return null;
   
 

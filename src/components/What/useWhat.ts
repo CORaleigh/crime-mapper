@@ -300,6 +300,15 @@ export function useWhat({
   }, [selectedCrimeGroups, allDescriptions]);
 
   useEffect(() => {
+    if (getSearchParam("groupSelections") === null) return;
+    if (groupSelections && Object.keys(groupSelections).length === 0) {
+      deleteSearchParam("groupSelections");
+    } else {
+      updateSearchParam("groupSelections", JSON.stringify(groupSelections));
+    }
+  }, [groupSelections]);
+
+  useEffect(() => {
     if (allSelectedDescriptions.length > 0) {
       // If any descriptions are selected, filter by them
       onWhereChange(
