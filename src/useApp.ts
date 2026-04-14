@@ -9,6 +9,7 @@ import type TableTemplate from "@arcgis/core/widgets/FeatureTable/support/TableT
 import Collection from "@arcgis/core/core/Collection";
 import HighlightOptions from "@arcgis/core/views/support/HighlightOptions";
 import type { GeometryUnion } from "@arcgis/core/geometry/types";
+import { when } from "@arcgis/core/core/reactiveUtils";
 
 type Description = {
   group: string;
@@ -206,7 +207,7 @@ export const useApp = () => {
         ? `crime_category IN ('${crimeTypes.current.join(
             "', '",
           )}') and ${whenClause}`
-        : "1=1";
+        : combinedWhere;
 
     const results = await (layer as FeatureLayer).queryFeatures({
       returnDistinctValues: true,
