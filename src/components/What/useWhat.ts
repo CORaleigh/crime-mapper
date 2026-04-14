@@ -81,7 +81,18 @@ export function useWhat({
         (tile) => tile.dataset.crimeGroup as string,
       );
       setSelectedCrimeGroups(newSelectedCrimeGroups);
+      console.log(groupSelections, newSelectedCrimeGroups);
+      if (newSelectedCrimeGroups.length === 0) {
+        deleteSearchParam("groupSelections");
+      }
 
+      Object.keys(groupSelections).forEach((group) => {
+        if (!newSelectedCrimeGroups.includes(group)) {
+          delete groupSelections[group];
+        }
+      });
+
+      updateSearchParam("groupSelections", JSON.stringify(groupSelections));
       const crimeTypes = categories
         .filter((c) =>
           newSelectedCrimeGroups.includes(c.attributes.crime_group),
@@ -300,15 +311,6 @@ export function useWhat({
   }, [selectedCrimeGroups, allDescriptions]);
 
   useEffect(() => {
-    if (getSearchParam("groupSelections") === null) return;
-    if (groupSelections && Object.keys(groupSelections).length === 0) {
-      deleteSearchParam("groupSelections");
-    } else {
-      updateSearchParam("groupSelections", JSON.stringify(groupSelections));
-    }
-  }, [groupSelections]);
-
-  useEffect(() => {
     if (allSelectedDescriptions.length > 0) {
       // If any descriptions are selected, filter by them
       onWhereChange(
@@ -372,7 +374,6 @@ export function useWhat({
 
         setSelectedCrimeTypes(crimeTypes);
       }
-
       const groupSelections = getSearchParam("groupSelections");
       if (groupSelections) {
         setGroupSelections(JSON.parse(groupSelections));
