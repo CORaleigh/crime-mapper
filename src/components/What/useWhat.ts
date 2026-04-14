@@ -317,8 +317,20 @@ export function useWhat({
           .toUpperCase()}')`,
       );
     } else if (selectedCrimeGroups.length > 0) {
+      //handle when groups are selected but no descriptions are selected - filter by all types in those groups
+      const selectedNoChildren = selectedCrimeGroups.filter((group: string) => {
+        return groupSelections[group] && groupSelections[group].length === 0;
+      });
+
+      const crimeTypes = categories
+        .filter(
+          (c) =>
+            !selectedNoChildren.includes(c.attributes.crime_group) &&
+            selectedCrimeGroups.includes(c.attributes.crime_group),
+        )
+        .map((c) => c.attributes.crime_category);
       // If no descriptions are selected but groups are, filter by all types in those groups
-      onWhereChange(`crime_category IN ('${selectedCrimeTypes.join("','")}')`);
+      onWhereChange(`crime_category IN ('${crimeTypes.join("','")}')`);
     } else if (filterViolentCrimes) {
       // If no groups or descriptions are selected but violent crimes filter is on, filter by violent crimes
       filterByTopOrViolentCrimes("violent_crime", false);
