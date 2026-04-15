@@ -199,7 +199,7 @@ export const useApp = () => {
       (layer) => layer.title === "Offenses",
     ) as FeatureLayer | undefined;
     if (!layer) return;
-
+  
     const where = showViolentCrimeOnly
       ? `crime_code in ('11','12','13','17A','20A','20B','25G')`
       : Array.isArray(crimeTypes.current) && crimeTypes.current.length > 0
@@ -207,7 +207,7 @@ export const useApp = () => {
             "', '",
           )}') and ${whenClause}`
         : combinedWhere ?? whenClause;
-
+    console.log("fetching descriptions with where clause:", where);
     const results = await (layer as FeatureLayer).queryFeatures({
       returnDistinctValues: true,
       outFields: ["crime_category", "crime_description"],
@@ -215,6 +215,7 @@ export const useApp = () => {
       geometry: geometryFilter,
       orderByFields: ["crime_category", "crime_description"],
     });
+    console.log("description query results", results);
 
     const countResults = await (layer as FeatureLayer).queryFeatures({
       where: where,
@@ -230,13 +231,15 @@ export const useApp = () => {
       outFields: ["description_count", "crime_description"],
       orderByFields: ["crime_description"],
     });
-    
+    console.log("description count results", countResults);
 
     const descriptionCountMap: Record<string, number> = {};
     countResults.features.forEach((f) => {
       descriptionCountMap[f.attributes.crime_description] =
         f.attributes.description_count;
     });
+
+    console.log("descriptionCountMap", descriptionCountMap);
 
     const categoryToGroup: Record<string, string> = {};
     categories.forEach((category) => {
@@ -271,6 +274,7 @@ export const useApp = () => {
         a.description.localeCompare(b.description),
       ),
     }));
+    console.log("grouped descriptions", result);
     setAllDescriptions(result.filter((item) => item.descriptions.length > 0));
   }, [showViolentCrimeOnly, whenClause, geometryFilter, categories]);
 
