@@ -36,7 +36,6 @@ const ChartPanel: FC<ChartPanelProps> = ({
   const [selectedChart, setSelectedChart] = useState(undefined);
   const runtimeDataFilters = useMemo(() => {
     if (!geometryFilter) return undefined;
-    console.log("geometry filter in runtimeDataFilters", geometryFilter);
     return {
       geometry: geometryFilter.toJSON(),
     };
@@ -108,7 +107,6 @@ const ChartPanel: FC<ChartPanelProps> = ({
         if ("legend" in chartModel) {
           chartModel.legend.position = width > 500 ? "right" : "bottom";
         }
-        console.log("axes" in chartModel);
         setChart({ ...chartModel } as ChartModel | WebChart);
       }
     });

@@ -159,7 +159,6 @@ export default function Help({ open, onClose }: HelpProps) {
       .then((data: FaqData) => setFaqSections(data.sections));
   }, []);
   const scrollToSection = (id: string) => {
-    console.log(id);
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: "smooth", block: "start" });

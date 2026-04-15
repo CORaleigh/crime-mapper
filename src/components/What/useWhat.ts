@@ -58,6 +58,14 @@ export function useWhat({
     [selectedCrimeGroups, groupSelections],
   );
 
+  const selectedNoDescriptions = useMemo(
+    () =>
+      selectedCrimeGroups.filter(
+        (group) => groupSelections[group] === undefined,
+      ),
+    [selectedCrimeGroups, groupSelections],
+  );
+
   // Filter helper
   const filterByTopOrViolentCrimes = useCallback(
     async (field: string, showAll: boolean) => {
@@ -69,6 +77,7 @@ export function useWhat({
             outFields: ["crime_category"],
           });
           const cats = results.features.map((f) => f.attributes.crime_category);
+
           onWhereChange(`crime_category IN ('${cats.join("','")}')`);
         } else if (field === "violent_crime") {
           onWhereChange(
@@ -302,9 +311,20 @@ export function useWhat({
   // Apply where clause based on current filter state
   useEffect(() => {
     if (allSelectedDescriptions.length > 0) {
-      onWhereChange(
-        `upper(crime_description) IN ('${allSelectedDescriptions.join("','").toUpperCase()}')`,
-      );
+      if (selectedNoDescriptions.length > 0) {
+        const crimeTypes = categories
+          .filter((c) =>
+            selectedNoDescriptions.includes(c.attributes.crime_group),
+          )
+          .map((c) => c.attributes.crime_category);
+        onWhereChange(
+          `(upper(crime_description) IN ('${allSelectedDescriptions.join("','").toUpperCase()}') OR crime_category IN ('${crimeTypes.join("','")}'))`,
+        );
+      } else {
+        onWhereChange(
+          `upper(crime_description) IN ('${allSelectedDescriptions.join("','").toUpperCase()}')`,
+        );
+      }
     } else if (selectedCrimeGroups.length > 0) {
       const crimeTypes = categories
         .filter(
@@ -326,6 +346,7 @@ export function useWhat({
     allSelectedDescriptions,
     selectedCrimeGroups,
     selectedNoChildren,
+    selectedNoDescriptions,
     categories,
     filterViolentCrimes,
     filterTopCrimes,

@@ -128,10 +128,8 @@ export const useApp = () => {
           ".header-actions--end",
         );
 
-        console.log(headerActionsEnd?.querySelector("#close"));
 
         const actionMenu = panel?.shadowRoot?.querySelector("#close");
-        console.log("headerActionsEnd", headerActionsEnd, actionMenu);
 
         (headerActionsEnd as Node)?.insertBefore(
           expandAction,
@@ -148,7 +146,6 @@ export const useApp = () => {
     event.target.highlights = new Collection([
       new HighlightOptions({ name: "default", color: "yellow" }),
     ]);
-    console.log(event.target.highlights);
     const layer = view?.map?.allLayers.find(
       (layer: Layer) => layer.title === "Offenses",
     ) as FeatureLayer;
@@ -207,7 +204,6 @@ export const useApp = () => {
             "', '",
           )}') and ${whenClause}`
         : combinedWhere ?? whenClause;
-    console.log("fetching descriptions with where clause:", where);
     const results = await (layer as FeatureLayer).queryFeatures({
       returnDistinctValues: true,
       outFields: ["crime_category", "crime_description"],
@@ -215,7 +211,6 @@ export const useApp = () => {
       geometry: geometryFilter,
       orderByFields: ["crime_category", "crime_description"],
     });
-    console.log("description query results", results);
 
     const countResults = await (layer as FeatureLayer).queryFeatures({
       where: where,
@@ -231,7 +226,6 @@ export const useApp = () => {
       outFields: ["description_count", "crime_description"],
       orderByFields: ["crime_description"],
     });
-    console.log("description count results", countResults);
 
     const descriptionCountMap: Record<string, number> = {};
     countResults.features.forEach((f) => {
@@ -239,7 +233,6 @@ export const useApp = () => {
         f.attributes.description_count;
     });
 
-    console.log("descriptionCountMap", descriptionCountMap);
 
     const categoryToGroup: Record<string, string> = {};
     categories.forEach((category) => {
@@ -274,7 +267,6 @@ export const useApp = () => {
         a.description.localeCompare(b.description),
       ),
     }));
-    console.log("grouped descriptions", result);
     setAllDescriptions(result.filter((item) => item.descriptions.length > 0));
   }, [showViolentCrimeOnly, whenClause, geometryFilter, categories]);
 
@@ -302,11 +294,11 @@ export const useApp = () => {
       return newTheme;
     });
   }, []);
-  useEffect(() => {
-    if (selectedSegment === "what") {
-      fetchAllDescriptions();
-    }
-  }, [selectedSegment, fetchAllDescriptions]);
+  // useEffect(() => {
+  //   if (selectedSegment === "what") {
+  //     fetchAllDescriptions();
+  //   }
+  // }, [selectedSegment, fetchAllDescriptions]);
 
   const handleCrimeTypeChange = (types: string[]) => {
     if (types.length > 0) {
@@ -321,6 +313,7 @@ export const useApp = () => {
       .join(" AND ");
 
     setCombinedWhere(combined);
+    console.log("combined where clause updated:", combined);
   }, [whereClause, whenClause]);
 
   // 1️⃣ ArcGIS update
@@ -369,7 +362,6 @@ export const useApp = () => {
   };
 
   useEffect(() => {
-    console.log("showTable changed", tableLoaded);
     if (showTable && !tableLoaded.current) {
       tableLoaded.current = true;
       forceUpdate();
