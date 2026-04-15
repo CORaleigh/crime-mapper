@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { type Description } from "../../types";
 import { useSearchParamHelpers } from "../../useSearchParamHelpers";
 
@@ -33,7 +32,6 @@ export function useWhat({
 }: UseWhatParams) {
   const [descriptions, setDescriptions] = useState<Description[]>([]);
   const [selectedCrimeGroups, setSelectedCrimeGroups] = useState<string[]>([]);
-  const [selectedCrimeTypes, setSelectedCrimeTypes] = useState<string[]>([]);
   const [showDescriptionFilter, setShowDescriptionFilter] = useState(false);
   const [groupSelections, setGroupSelections] = useState<
     Record<string, string[]>
@@ -41,8 +39,25 @@ export function useWhat({
   const [filterViolentCrimes, setFilterViolentCrimes] = useState(false);
   const [filterTopCrimes, setFilterTopCrimes] = useState(false);
 
+  const initializedGroups = useRef<Set<string>>(new Set());
+
   const { updateSearchParam, deleteSearchParam, getSearchParam } =
     useSearchParamHelpers();
+
+  const allSelectedDescriptions = useMemo(
+    () => descriptions.flatMap((desc) => groupSelections[desc.group] ?? []),
+    [descriptions, groupSelections],
+  );
+
+  const selectedNoChildren = useMemo(
+    () =>
+      selectedCrimeGroups.filter(
+        (group) =>
+          groupSelections[group] && groupSelections[group].length === 0,
+      ),
+    [selectedCrimeGroups, groupSelections],
+  );
+
   // Filter helper
   const filterByTopOrViolentCrimes = useCallback(
     async (field: string, showAll: boolean) => {
@@ -53,11 +68,8 @@ export function useWhat({
             returnDistinctValues: true,
             outFields: ["crime_category"],
           });
-          const categories = results.features.map(
-            (f) => f.attributes.crime_category,
-          );
-          const whereClause = `crime_category IN ('${categories.join("','")}')`;
-          onWhereChange(whereClause);
+          const cats = results.features.map((f) => f.attributes.crime_category);
+          onWhereChange(`crime_category IN ('${cats.join("','")}')`);
         } else if (field === "violent_crime") {
           onWhereChange(
             "crime_code in ('11','12','13','17A','20A','20B','25G')",
@@ -73,48 +85,54 @@ export function useWhat({
   // Tile selection handler
   const tileSelected = useCallback(
     (event: HTMLCalciteTileGroupElement["calciteTileGroupSelect"]) => {
-      const selectedTiles = event.target.selectedItems;
       event.target
         .querySelectorAll("calcite-tile")
         .forEach((tile) => tile.blur());
-      const newSelectedCrimeGroups = Array.from(selectedTiles).map(
+
+      const newSelectedCrimeGroups = Array.from(event.target.selectedItems).map(
         (tile) => tile.dataset.crimeGroup as string,
       );
+
+      const nextGroupSelections = Object.fromEntries(
+        Object.entries(groupSelections).filter(([group]) =>
+          newSelectedCrimeGroups.includes(group),
+        ),
+      );
+
       setSelectedCrimeGroups(newSelectedCrimeGroups);
-      console.log(groupSelections, newSelectedCrimeGroups);
+
       if (newSelectedCrimeGroups.length === 0) {
         deleteSearchParam("groupSelections");
+        deleteSearchParam("selectedCrimeGroups");
+      } else {
+        updateSearchParam(
+          "groupSelections",
+          JSON.stringify(nextGroupSelections),
+        );
+        updateSearchParam(
+          "selectedCrimeGroups",
+          JSON.stringify(newSelectedCrimeGroups),
+        );
       }
 
-      Object.keys(groupSelections).forEach((group) => {
-        if (!newSelectedCrimeGroups.includes(group)) {
-          delete groupSelections[group];
-        }
-      });
-
-      updateSearchParam("groupSelections", JSON.stringify(groupSelections));
       const crimeTypes = categories
         .filter((c) =>
           newSelectedCrimeGroups.includes(c.attributes.crime_group),
         )
         .map((c) => c.attributes.crime_category);
 
-      setSelectedCrimeTypes(crimeTypes);
       onCrimeTypeChange(crimeTypes);
-
-      if (newSelectedCrimeGroups.length > 0) {
-        updateSearchParam(
-          "selectedCrimeGroups",
-          JSON.stringify(newSelectedCrimeGroups),
-        );
-      } else {
-        deleteSearchParam("selectedCrimeGroups");
-      }
     },
-    [categories, onCrimeTypeChange],
+    [
+      categories,
+      onCrimeTypeChange,
+      updateSearchParam,
+      deleteSearchParam,
+      groupSelections,
+    ],
   );
 
-  // List item select handler (moved from What.tsx)
+  // List item select handler
   const listItemSelect = useCallback(
     (
       item: Description,
@@ -125,32 +143,27 @@ export function useWhat({
         item.descriptions.map((d) => d.description);
       const checked = event.target.selected;
       const value = event.target.value;
-      let next: string[];
-      if (checked) {
-        next = [...prev, value];
-      } else {
-        next = prev.filter((d: string) => d !== value);
-      }
-      setGroupSelections((prevState: Record<string, string[]>) => ({
+      const next = checked
+        ? [...prev, value]
+        : prev.filter((d: string) => d !== value);
+      const deduped = Array.from(new Set(next));
+
+      setGroupSelections((prevState) => ({
         ...prevState,
-        [item.group]: Array.from(new Set(next)),
+        [item.group]: deduped,
       }));
+
       updateSearchParam(
         "groupSelections",
-        JSON.stringify({
-          ...groupSelections,
-          [item.group]: Array.from(new Set(next)),
-        }),
+        JSON.stringify({ ...groupSelections, [item.group]: deduped }),
       );
     },
-    [groupSelections, setGroupSelections],
+    [groupSelections, updateSearchParam],
   );
 
   const selectAllInGroup = useCallback(
     (item: Description, selectAll: boolean) => {
-      const next = selectAll
-        ? item.descriptions.map((d) => d.description) // ALL
-        : []; // CLEAR
+      const next = selectAll ? item.descriptions.map((d) => d.description) : [];
 
       setGroupSelections((prevState) => ({
         ...prevState,
@@ -159,13 +172,10 @@ export function useWhat({
 
       updateSearchParam(
         "groupSelections",
-        JSON.stringify({
-          ...groupSelections,
-          [item.group]: next,
-        }),
+        JSON.stringify({ ...groupSelections, [item.group]: next }),
       );
     },
-    [groupSelections],
+    [groupSelections, updateSearchParam],
   );
 
   const violentCrimeSelected = useCallback(
@@ -177,46 +187,36 @@ export function useWhat({
       }
 
       setFilterViolentCrimes(checked);
-      // Clear any selected groups or descriptions
       setSelectedCrimeGroups([]);
-      setSelectedCrimeTypes([]);
       setDescriptions([]);
 
-      // If violent crimes is being checked, uncheck top crimes
       if (checked) {
         deleteSearchParam("filterTopCrimes");
-
         setFilterTopCrimes(false);
       }
 
-      // Provide to parent
       onViolentCrimeFilterChange?.(checked);
-
-      // Apply the filter
       await filterByTopOrViolentCrimes(
         "violent_crime",
         !checked && !filterTopCrimes,
       );
     },
     [
-      setFilterViolentCrimes,
-      setSelectedCrimeGroups,
-      setSelectedCrimeTypes,
-      setDescriptions,
-      setFilterTopCrimes,
+      updateSearchParam,
+      deleteSearchParam,
       onViolentCrimeFilterChange,
       filterByTopOrViolentCrimes,
       filterTopCrimes,
     ],
   );
-  // Switch handlers (moved from What.tsx)
+
   const handleViolentCrimeSwitchChange = useCallback(
     async (event: HTMLCalciteSwitchElement["calciteSwitchChange"]) => {
       violentCrimeSelected(event.target.checked);
       deleteSearchParam("groupSelections");
       deleteSearchParam("selectedCrimeGroups");
     },
-    [violentCrimeSelected],
+    [violentCrimeSelected, deleteSearchParam],
   );
 
   const topCrimeSelected = useCallback(
@@ -228,33 +228,23 @@ export function useWhat({
       }
 
       setFilterTopCrimes(checked);
-      // Clear any selected groups or descriptions
       setSelectedCrimeGroups([]);
-      setSelectedCrimeTypes([]);
       setDescriptions([]);
 
-      // If top crimes is being checked, uncheck violent crimes
       if (checked) {
         deleteSearchParam("filterViolentCrimes");
-
         setFilterViolentCrimes(false);
       }
-      // Provide to parent
 
       onTopCrimeFilterChange?.(checked);
-
-      // Apply the filter
       await filterByTopOrViolentCrimes(
         "top_crime",
         !checked && !filterViolentCrimes,
       );
     },
     [
-      setFilterTopCrimes,
-      setSelectedCrimeGroups,
-      setSelectedCrimeTypes,
-      setDescriptions,
-      setFilterViolentCrimes,
+      updateSearchParam,
+      deleteSearchParam,
       onTopCrimeFilterChange,
       filterByTopOrViolentCrimes,
       filterViolentCrimes,
@@ -267,18 +257,16 @@ export function useWhat({
       deleteSearchParam("groupSelections");
       deleteSearchParam("selectedCrimeGroups");
     },
-    [topCrimeSelected],
+    [topCrimeSelected, deleteSearchParam],
   );
 
-  const removeAllFilters = () => {
+  const removeAllFilters = useCallback(() => {
     setSelectedCrimeGroups([]);
+    setGroupSelections({});
+    initializedGroups.current.clear();
     deleteSearchParam("groupSelections");
     deleteSearchParam("selectedCrimeGroups");
-  };
-  // Derived data
-  const allSelectedDescriptions = descriptions.flatMap(
-    (desc) => groupSelections[desc.group] ?? [],
-  );
+  }, [deleteSearchParam]);
 
   // Update filtered descriptions when group selection changes
   useEffect(() => {
@@ -289,41 +277,33 @@ export function useWhat({
     );
   }, [allDescriptions, selectedCrimeGroups]);
 
-  // Manage groupSelections state
+  // Initialize groupSelections when descriptions become available
   useEffect(() => {
     setGroupSelections((prev) => {
       const next = { ...prev };
-      for (const desc of allDescriptions) {
-        if (
-          selectedCrimeGroups.includes(desc.group) &&
-          next[desc.group] === undefined
-        ) {
+      for (const desc of descriptions) {
+        if (next[desc.group] === undefined) {
           next[desc.group] = desc.descriptions.map((d) => d.description);
+          initializedGroups.current.add(desc.group);
         }
       }
       for (const group in next) {
         if (!selectedCrimeGroups.includes(group)) {
           delete next[group];
+          initializedGroups.current.delete(group);
         }
       }
       return next;
     });
-  }, [selectedCrimeGroups, allDescriptions]);
+  }, [descriptions, selectedCrimeGroups]);
 
+  // Apply where clause based on current filter state
   useEffect(() => {
     if (allSelectedDescriptions.length > 0) {
-      // If any descriptions are selected, filter by them
       onWhereChange(
-        `upper(crime_description) IN ('${allSelectedDescriptions
-          .join("','")
-          .toUpperCase()}')`,
+        `upper(crime_description) IN ('${allSelectedDescriptions.join("','").toUpperCase()}')`,
       );
     } else if (selectedCrimeGroups.length > 0) {
-      //handle when groups are selected but no descriptions are selected - filter by all types in those groups
-      const selectedNoChildren = selectedCrimeGroups.filter((group: string) => {
-        return groupSelections[group] && groupSelections[group].length === 0;
-      });
-
       const crimeTypes = categories
         .filter(
           (c) =>
@@ -331,21 +311,24 @@ export function useWhat({
             selectedCrimeGroups.includes(c.attributes.crime_group),
         )
         .map((c) => c.attributes.crime_category);
-      // If no descriptions are selected but groups are, filter by all types in those groups
+
       onWhereChange(`crime_category IN ('${crimeTypes.join("','")}')`);
     } else if (filterViolentCrimes) {
-      // If no groups or descriptions are selected but violent crimes filter is on, filter by violent crimes
       filterByTopOrViolentCrimes("violent_crime", false);
     } else if (filterTopCrimes) {
-      // If no groups or descriptions are selected but top crimes filter is on, filter by top crimes
       filterByTopOrViolentCrimes("top_crime", false);
     } else {
       onWhereChange(undefined);
     }
   }, [
-    allSelectedDescriptions.join(","),
-    selectedCrimeGroups.join(","),
-    selectedCrimeTypes.join(","),
+    allSelectedDescriptions,
+    selectedCrimeGroups,
+    selectedNoChildren,
+    categories,
+    filterViolentCrimes,
+    filterTopCrimes,
+    onWhereChange,
+    filterByTopOrViolentCrimes,
   ]);
 
   // Notify parent when description panel toggles
@@ -353,6 +336,7 @@ export function useWhat({
     onDescriptionShow(showDescriptionFilter);
   }, [showDescriptionFilter, onDescriptionShow]);
 
+  // Restore state from URL params on mount
   useEffect(() => {
     if (!incidentsLayer || !arcgisMap || categories.length === 0) return;
     (async () => {
@@ -365,26 +349,27 @@ export function useWhat({
         violentCrimeSelected(true);
       }
       const storedCrimeGroups = getSearchParam("selectedCrimeGroups");
-
       if (storedCrimeGroups) {
-        setSelectedCrimeGroups(JSON.parse(storedCrimeGroups));
+        const parsed = JSON.parse(storedCrimeGroups);
+        setSelectedCrimeGroups(parsed);
         const crimeTypes = categories
-          .filter((c) => storedCrimeGroups.includes(c.attributes.crime_group))
+          .filter((c) => parsed.includes(c.attributes.crime_group))
           .map((c) => c.attributes.crime_category);
-
-        setSelectedCrimeTypes(crimeTypes);
+        onCrimeTypeChange(crimeTypes);
       }
-      const groupSelections = getSearchParam("groupSelections");
-      if (groupSelections) {
-        setGroupSelections(JSON.parse(groupSelections));
+      const storedGroupSelections = getSearchParam("groupSelections");
+      if (storedGroupSelections) {
+        setGroupSelections(JSON.parse(storedGroupSelections));
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [arcgisMap, incidentsLayer, categories.length]);
 
+  // Fix Calcite tile group grid layout
   useEffect(() => {
     setTimeout(() => {
       const group = document.querySelector("calcite-tile-group");
-      if (group && group.shadowRoot) {
+      if (group?.shadowRoot) {
         const container = group.shadowRoot.querySelector(".container");
         if (container) {
           container.setAttribute("style", "grid-auto-flow: row");
@@ -392,17 +377,15 @@ export function useWhat({
       }
     });
   }, []);
+
   return {
-    // State
     descriptions,
     selectedCrimeGroups,
     showDescriptionFilter,
     groupSelections,
     filterViolentCrimes,
     filterTopCrimes,
-    // Setters
     setShowDescriptionFilter,
-    // Handlers
     tileSelected,
     listItemSelect,
     handleViolentCrimeSwitchChange,
