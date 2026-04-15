@@ -106,13 +106,15 @@ export function useWhat({
         deleteSearchParam("selectedCrimeGroups");
       } else {
         updateSearchParam(
+          "selectedCrimeGroups",
+          JSON.stringify(newSelectedCrimeGroups),
+        );        
+        if (allSelectedDescriptions.length === 0) return;
+        updateSearchParam(
           "groupSelections",
           JSON.stringify(nextGroupSelections),
         );
-        updateSearchParam(
-          "selectedCrimeGroups",
-          JSON.stringify(newSelectedCrimeGroups),
-        );
+
       }
 
       const crimeTypes = categories
@@ -129,6 +131,7 @@ export function useWhat({
       updateSearchParam,
       deleteSearchParam,
       groupSelections,
+      allSelectedDescriptions
     ],
   );
 
@@ -152,7 +155,6 @@ export function useWhat({
         ...prevState,
         [item.group]: deduped,
       }));
-
       updateSearchParam(
         "groupSelections",
         JSON.stringify({ ...groupSelections, [item.group]: deduped }),

@@ -206,7 +206,7 @@ export const useApp = () => {
         ? `crime_category IN ('${crimeTypes.current.join(
             "', '",
           )}') and ${whenClause}`
-        : combinedWhere;
+        : combinedWhere ?? whenClause;
 
     const results = await (layer as FeatureLayer).queryFeatures({
       returnDistinctValues: true,
@@ -230,6 +230,7 @@ export const useApp = () => {
       outFields: ["description_count", "crime_description"],
       orderByFields: ["crime_description"],
     });
+    
 
     const descriptionCountMap: Record<string, number> = {};
     countResults.features.forEach((f) => {
