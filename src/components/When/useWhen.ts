@@ -9,7 +9,7 @@ export type Preset = "week" | "month" | "90days" | "";
 function getPresetDates(preset: Preset): { start: string; end: string } {
   const today = new Date();
   const end = today.toISOString().slice(0, 10);
-  let start = "";
+  let start: string;
   switch (preset) {
     case "week":
       start = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
